@@ -224,17 +224,16 @@ BD_0 <- BD_0 %>%
 
 ```
 
-### Tendencias paraledas
+### Graficar cada departamento
 
 ```{r}
-# Gráfico de tendencias paralelas para IVIG método 1
-ggplot(BD_0, aes(x = periodo, y = productividad_industrial_nominal, color = grupo_IVIG_1)) +
-  geom_line(stat = "summary", fun = "mean", size = 1) +
-  geom_vline(xintercept = 2022, linetype = "dashed", color = "red") +
-  labs(title = "Tendencias Paralelas de Productividad Industrial Nominal",
-       x = "Periodo",
-       y = "Productividad Industrial Nominal",
-       color = "Grupo") +
+# Gráfico de cada despartamento en el tiempo
+
+ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = departamento)) +
+  geom_line() +
+  labs(title = "Productividad Industrial Nominal por Departamento",
+       x = "Fecha",
+       y = "Productividad Industrial Nominal") +
   theme_minimal()
 
 
