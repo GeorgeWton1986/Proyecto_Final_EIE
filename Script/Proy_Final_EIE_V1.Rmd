@@ -24,49 +24,75 @@ options(kableExtra.latex.load_packages = FALSE)
 
 ```
 
+# Paso 1. ¿Cuál es su pregunta de investigación? ¿Qué ideas tiene su grupo para contestar?
+## 1.	Pregunta de investigación
 
-## Introducción
+¿Cuál es el impacto a la productividad industrial nominal en los departamentos colombianos bajo la condición de vulnerabilidad a la importación de Gas Natural y al cambio en las políticas de extracción de energías fósiles? O ¿la reactivación económica generada por el levantamiento de restricciones del COVID-19?
 
-xxxxxxx
+<!-- \begin{align} -->
+<!-- y_{i}=α+\beta m_i+f(x_i)+ε_i\quad \nonumber \\ -->
+<!-- \end{align} -->
 
-\begin{align}
-y_{i}=α+\beta m_i+f(x_i)+ε_i\quad \nonumber \\
-\end{align}
+<!-- Donde: -->
 
-Donde:
+<!-- - $y_i$ es la proporción de mujeres entre 15 y 20 años con educación secundaria completa en el año 2000. -->
 
-- $y_i$ es la proporción de mujeres entre 15 y 20 años con educación secundaria completa en el año 2000.
+<!-- - $x_i$ es el margen de votos con el que ganó o perdió el candidato del partido islámico. -->
 
-- $x_i$ es el margen de votos con el que ganó o perdió el candidato del partido islámico.
+<!-- - $f(⋅)$ es un polinomio de grado $n$ de la variable $x_i$. -->
+<!-- - $m_i$ es una dicótoma que toma el valor de uno si $x_i≥0$, es decir, si el alcalde que llegó al poder en 1994 era del partido Islámico. -->
 
-- $f(⋅)$ es un polinomio de grado $n$ de la variable $x_i$.
-- $m_i$ es una dicótoma que toma el valor de uno si $x_i≥0$, es decir, si el alcalde que llegó al poder en 1994 era del partido Islámico.
+<!-- - $ε_i$ es el término del error. La ecuación es estimada en un vecindario alrededor del corte, el cual, en este caso, es cero. -->
 
-- $ε_i$ es el término del error. La ecuación es estimada en un vecindario alrededor del corte, el cual, en este caso, es cero.
+## 2.	Motivación
+Colombia enfrenta un déficit de Gas Natural (GN) causado por la reducción del potencial de producción de los principales campos gasíferos, un aumento marginal sostenido de la demanda regulada, e industrial y una volatilidad de la demanda termoeléctrica  a razón del Fenómeno del Niño que puede representar incrementos significativos y estrés adicional al sistema., estas condiciones obligaron a que por primera vez en la historia se importara gas natural para atender la demanda de la industria y hogares colombianos. Según cifras del Gestor del Mercado de Gas Natural – GMGN, en lo corrido del año 2025 se ha importado cerca del 17% del total de la demanda nacional.
 
-xxxx
+Desde 2016, el Gas Natural Importado – GNI se ha venido incorporando al mercado por medio de la planta regasificadora instalada en Cartagena – SPEC, infraestructura que fue pensada como respaldo para las plantas termoeléctricas de la costa (grupo térmico), más no como una planta de abastecimiento para la demanda general.
 
-## Primer Punto
-1.	¿Por qué el autor usa la metodología de Regresión Discontinua para identificar los efectos de interés? ¿Cuál es la intuición detrás? ¿Cuál es el supuesto de identificación?
+En términos de balance entre la oferta y la demanda, gracias a la disposición de la infraestructura de transporte y limitaciones en las capacidades de intercambio entre sistemas, es necesario separar el mercado entre la zona Caribe y el interior. Con referencia a la zona Caribe, se identifican proyectos de producción de Gas Natural más jóvenes y con potencial de producción creciente, de otro lado, con una demanda relativamente estable con una participación importante del grupo térmico de la costa y con un balance superavitario del energético. Respecto a la zona interior, se presenta un potencial de producción que refleja la caída de los grandes campos tradicionales (Cuciana, Cupiagua y Pauto) y una demanda en crecimiento, resultando en un balance deficitario de Gas Natural. 
 
-### Solución Primer Punto
+Ahora, de acuerdo con el Ministerio de Minas y Energía - MME a cierre de 2024, la cobertura para el sector residencial es el 78% (36 millones de colombianos) de los usuarios residenciales anillados, de los cuales, el 20% se encuentran en la zona caribe y el 85% de estos usuarios residenciales pertenecen a los estratos 1, 2 y 3. Además, se estima que los usuarios nuevos incrementen aproximadamente 3.2%. En consecuencia, continúa ampliándose la brecha entre la oferta de producción nacional y la demanda.
 
-a)	¿Por qué el autor usa la metodología de Regresión Discontinua para identificar los efectos de interés? 
+Teniendo en cuenta lo anterior, el Gestor del Mercado de Gas Natural – GMGN estimó un déficit creciente de 8.2% de la demanda en 2025 y de 20.6% en año 2026. De esta manera, se ha tomado la determinación de comercializar en el mercado primario el GNI para los sectores industriales, comercial, vehicular y residencial (esenciales), iniciando desde noviembre de 2024. Este hecho, es de suma relevancia dado que el servicio público en el sector residencial tiene una participación en la demanda cercano al 20% 
 
-**Respuesta:** El autor usa la metodología de Regresión Discontinua (RD) porque quiere identificar el impacto causal local de las leyes o políticas islámicas en términos de resultados de la educación a nivel municipal, haciendo una distinción entre ganar o perder las elecciones por parte del partido islámico.
+Por lo tanto, resulta fundamental evaluar los efectos en la productividad industrial nominal sobre la dependencia o autosuficiencia de Gas Natural al sector industrial y el cambio en las políticas públicas frente a la extracción de energías fósiles, estas decisiones pueden tener efectos diferenciales dependiendo del departamento.
 
-Es decir, los municipios que eligen partidos islámicos suelen ser pobres y conservadores, lo que genera correlaciones negativas en los modelos lineales sin controles. 
 
-b)	¿Cuál es la intuición detrás?
+## 3.	Expectativas de la investigación
+Los estudios en el sector del Gas Natural se orientan en estimar la producción anual nacional, aproximar las reservas probadas (P1), reservas probables (P2), recursos contingentes C1 y C2 tanto en tierra firme como costa afuera. Además, presentan hechos relevantes de ámbito nacional que les permite justificar las cifras de producción anual, por cada una de las fuentes de extracción. De otro lado, se presentan escenarios de demanda agregada, la cual en su conjunto buscan identificar el desbalance en términos volumétricos.
 
-**Respuesta:** El diseño de un RD permite establecer un punto de corte (Umbral) $c=0$ de acuerdo con el índice de elegibilidad $m_i$. 
+Aunado a lo anterior, los documentos que caracterizan a este sector son planes a Largo Plazo, que describen las diferentes actividades de la prestación del servicio público, como producción, importación, suministro, transporte, comercialización, con un enfoque de transición energética, que se encaminan a identificar necesidades y proponer soluciones. No obstante, dejan atrás el análisis causal de los cambios que se están presentando en el mercado.
 
-c)	¿Cuál es el supuesto de identificación?
+En contraste, la presente investigación tomará la información del sector del Gas Natural y la coyuntura actual de dependencia de las importaciones de este recurso energético para atender la demanda industrial. 
+Así mismo, se vincularán variables relevantes como empleos en sector industrial, cobertura de usuarios, PIB, población, SGP.
 
-**Respuesta:** Las características observables y no observables varian levemente alrededor del umbral. Además, no hay manipulación de la variable de asignación $x_i$ alrededor del umbral.
+Como resultado, la investigación permitirá tener un estudio acorde a la actualidad energética de Colombia con el cual se podría establecer efectos causales bajo metodologías de evaluación de impacto económico que permitirán generar recomendaciones de política pública que para ser implementadas por los entes incumbentes.   
 
-## Segundo Punto
-2.	Para cada género, presenten en una tabla los resultados de estimar las siguientes especificaciones
+## 4.	Los datos
+La información fue tomada de diferentes fuentes oficiales tales como el Gestor del Mercado de Gas Natural- – GMGN en Colombia donde se centralizan las operaciones y transacciones del sector, también de los repositorios de información internacional como, la Agencia Nacional de Hidrocarburos – ANH, y de la Encuesta Mensual Manufacturera con Enfoque Territorial (EMMET) del DANE, del SICODIS se obtuvieron los Recursos distribuidos del Sistema General de Participaciones (SGP), del O3 de la SSPD, se obtuvieron los costos históricos del costos promedio unitario de la molécula y de su transporte, del MME se extrajeron los datos de cobertura industrial del gas y el PIB departamentos y las proyecciones de población del DANE. La frecuencia de la información es mensual desde enero de 2018 hasta abril de 2025 a nivel de departamentos en Colombia.
+
+## 5.	Especificación econométrica
+
+
+## 6.	Resultados esperados
+
+Los resultados obtenidos permitirán responder directamente a la pregunta de investigación porque el modelo de diferencias en diferencias estima cuánto cambia la productividad industrial nominal bajo las condiciones de políticas públicas y las decisiones de importar Gas Natural entre los departamentos con o sin vulnerabilidad. Por lo tanto, esto nos permitirá cuantificar el efecto de las decisiones y acciones.
+
+En términos de política pública, los resultados tendrían al menos dos implicaciones concretas. Primero, evidenciarían el cambio en la productividad industrial por haber perdido autosuficiencia energética y el segundo, aportará insumos para la discusión sobre la necesidad de promover la exploración y producción de gas natural local.
+
+En general, los resultados de nuestra estimación no solo cuantificarán el efecto causal de las importaciones sobre el precio de suministro, sino que también servirán como alerta sobre la fragilidad del actual esquema energético colombiano y como evidencia para orientar la política pública hacia un balance más sostenible en el trilema energético.
+
+# Paso 2. ¿Qué estrategia propone y cuál es su supuesto de identificación?
+
+Para desarrollar esta evaluación de impacto se llevará a cabo un modelo de diferencias en diferencias con efecto fijo temporal y por departamento, en el que se busca estimar el efecto del cambio en las políticas de extracción de energía fósil y el grado de vulnerabilidad del departamento en la productividad industrial nominal.
+ 
+La estrategia de identificación descansa en el supuesto de tendencias paralelas, según el cual, en ausencia del cambio en las políticas de extracción de energía fósil (a partir del año 2022), los departamentos que superan 0,5 el índice de Vulnerabilidad a la Importación de Gas (IVIG_dt) (grupo tratado) y aquellos departamentos que son menores o iguales a 0,5 el Índice de Vulnerabilidad a la Importación de Gas (IVIG_dt) (grupo control) mantienen la productividad industrial nominal similar en todos los periodos de análisis. 
+
+Para reforzar la validez de este supuesto se realizarán gráficas de tendencias paralelas pre-tratamiento. Además, se realizarán test de Placebo en periodos anteriores al 2022 para verificar que no se estén sobreestimando los resultados. 
+
+De otro lado, se incluirán controles tales como, empleo en el sector industrial, cobertura de gas a usuarios industriales, PIB, población y SGP. De esta forma, el coeficiente Delta (δ) asociado a la interacción (Shock_t× Grupo) puede interpretarse como el efecto causal del cambio en la política de extracción de energía fósil interactuada con el Índice de Vulnerabilidad a la Importación de Gas.
+
+# Paso 3. Estadísticas descriptivas
 
 ### Generalidades de R
 ```{r}
@@ -78,40 +104,87 @@ rm(list = ls())
 
 #Incluir las librerias
 if(!require(pacman)) install.packages("pacman") ; require(pacman)
-p_load(haven,   #Leer archivos .dta
-      dplyr,    #Manipular datos
-      stargazer,  #Visualizar tablas de regresión
-      fixest,   #Calcular los efectos fijos
-      plm,  #Datos de panel
-      knitr,   #Visualizar tablas adicionales
-      ivreg,  #Regresiones por variables instrumentales
-      broom, #Extraer resultados de regresiones
-      AER,    #Regresiones por variables instrumentales
-      sandwich, #Errores estándar robustos
-      lmtest,  #Pruebas estadísticas
-      kableExtra, #Tablas avanzadas
-      tidyverse, #Conjunto de paquetes para ciencia de datos
-      modelsummary, #Resumir modelos
-      ggplot2, #Gráficos
-      rddensity #Test de McCrary
+p_load(haven,        #Leer archivos .dta
+       dplyr,        #Manipular datos
+       stargazer,    #Visualizar tablas de regresión
+       fixest,       #Calcular los efectos fijos
+       plm,          #Datos de panel
+       knitr,        #Visualizar tablas adicionales
+       ivreg,        #Regresiones por variables instrumentales
+       broom,        #Extraer resultados de regresiones
+       AER,          #Regresiones por variables instrumentales
+       sandwich,     #Errores estándar robustos
+       lmtest,       #Pruebas estadísticas
+       kableExtra,   #Tablas avanzadas
+       tidyverse,    #Conjunto de paquetes para ciencia de datos
+       modelsummary, #Resumir modelos
+       ggplot2,      #Gráficos
+       rddensity,    #Test de McCrary
+       readxl,       #Leer archivos Excel
+       rio           #Importar/exportar datos múltiples formatos
       )
+
 ```
 
 ### Transformación de datos en R
 ```{r}
-# Definir URL del repositorio
-github_url <- "https://raw.githubusercontent.com/GeorgeWton1986/Eva_impacto_T5/main"
-# Cargar datos
-BD_0 <- read_dta(paste0(github_url, "/Data/turquia.dta"))
+# Definir URL del archivo en GitHub
+github_url <- "https://raw.githubusercontent.com/GeorgeWton1986/Proyecto_Final_EIE/main/Data/20251108_DB.xlsx"
 
+temp_file <- tempfile(fileext = ".xlsx")
+download.file(github_url, temp_file, mode = "wb")
+
+# Cargar datos usando readxl
+BD_0 <- read_excel(temp_file)
 
 # Ver estructura de los datos
-#glimpse(BD_0)
-#head(BD_0)
+glimpse(BD_0)
+head(BD_0)
 
-# Verificar los nombres de la columnas
+# Verificar los nombres de las columnas
 colnames(BD_0)
+
+# Eliminar archivo temporal
+unlink(temp_file)
 ```
+
+# Paso 4. Síntesis estado del arte
+La evidencia para Colombia y la región muestra que los choques y los arreglos institucionales en los sectores de hidrocarburos y energía generan efectos heterogéneos a nivel territorial y, en muchos casos, solo parcialmente favorables sobre el bienestar y la actividad económica. En términos generales, la literatura latinoamericana sobre el tema comparte enfoques metodológicos y conceptuales similares al del presente trabajo, aunque con variaciones en contexto y alcance. En el caso colombiano, la reciente necesidad de importar gas natural para abastecer la demanda nacional constituye un hecho sin precedentes. Este shock de importación abre un espacio de análisis poco explorado, dado que la literatura previa se ha centrado en aspectos fiscales (como las regalías) o macroeconómicos, pero no en los efectos productivos departamentales asociados a la dependencia energética.
+ 
+Para el caso de Colombia específicamente se encuentra un trabajo relevante porque muestra cómo los shocks asociados al sector de hidrocarburos, ya sea en ingresos o en oferta, no necesariamente se transforman automáticamente en beneficios reales para las regiones productoras. Moyano (2016) analiza la reforma del sistema general de regalías de 2012 bajo un enfoque de diferencias en diferencias y encuentra impactos débiles o nulos sobre la pobreza. El autor destaca que las transferencias por regalías no se tradujeron de manera homogénea en bienestar, pues su efectividad depende de la capacidad institucional y la eficiencia en la gestión de los recursos a nivel territorial. 
+ 
+Por su parte, Alcaraz (2017) documenta para México que los episodios de escasez de gas natural tuvieron efectos negativos y diferenciados sobre la producción industrial y el crecimiento económico regional. Usando un modelo de panel con efectos fijos, el autor muestra que las regiones más dependientes del gas enfrentaron caídas más pronunciadas en su actividad económica durante los periodos de restricción. Este hallazgo es central para la investigación propuesta, pues evidencia que los shocks energéticos, ya sean por escasez o dependencia de importaciones, pueden traducirse en heterogeneidades productivas entre regiones, especialmente en sectores intensivos en energía.
+ 
+En un nivel más estructural, Yépez-García (2021) explora la relación entre intensidad energética y productividad industrial en América Latina. Su análisis, basado en un modelo de panel two-way fixed effects, muestra que los sectores con mayor eficiencia energética tienden a presentar una productividad más alta. Aunque el estudio no identifica un shock exógeno, aporta evidencia sólida sobre el vínculo entre energía y desempeño productivo, reforzando la idea de que los patrones de consumo energético están estrechamente ligados a la competitividad industrial.
+ 
+Finalmente, Wang y Garduño-Rivera (2022) analizan los efectos del creciente comercio transfronterizo de gas entre Estados Unidos y México. A través de un modelo de panel con efectos fijos e instrumentos geográficos (distancia a gasoductos), los autores identifican que los estados más expuestos a las importaciones experimentaron aumentos en el empleo manufacturero y en la actividad económica, aunque con variaciones regionales marcadas. Su diseño se asemeja a un modelo de diferencias en diferencias, donde la exposición preexistente al shock define la intensidad del tratamiento.
+ 
+En conjunto, esta literatura profundiza en tres elementos fundamentales para la presente investigación. Primero, los shocks energéticos y las transformaciones en el suministro, ya sea por reformas, escasez o dependencia de importaciones, generan consecuencias reales sobre la productividad y el bienestar departamental. Segundo, la exposición diferencial o “vulnerabilidad” de las regiones es un canal clave que explica la magnitud de dichos efectos, lo cual justifica la construcción de un índice de vulnerabilidad energética como tratamiento continuo. Y tercero, la metodología panel con efectos fijos, o two-way fixed effects, está presente para capturar estas relaciones causales en presencia de variación temporal y espacial, garantizando un enfoque robusto frente a factores no observados.
+
+#Aporte a la literatura y factor diferencial
+
+Como ya se dijo anteriormente, Colombia es un país que ha contado con un superávit energético durante los años recientes y la necesidad de importación de productos como el gas no se ha dado en el pasado. Este shock de importación, intensificado a partir de 2024, constituye un punto de quiebre estructural que aún no ha sido abordado por la literatura nacional, ni desde el punto de vista de su impacto en la productividad ni desde su dimensión territorial.
+ 
+Hasta ahora, la evidencia existente para Colombia se ha concentrado en temas como la distribución de regalías y su relación con la pobreza (Moyano, 2016) o en análisis agregados del sector energético y macroeconómico, sin vincularlos con efectos reales sobre la actividad industrial o la competitividad regional. En cambio, los estudios latinoamericanos más cercanos, como Alcaraz (2017) y Wang & Garduño-Rivera (2022), sí exploran shocks energéticos, pero en contextos donde la dependencia del gas ya era estructural (México), o desde una óptica del empleo y la producción agregada, no de la productividad manufacturera subnacional.
+ 
+De esta manera, el estudio amplía la frontera de la literatura sobre energía y desarrollo regional en América Latina, aportando evidencia novedosa sobre cómo los cambios en la composición del suministro energético, particularmente la pérdida de autosuficiencia y la exposición a importaciones, pueden tener consecuencias diferenciadas sobre la actividad productiva interna, incluso en sectores no directamente vinculados a la extracción.
+
+# Paso 5. Interpretación de resultados
+
+# Paso 6. Aplicación de la Teoría de Cambio
+
+## Bibliografía
+
+Moyano, L. F. (2016). Regalías y pobreza en el Caribe colombiano: un análisis de impacto distributivo del Sistema General de Regalías. Universidad del Norte. https://manglar.uninorte.edu.co/handle/10584/7374
+Alcaraz, C. (2017). The effect of natural gas shortages on the Mexican economy. Energy Economics, 66, 77–86. https://doi.org/10.1016/j.eneco.2017.05.011
+Yépez-García, A. (2021). Productivity and energy intensity in Latin America. Inter-American Development Bank (IDB), Energy Division Working Paper. https://publications.iadb.org/en/productivity-and-energy-intensity-latin-america
+Wang, C., & Garduño-Rivera, R. (2022). The growing US-Mexico natural gas trade and its regional economic impacts in Mexico. arXiv preprint. https://arxiv.org/abs/2207.09391
+
+
+## Segundo Punto
+2.	Para cada género, presenten en una tabla los resultados de estimar las siguientes especificaciones
+
+
 
 
 ```{r}
