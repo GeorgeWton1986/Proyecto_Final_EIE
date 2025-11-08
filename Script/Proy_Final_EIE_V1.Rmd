@@ -147,19 +147,21 @@ colnames(BD_0)
 # Eliminar archivo temporal
 unlink(temp_file)
 ```
-## imputación variable consumo
+## Imputación variable consumo
 
 ```{r}
 # Imputación de valores con 0 en la variable consumo con mediana
 
 BD_0 <- BD_0 %>%
   mutate(
-    consumo = ifelse(consumo == 0, median(consumo[consumo != 0], na.rm = TRUE), consumo)
+    consumo = ifelse(consumo == 0, median(consumo[consumo != 0], na.rm = TRUE), consumo),
+    costotransporte = ifelse(costotransporte == 0, median(costotransporte[costotransporte != 0], na.rm = TRUE), costotransporte),
+    costomolgas = ifelse(costomolgas == 0, median(costomolgas[costomolgas != 0], na.rm = TRUE), costomolgas)
   )
 
 ```
 
-### Calculo de Indices de Vulnerabilidad
+### Cálculo de Índices de Vulnerabilidad
 ```{r}
 
 # Cáluclo de autosuficiencia y estandarización de costos
@@ -208,7 +210,36 @@ BD_0 <- BD_0 %>%
 
 ```
 
-### Cálculo de 
+### Clasificación de grupos
+
+```{r}
+# Clasificación de grupos tratados y control según el IVIG
+
+BD_0 <- BD_0 %>%
+  mutate(
+    grupo_IVIG_1 = ifelse(IVIG_1_dt == 1, "Tratado", "Control"),
+    grupo_IVIG_2 = ifelse(IVIG_2_dt == 1, "Tratado", "Control"),
+    grupo_IVIG_3 = ifelse(IVIG_3_dt == 1, "Tratado", "Control")
+  )
+
+```
+
+### Tendencias paraledas
+
+```{r}
+# Gráfico de tendencias paralelas para IVIG método 1
+ggplot(BD_0, aes(x = periodo, y = productividad_industrial_nominal, color = grupo_IVIG_1)) +
+  geom_line(stat = "summary", fun = "mean", size = 1) +
+  geom_vline(xintercept = 2022, linetype = "dashed", color = "red") +
+  labs(title = "Tendencias Paralelas de Productividad Industrial Nominal",
+       x = "Periodo",
+       y = "Productividad Industrial Nominal",
+       color = "Grupo") +
+  theme_minimal()
+
+
+```
+
 
 # Paso 4. Síntesis estado del arte
 La evidencia para Colombia y la región muestra que los choques y los arreglos institucionales en los sectores de hidrocarburos y energía generan efectos heterogéneos a nivel territorial y, en muchos casos, solo parcialmente favorables sobre el bienestar y la actividad económica. En términos generales, la literatura latinoamericana sobre el tema comparte enfoques metodológicos y conceptuales similares al del presente trabajo, aunque con variaciones en contexto y alcance. En el caso colombiano, la reciente necesidad de importar gas natural para abastecer la demanda nacional constituye un hecho sin precedentes. Este shock de importación abre un espacio de análisis poco explorado, dado que la literatura previa se ha centrado en aspectos fiscales (como las regalías) o macroeconómicos, pero no en los efectos productivos departamentales asociados a la dependencia energética.
