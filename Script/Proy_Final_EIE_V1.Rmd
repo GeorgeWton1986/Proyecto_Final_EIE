@@ -171,26 +171,26 @@ BD_0 <- BD_0 %>%
     est_costomolgas = (costomolgas - min(costomolgas, na.rm = TRUE)) / (max(costomolgas, na.rm = TRUE) - min(costomolgas, na.rm = TRUE))
     )
 
-# Calculo de indice IVIG metodo 1
-## Ponderacion fija 1/3
+# Célculo de índice IVIG método 1
+## Ponderación fija 1/3
 
 w<- 1/3
 
-# Calculo de indice IVIG metodo 2
-## Ponderacion por autores
+# Célculo de índice IVIG método 2
+## Ponderación por autores
 
-w1_2<- 1/3
-w2_2<- 1/3
-w3_2<- 1/3
+w1_2<- 0.50
+w2_2<- 0.25
+w3_2<- 0.25
 
-#Calculo de indice IVIG metodo 3
-## Ponderacion por varianza inversa
+#Célculo de índice IVIG método 3
+## Ponderación por varianza inversa
 
 w1_3<- (1/var(BD_0$autosuficiencia, na.rm = TRUE))/sum((1/var(BD_0$autosuficiencia, na.rm = TRUE)))
 w2_3<- (1/var(BD_0$est_costotransporte, na.rm = TRUE))/sum((1/var(BD_0$est_costotransporte, na.rm = TRUE)))
 w3_3<- (1/var(BD_0$est_costomolgas, na.rm = TRUE))/sum((1/var(BD_0$est_costomolgas, na.rm = TRUE)))
 
-# Calculo de IVIG (continuo)
+# Célculo de IVIG (continuo)
 BD_0 <- BD_0 %>%
   mutate(
     IVIG_1_cont = (w * autosuficiencia) + (w * est_costotransporte) + (w * est_costomolgas),
@@ -198,7 +198,7 @@ BD_0 <- BD_0 %>%
     IVIG_3_cont= (w1_3 * autosuficiencia) + (w2_3 * est_costotransporte) + (w3_3 * est_costomolgas)
   )
 
-# Calculo de IVIG (dicotoma)
+# Cálculo de IVIG (dicotoma)
 BD_0 <- BD_0 %>%
   mutate(
     IVIG_1_dt = ifelse(IVIG_1_cont >= 0.5, 1, 0),
