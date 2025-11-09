@@ -164,51 +164,166 @@ BD_0 <- BD_0 %>%
 ### Cálculo de Índices de Vulnerabilidad
 ```{r}
 
-# Cáluclo de autosuficiencia y estandarización de costos
+# Definir el periodo de referencia pre-tratamiento
 
+fecha_corte_covid <- as.Date("2021-12-17")      # Ajusta según tu shock COVID
+fecha_corte_gobierno <- as.Date("2022-08-01")   # Agosto 2022
+
+# Filtrar la base según nuestro schock
+BD_pre <- BD_0 %>%
+  filter(date < fecha_corte_covid) #Opción 1
+
+# Calcular min/max pre-tratamiento según schock
+min_costotransporte <- min(BD_pre$costotransporte, na.rm = TRUE)
+max_costotransporte <- max(BD_pre$costotransporte, na.rm = TRUE)
+min_costomolgas <- min(BD_pre$costomolgas, na.rm = TRUE)
+max_costomolgas <- max(BD_pre$costomolgas, na.rm = TRUE)
+
+# Cálculo dependencia y estandarización de variables
 BD_0 <- BD_0 %>%
   mutate(
-    autosuficiencia = (1 -(prod/consumo)), 
-    est_costotransporte = (costotransporte - min(costotransporte, na.rm = TRUE)) / (max(costotransporte, na.rm = TRUE) - min(costotransporte, na.rm = TRUE)),
-    est_costomolgas = (costomolgas - min(costomolgas, na.rm = TRUE)) / (max(costomolgas, na.rm = TRUE) - min(costomolgas, na.rm = TRUE))
-    )
+    dependencia = 1 - (prod/consumo),
+    est_costotransporte = (costotransporte - min_costotransporte) / 
+                          (max_costotransporte - min_costotransporte),
+    est_costomolgas = (costomolgas - min_costomolgas) / 
+                      (max_costomolgas - min_costomolgas)
+  )
 
-# Célculo de índice IVIG método 1
+# Cálculo de índice IVIG método 1
 ## Ponderación fija 1/3
-
 w<- 1/3
 
-# Célculo de índice IVIG método 2
-## Ponderación por autores
+# Cálculo de índice IVIG método 2
+## Ponderación por autor 
 
-w1_2<- 0.50
-w2_2<- 0.25
-w3_2<- 0.25
+w1_2 <- 0.50  # Dependencia
+w2_2 <- 0.25  # CostoTransporte
+w3_2 <- 0.25  # CostoMolGas
 
-#Célculo de índice IVIG método 3
-## Ponderación por varianza inversa
+# Cálculo de índice IVIG método 3
+## Ponderación inversa
 
-w1_3<- (1/var(BD_0$autosuficiencia, na.rm = TRUE))/sum((1/var(BD_0$autosuficiencia, na.rm = TRUE)))
-w2_3<- (1/var(BD_0$est_costotransporte, na.rm = TRUE))/sum((1/var(BD_0$est_costotransporte, na.rm = TRUE)))
-w3_3<- (1/var(BD_0$est_costomolgas, na.rm = TRUE))/sum((1/var(BD_0$est_costomolgas, na.rm = TRUE)))
+# Promedio por departamento en el año 2021
 
-# Célculo de IVIG (continuo)
+datos_ref <- BD_0 %>%
+  filter(year == 2021) %>%
+  group_by(departamento) %>%
+  summarise(
+    dependencia_mean = mean(dependencia, na.rm = TRUE),
+    est_costotransporte_mean = mean(est_costotransporte, na.rm = TRUE),
+    est_costomolgas_mean = mean(est_costomolgas, na.rm = TRUE)
+  ) %>%
+  ungroup()
+
+#Calcular varianzas entre departamentos
+
+var_dependencia <- var(datos_ref$dependencia_mean, na.rm = TRUE)
+var_est_costotransporte <- var(datos_ref$est_costotransporte_mean, na.rm = TRUE)
+var_est_costomolgas <- var(datos_ref$est_costomolgas_mean, na.rm = TRUE)
+
+# Calcular ponderaciones de varianza inversa
+inv_var_dependencia <- 1 / var_dependencia
+inv_var_est_costotransporte <- 1 / var_est_costotransporte
+inv_var_est_costomolgas <- 1 / var_est_costomolgas
+
+sum_inv_vars <- inv_var_dependencia + inv_var_est_costotransporte + inv_var_est_costomolgas
+
+w1_3 <- inv_var_dependencia / sum_inv_vars
+w2_3 <- inv_var_est_costotransporte / sum_inv_vars
+w3_3 <- inv_var_est_costomolgas / sum_inv_vars
+
+# Cálculo de IVIG (continuo)
 BD_0 <- BD_0 %>%
   mutate(
-    IVIG_1_cont = (w * autosuficiencia) + (w * est_costotransporte) + (w * est_costomolgas),
-    IVIG_2_cont = (w1_2 * autosuficiencia) + (w2_2 * est_costotransporte) + (w3_2 * est_costomolgas),
-    IVIG_3_cont= (w1_3 * autosuficiencia) + (w2_3 * est_costotransporte) + (w3_3 * est_costomolgas)
+    IVIG_1_cont = (w * dependencia) + (w * est_costotransporte) + (w * est_costomolgas),
+    IVIG_2_cont = (w1_2 * dependencia) + (w2_2 * est_costotransporte) + (w3_2 * est_costomolgas),
+    IVIG_3_cont = (w1_3 * dependencia) + (w2_3 * est_costotransporte) + (w3_3 * est_costomolgas)
   )
 
 # Cálculo de IVIG (dicotoma)
-BD_0 <- BD_0 %>%
-  mutate(
-    IVIG_1_dt = ifelse(IVIG_1_cont >= 0.5, 1, 0),
-    IVIG_2_dt = ifelse(IVIG_2_cont >=0.5, 1, 0),
-    IVIG_3_dt = ifelse(IVIG_3_cont >=0.5, 1, 0)
+
+# Calcular medianas en período pre-tratamiento (año 2021)
+medianas_pre <- BD_0 %>%
+  filter(year == 2021) %>%
+  summarise(
+    mediana_IVIG_1 = median(IVIG_1_cont, na.rm = TRUE),
+    mediana_IVIG_2 = median(IVIG_2_cont, na.rm = TRUE),
+    mediana_IVIG_3 = median(IVIG_3_cont, na.rm = TRUE)
   )
 
+BD_0 <- BD_0 %>%
+  mutate(
+    IVIG_1_dt = ifelse(IVIG_1_cont >= medianas_pre$mediana_IVIG_1, 1, 0),
+    IVIG_2_dt = ifelse(IVIG_2_cont >= medianas_pre$mediana_IVIG_2, 1, 0),
+    IVIG_3_dt = ifelse(IVIG_3_cont >= medianas_pre$mediana_IVIG_3, 1, 0)
+  )
+
+cat("Correlaciones entre métodos (IVIG continuo):\n")
+correlaciones <- BD_0 %>%
+  select(IVIG_1_cont, IVIG_2_cont, IVIG_3_cont) %>%
+  cor(use = "complete.obs")
+
+print(round(correlaciones, 3))
+cat("\n")
+
 ```
+
+### Compararacion entre los métodos
+
+```{r}
+# Preparar datos para gráfico
+datos_plot <- BD_0 %>%
+  filter(year == 2021) %>%
+  select(departamento, IVIG_1_cont, IVIG_2_cont, IVIG_3_cont) %>%
+  pivot_longer(cols = starts_with("IVIG"), 
+               names_to = "Método", 
+               values_to = "IVIG") %>%
+  mutate(Método = case_when(
+    Método == "IVIG_1_cont" ~ "Método 1: Pesos iguales",
+    Método == "IVIG_2_cont" ~ "Método 2: Pesos informados",
+    Método == "IVIG_3_cont" ~ "Método 3: Varianza inversa"
+  ))
+
+# Gráfico de densidad
+ggplot(datos_plot, aes(x = IVIG, fill = Método)) +
+  geom_density(alpha = 0.5) +
+  geom_vline(data = datos_plot %>% 
+               group_by(Método) %>% 
+               summarise(mediana = median(IVIG, na.rm = TRUE)),
+             aes(xintercept = mediana, color = Método),
+             linetype = "dashed", size = 1) +
+  labs(title = "Distribución del IVIG según método de ponderación",
+       subtitle = "Año 2021 (pre-tratamiento)",
+       x = "IVIG",
+       y = "Densidad") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+# Boxplot comparativo
+ggplot(datos_plot, aes(x = Método, y = IVIG, fill = Método)) +
+  geom_boxplot(alpha = 0.7) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "red") +
+  labs(title = "Comparación de métodos de cálculo del IVIG",
+       subtitle = "Año 2021 (pre-tratamiento)",
+       x = "",
+       y = "IVIG") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 15, hjust = 1))
+
+# Tabla de estadísticas descriptivas por método
+stats_table <- datos_plot %>%
+  group_by(Método) %>%
+  summarise(
+    Media = mean(IVIG, na.rm = TRUE),
+    Mediana = median(IVIG, na.rm = TRUE),
+    SD = sd(IVIG, na.rm = TRUE),
+    Min = min(IVIG, na.rm = TRUE),
+    Max = max(IVIG, na.rm = TRUE),
+    N_alta_vuln = sum(IVIG >= median(IVIG, na.rm = TRUE))
+  )
+```
+
 
 ### Clasificación de grupos
 
@@ -217,9 +332,9 @@ BD_0 <- BD_0 %>%
 
 BD_0 <- BD_0 %>%
   mutate(
-    grupo_IVIG_1 = ifelse(IVIG_1_dt == 1, "Tratado", "Control"),
-    grupo_IVIG_2 = ifelse(IVIG_2_dt == 1, "Tratado", "Control"),
-    grupo_IVIG_3 = ifelse(IVIG_3_dt == 1, "Tratado", "Control")
+    grupo_IVIG_1_label = ifelse(IVIG_1_dt == 1, "Tratado", "Control"),
+    grupo_IVIG_2_label = ifelse(IVIG_2_dt == 1, "Tratado", "Control"),
+    grupo_IVIG_3_label = ifelse(IVIG_3_dt == 1, "Tratado", "Control")
   )
 
 ```
@@ -238,6 +353,323 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = departamento)) +
 
 
 ```
+### Grafico de tendencias paralelas - Completo
+```{r}
+BD_0 <- BD_0 %>%
+  mutate(date = as.Date(date))
+
+# Verificar que ahora es Date
+cat("Clase de 'date' después de conversión:", class(BD_0$date), "\n")
+
+# También convertir las fechas de corte a Date (por consistencia)
+fecha_corte_covid <- as.Date("2021-12-17")
+fecha_corte_gobierno <- as.Date("2022-08-01")
+
+# Función para crear gráfico de tendencias paralelas
+plot_tendencias <- function(data, grupo_var, titulo, fecha_shock, 
+                           periodo_pre_inicio = NULL) {
+  
+  # Si no se especifica inicio del período pre, usar toda la data antes del shock
+  if(is.null(periodo_pre_inicio)) {
+    periodo_pre_inicio <- min(data$date, na.rm = TRUE)
+  }
+  
+  # Preparar datos agregados por fecha y grupo
+  datos_plot <- data %>%
+    group_by(date, !!sym(grupo_var)) %>%
+    summarise(
+      prod_mean = mean(ind_prod_nominal, na.rm = TRUE),
+      prod_se = sd(ind_prod_nominal, na.rm = TRUE) / sqrt(n()),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      periodo = ifelse(date < fecha_shock, "Pre-shock", "Post-shock")
+    )
+  
+  # Crear gráfico
+  p <- ggplot(datos_plot, aes(x = date, y = prod_mean, 
+                               color = !!sym(grupo_var),
+                               linetype = periodo)) +
+    geom_line(linewidth = 1) +
+    geom_ribbon(aes(ymin = prod_mean - 1.96*prod_se, 
+                    ymax = prod_mean + 1.96*prod_se,
+                    fill = !!sym(grupo_var)),
+                alpha = 0.2, color = NA) +
+    geom_vline(xintercept = fecha_shock,
+               linetype = "dashed", color = "red", linewidth = 1) +
+    annotate("text", x = fecha_shock, y = max(datos_plot$prod_mean, na.rm=TRUE),
+             label = "Shock", color = "red", hjust = -0.1, size = 4) +
+    labs(title = titulo,
+         subtitle = paste("Línea vertical roja:", format(fecha_shock, "%b %Y")),
+         x = "Fecha",
+         y = "Productividad Industrial Nominal (promedio)",
+         color = "Grupo",
+         fill = "Grupo",
+         linetype = "Período") +
+    theme_minimal() +
+    theme(
+      plot.title = element_text(size = 14, face = "bold"),
+      legend.position = "bottom",
+      panel.grid.minor = element_blank()
+    ) +
+    scale_color_manual(values = c("Control" = "#0072B2", 
+                                   "Tratado" = "#D55E00")) +  # ✅ CORREGIDO: "Tratado" en lugar de "Tratamiento"
+    scale_fill_manual(values = c("Control" = "#0072B2", 
+                                  "Tratado" = "#D55E00"))
+  
+  return(p)
+}
+
+#OPCIÓN 1: Shock COVID (marzo 2020)
+
+# Método 1
+p1_covid <- plot_tendencias(BD_0, "grupo_IVIG_1_label", 
+                            "Tendencias Paralelas - Método 1 (Pesos iguales) - COVID",
+                            fecha_corte_covid)
+
+# Método 2
+p2_covid <- plot_tendencias(BD_0, "grupo_IVIG_2_label", 
+                            "Tendencias Paralelas - Método 2 (Pesos informados) - COVID",
+                            fecha_corte_covid)
+
+# Método 3
+p3_covid <- plot_tendencias(BD_0, "grupo_IVIG_3_label", 
+                            "Tendencias Paralelas - Método 3 (Varianza inversa) - COVID",
+                            fecha_corte_covid)
+
+# Mostrar gráficos
+print(p1_covid)
+print(p2_covid)
+print(p3_covid)
+
+#OPCIÓN 2: Cambio de gobierno (agosto 2022)
+# Método 1
+p1_gob <- plot_tendencias(BD_0, "grupo_IVIG_1_label", 
+                          "Tendencias Paralelas - Método 1 (Pesos iguales) - Gobierno",
+                          fecha_corte_gobierno)
+
+# Método 2
+p2_gob <- plot_tendencias(BD_0, "grupo_IVIG_2_label", 
+                          "Tendencias Paralelas - Método 2 (Pesos informados) - Gobierno",
+                          fecha_corte_gobierno)
+
+# Método 3
+p3_gob <- plot_tendencias(BD_0, "grupo_IVIG_3_label", 
+                          "Tendencias Paralelas - Método 3 (Varianza inversa) - Gobierno",
+                          fecha_corte_gobierno)
+
+# Mostrar gráficos
+print(p1_gob)
+print(p2_gob)
+print(p3_gob)
+
+```
+### Grafico de tendencias paralelas - Pre-tratamiento
+
+```{r}
+# Función para gráfico solo período pre-tratamiento
+plot_tendencias_pre <- function(data, grupo_var, titulo, fecha_shock,
+                                meses_antes = 24) {
+  
+  fecha_inicio <- fecha_shock %m-% months(meses_antes)
+  
+  datos_plot <- data %>%
+    filter(date >= fecha_inicio & date < fecha_shock) %>%
+    group_by(date, !!sym(grupo_var)) %>%
+    summarise(
+      prod_mean = mean(ind_prod_nominal, na.rm = TRUE),
+      prod_se = sd(ind_prod_nominal, na.rm = TRUE) / sqrt(n()),
+      .groups = "drop"
+    )
+  
+  p <- ggplot(datos_plot, aes(x = date, y = prod_mean, 
+                               color = !!sym(grupo_var))) +
+    geom_line(linewidth = 1.2) +
+    geom_point(size = 2) +
+    geom_ribbon(aes(ymin = prod_mean - 1.96*prod_se, 
+                    ymax = prod_mean + 1.96*prod_se,
+                    fill = !!sym(grupo_var)),
+                alpha = 0.15, color = NA) +
+    labs(title = titulo,
+         subtitle = paste("Período pre-shock:", 
+                         format(fecha_inicio, "%b %Y"), "a", 
+                         format(fecha_shock %m-% months(1), "%b %Y")),
+         x = "Fecha",
+         y = "Productividad Industrial Nominal (promedio)",
+         color = "Grupo",
+         fill = "Grupo") +
+    theme_minimal() +
+    theme(
+      plot.title = element_text(size = 13, face = "bold"),
+      legend.position = "bottom",
+      panel.grid.minor = element_blank()
+    ) +
+    scale_color_manual(values = c("Control" = "#0072B2", 
+                                   "Tratado" = "#D55E00")) +
+    scale_fill_manual(values = c("Control" = "#0072B2", 
+                                  "Tratado" = "#D55E00"))
+  
+  return(p)
+}
+
+#Gráfico pre-tratamiento Covid y Gobierno
+
+#Metodo 1
+
+# Para shock COVID (24 meses antes)
+p_pre_covid_m1 <- plot_tendencias_pre(BD_0, "grupo_IVIG_1_label",
+                                      "Test de Tendencias Paralelas (Pre-COVID) - Método 1",
+                                      fecha_corte_covid, meses_antes = 24)
+
+# Para shock Gobierno (24 meses antes)
+p_pre_gob_m1 <- plot_tendencias_pre(BD_0, "grupo_IVIG_1_label",
+                                    "Test de Tendencias Paralelas (Pre-Gobierno) - Método 1",
+                                    fecha_corte_gobierno, meses_antes = 24)
+
+print(p_pre_covid_m1)
+print(p_pre_gob_m1)
+
+#Metodo 2
+# Para shock COVID (24 meses antes)
+p_pre_covid_m2 <- plot_tendencias_pre(BD_0, "grupo_IVIG_2_label",
+                                      "Test de Tendencias Paralelas (Pre-COVID) - Método 2",
+                                      fecha_corte_covid, meses_antes = 24)
+
+# Para shock Gobierno (24 meses antes)
+p_pre_gob_m2 <- plot_tendencias_pre(BD_0, "grupo_IVIG_2_label",
+                                    "Test de Tendencias Paralelas (Pre-Gobierno) - Método 2",
+                                    fecha_corte_gobierno, meses_antes = 24)
+
+print(p_pre_covid_m2)
+print(p_pre_gob_m2)
+
+#Metodo 3
+# Para shock COVID (24 meses antes)
+p_pre_covid_m3 <- plot_tendencias_pre(BD_0, "grupo_IVIG_3_label",
+                                      "Test de Tendencias Paralelas (Pre-COVID) - Método 3",
+                                      fecha_corte_covid, meses_antes = 24)
+
+# Para shock Gobierno (24 meses antes)
+p_pre_gob_m3 <- plot_tendencias_pre(BD_0, "grupo_IVIG_3_label",
+                                    "Test de Tendencias Paralelas (Pre-Gobierno) - Método 3",
+                                    fecha_corte_gobierno, meses_antes = 24)
+
+print(p_pre_covid_m3)
+print(p_pre_gob_m3)
+
+
+```
+
+#Test de tendencias paralelas
+```{r}
+### ============================================================
+### TEST FORMAL DE TENDENCIAS PARALELAS
+### ============================================================
+
+# Función para test formal
+test_tendencias_formales <- function(data, grupo_var, fecha_shock, 
+                                    outcome = "ind_prod_nominal") {
+  
+  # Filtrar período pre-shock
+  datos_pre <- data %>%
+    filter(date < fecha_shock) %>%
+    mutate(
+      tiempo = as.numeric(date - min(date)),  # Tendencia temporal
+      grupo = !!sym(grupo_var)
+    )
+  
+  # Modelo: outcome ~ tiempo + grupo + tiempo×grupo + FE
+  modelo <- feols(
+    as.formula(paste(outcome, "~ tiempo + grupo + tiempo:grupo | departamento")),
+    data = datos_pre,
+    cluster = ~departamento
+  )
+  
+  # Test: coeficiente de tiempo×grupo debe ser ≈ 0
+  # Si es significativo, HAY DIFERENCIA en tendencias (viola supuesto)
+  
+  return(modelo)
+}
+
+cat("\n============================================================\n")
+cat("TEST FORMAL DE TENDENCIAS PARALELAS - SHOCK COVID\n")
+cat("============================================================\n\n")
+
+# Test para los 3 métodos (Shock Covid)
+
+test_covid_m1 <- test_tendencias_formales(BD_0, "IVIG_1_dt", fecha_corte_covid)
+test_covid_m2 <- test_tendencias_formales(BD_0, "IVIG_2_dt", fecha_corte_covid)
+test_covid_m3 <- test_tendencias_formales(BD_0, "IVIG_3_dt", fecha_corte_covid)
+
+# Mostrar resultados
+etable(test_covid_m1, test_covid_m2, test_covid_m3,
+       title = "Test Formal de Tendencias Paralelas (Pre-Covid)",
+       headers = c("Método 1", "Método 2", "Método 3"),
+       dict = c("tiempo" = "Tendencia temporal",
+                "grupo" = "Diferencia nivel (Trat-Control)",
+                "tiempo:grupo" = "Diferencia en tendencias (TEST)"),
+       notes = "Coeficiente clave: tiempo:grupo. Si p > 0.10, NO se rechaza tendencias paralelas.")
+
+# Interpretación automática
+cat("\nINTERPRETACIÓN:\n")
+for(i in 1:3) {
+  modelo <- get(paste0("test_covid_m", i))
+  coef_interaccion <- coef(modelo)["tiempo:grupo"]
+  pvalue <- pvalue(modelo)["tiempo:grupo"]
+  
+  cat(sprintf("\nMétodo %d:\n", i))
+  cat(sprintf("  Coeficiente tiempo×grupo: %.4f\n", coef_interaccion))
+  cat(sprintf("  P-value: %.4f\n", pvalue))
+  
+  if(pvalue > 0.10) {
+    cat("NO se rechaza H₀ → Tendencias paralelas VÁLIDAS\n")
+  } else if(pvalue > 0.05) {
+    cat("Evidencia débil contra tendencias paralelas (considerar con precaución)\n")
+  } else {
+    cat("Se rechaza H₀ → VIOLACIÓN de tendencias paralelas\n")
+  }
+}
+
+cat("\n============================================================\n")
+cat("TEST FORMAL DE TENDENCIAS PARALELAS - SHOCK GOBIERNO\n")
+cat("============================================================\n\n")
+
+# Test para los 3 métodos (Shock Gobierno)
+test_gob_m1 <- test_tendencias_formales(BD_0, "IVIG_1_dt", fecha_corte_gobierno)
+test_gob_m2 <- test_tendencias_formales(BD_0, "IVIG_2_dt", fecha_corte_gobierno)
+test_gob_m3 <- test_tendencias_formales(BD_0, "IVIG_3_dt", fecha_corte_gobierno)
+
+# Mostrar resultados
+etable(test_gob_m1, test_gob_m2, test_gob_m3,
+       title = "Test Formal de Tendencias Paralelas (Pre-Gobierno)",
+       headers = c("Método 1", "Método 2", "Método 3"),
+       dict = c("tiempo" = "Tendencia temporal",
+                "grupo" = "Diferencia nivel (Trat-Control)",
+                "tiempo:grupo" = "Diferencia en tendencias (TEST)"),
+       notes = "Coeficiente clave: tiempo:grupo. Si p > 0.10, NO se rechaza tendencias paralelas.")
+
+# Interpretación automática
+cat("\nINTERPRETACIÓN:\n")
+for(i in 1:3) {
+  modelo <- get(paste0("test_gob_m", i))
+  coef_interaccion <- coef(modelo)["tiempo:grupo"]
+  pvalue <- pvalue(modelo)["tiempo:grupo"]
+  
+  cat(sprintf("\nMétodo %d:\n", i))
+  cat(sprintf("  Coeficiente tiempo×grupo: %.4f\n", coef_interaccion))
+  cat(sprintf("  P-value: %.4f\n", pvalue))
+  
+  if(pvalue > 0.10) {
+    cat("NO se rechaza H₀ → Tendencias paralelas VÁLIDAS\n")
+  } else if(pvalue > 0.05) {
+    cat("Evidencia débil contra tendencias paralelas (considerar con precaución)\n")
+  } else {
+    cat("Se rechaza H₀ → VIOLACIÓN de tendencias paralelas\n")
+  }
+}
+
+```
+
 
 
 # Paso 4. Síntesis estado del arte
