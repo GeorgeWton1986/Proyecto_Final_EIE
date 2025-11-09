@@ -670,8 +670,156 @@ for(i in 1:3) {
 
 ```
 
+#Estimacion del modelo de DID
+
+```{r}
+
+cat("\n============================================================\n")
+cat("ESTIMANDO MODELOS DiD\n")
+cat("============================================================\n\n")
+
+# ------------------------------------------------------------
+# OPCIÓN 1: SHOCK COVID-19
+# ------------------------------------------------------------
+
+cat("Estimando modelos con Shock COVID...\n")
+
+# Primero, crear variable Shock_Gobierno si no existe
+if(!"Shock_Covid" %in% colnames(BD_0)) {
+  BD_0 <- BD_0 %>%
+    mutate(Shock_Covid = ifelse(date >= fecha_corte_covid, 1, 0))
+  cat("→ Variable Shock_Covid creada\n")
+}
+
+# Método 1: Pesos iguales
+modelo_covid_m1 <- feols(
+  ind_prod_nominal ~ Shock_COVID:IVIG_1_dt + 
+                     ind_empleo + cobertura + log(PIB_DPTO) + 
+                     log(población) + log(SGP) | 
+                     departamento + ym,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+# Método 2: Pesos informados
+modelo_covid_m2 <- feols(
+  ind_prod_nominal ~ Shock_COVID:IVIG_2_dt + 
+                     ind_empleo + cobertura + log(PIB_DPTO) + 
+                     log(población) + log(SGP) | 
+                     departamento + ym,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+# Método 3: Varianza inversa
+modelo_covid_m3 <- feols(
+  ind_prod_nominal ~ Shock_COVID:IVIG_3_dt + 
+                     ind_empleo + cobertura + log(PIB_DPTO) + 
+                     log(población) + log(SGP) | 
+                     departamento + ym,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+cat("✓ Modelos COVID estimados\n\n")
 
 
+
+# ------------------------------------------------------------
+# OPCIÓN 2: SHOCK CAMBIO DE GOBIERNO
+# ------------------------------------------------------------
+
+cat("Estimando modelos con Shock Gobierno...\n")
+
+# Primero, crear variable Shock_Gobierno si no existe
+if(!"Shock_Gobierno" %in% colnames(BD_0)) {
+  BD_0 <- BD_0 %>%
+    mutate(Shock_Gobierno = ifelse(date >= fecha_corte_gobierno, 1, 0))
+  cat("→ Variable Shock_Gobierno creada\n")
+}
+
+# Método 1: Pesos iguales
+modelo_gob_m1 <- feols(
+  ind_prod_nominal ~ Shock_Gobierno:IVIG_1_dt + 
+                     ind_empleo + cobertura + log(PIB_DPTO) + 
+                     log(población) + log(SGP) | 
+                     departamento + ym,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+# Método 2: Pesos informados
+modelo_gob_m2 <- feols(
+  ind_prod_nominal ~ Shock_Gobierno:IVIG_2_dt + 
+                     ind_empleo + cobertura + log(PIB_DPTO) + 
+                     log(población) + log(SGP) | 
+                     departamento + ym,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+# Método 3: Varianza inversa
+modelo_gob_m3 <- feols(
+  ind_prod_nominal ~ Shock_Gobierno:IVIG_3_dt + 
+                     ind_empleo + cobertura + log(PIB_DPTO) + 
+                     log(población) + log(SGP) | 
+                     departamento + ym,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+cat("✓ Modelos Gobierno estimados\n\n")
+
+cat("\n============================================================\n")
+cat("RESULTADOS - SHOCK COVID-19\n")
+cat("============================================================\n\n")
+
+etable(modelo_covid_m1, modelo_covid_m2, modelo_covid_m3,
+       title = "Efecto del Shock COVID-19 sobre Productividad Industrial",
+       headers = c("Método 1\n(Pesos iguales)", 
+                   "Método 2\n(Pesos informados)", 
+                   "Método 3\n(Varianza inversa)"),
+       dict = c("Shock_COVID:IVIG_1_dt" = "Shock COVID × Grupo Vulnerable (M1)",
+                "Shock_COVID:IVIG_2_dt" = "Shock COVID × Grupo Vulnerable (M2)",
+                "Shock_COVID:IVIG_3_dt" = "Shock COVID × Grupo Vulnerable (M3)",
+                "ind_empleo" = "Empleo industrial",
+                "cobertura" = "Cobertura de gas",
+                "log(PIB_DPTO)" = "log(PIB departamental)",
+                "log(población)" = "log(Población)",
+                "log(SGP)" = "log(SGP)"),
+       notes = c("Errores estándar agrupados por departamento en paréntesis.",
+                 "Efectos fijos por departamento y período (año-mes) incluidos.",
+                 "El coeficiente de interés captura el efecto diferencial del shock COVID",
+                 "en departamentos vulnerables (Grupo=1) relativo a departamentos control (Grupo=0)."),
+       fitstat = c("n", "r2", "wr2"))
+
+
+
+cat("\n============================================================\n")
+cat("RESULTADOS - SHOCK CAMBIO DE GOBIERNO\n")
+cat("============================================================\n\n")
+
+etable(modelo_gob_m1, modelo_gob_m2, modelo_gob_m3,
+       title = "Efecto del Cambio de Gobierno sobre Productividad Industrial",
+       headers = c("Método 1\n(Pesos iguales)", 
+                   "Método 2\n(Pesos informados)", 
+                   "Método 3\n(Varianza inversa)"),
+       dict = c("Shock_Gobierno:IVIG_1_dt" = "Shock Gobierno × Grupo Vulnerable (M1)",
+                "Shock_Gobierno:IVIG_2_dt" = "Shock Gobierno × Grupo Vulnerable (M2)",
+                "Shock_Gobierno:IVIG_3_dt" = "Shock Gobierno × Grupo Vulnerable (M3)",
+                "ind_empleo" = "Empleo industrial",
+                "cobertura" = "Cobertura de gas",
+                "log(PIB_DPTO)" = "log(PIB departamental)",
+                "log(población)" = "log(Población)",
+                "log(SGP)" = "log(SGP)"),
+       notes = c("Errores estándar agrupados por departamento en paréntesis.",
+                 "Efectos fijos por departamento y período (año-mes) incluidos.",
+                 "El coeficiente de interés captura el efecto diferencial del cambio de política energética",
+                 "en departamentos vulnerables (Grupo=1) relativo a departamentos control (Grupo=0)."),
+       fitstat = c("n", "r2", "wr2"))
+
+
+```
 # Paso 4. Síntesis estado del arte
 La evidencia para Colombia y la región muestra que los choques y los arreglos institucionales en los sectores de hidrocarburos y energía generan efectos heterogéneos a nivel territorial y, en muchos casos, solo parcialmente favorables sobre el bienestar y la actividad económica. En términos generales, la literatura latinoamericana sobre el tema comparte enfoques metodológicos y conceptuales similares al del presente trabajo, aunque con variaciones en contexto y alcance. En el caso colombiano, la reciente necesidad de importar gas natural para abastecer la demanda nacional constituye un hecho sin precedentes. Este shock de importación abre un espacio de análisis poco explorado, dado que la literatura previa se ha centrado en aspectos fiscales (como las regalías) o macroeconómicos, pero no en los efectos productivos departamentales asociados a la dependencia energética.
  
