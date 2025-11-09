@@ -6,7 +6,7 @@ output:
   pdf_document:
     latex_engine: xelatex
     keep_tex: false
-    extra_dependencies: ["booktabs"]
+    extra_dependencies: ["makecell","booktabs"]
 ---
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 knitr::opts_chunk$set(
@@ -21,6 +21,7 @@ knitr::opts_chunk$set(
 # Configurar opciones
 options(modelsummary_factory_default = "gt")
 options(kableExtra.latex.load_packages = FALSE)
+tinytex::tlmgr_install('makecell')
 
 ```
 
@@ -603,12 +604,14 @@ test_covid_m3 <- test_tendencias_formales(BD_0, "IVIG_3_dt", fecha_corte_covid)
 
 # Mostrar resultados
 etable(test_covid_m1, test_covid_m2, test_covid_m3,
+       tex = TRUE,
        title = "Test Formal de Tendencias Paralelas (Pre-Covid)",
        headers = c("Método 1", "Método 2", "Método 3"),
        dict = c("tiempo" = "Tendencia temporal",
                 "grupo" = "Diferencia nivel (Trat-Control)",
                 "tiempo:grupo" = "Diferencia en tendencias (TEST)"),
-       notes = "Coeficiente clave: tiempo:grupo. Si p > 0.10, NO se rechaza tendencias paralelas.")
+       notes = "Coeficiente clave: tiempo:grupo. Si p > 0.10, NO se rechaza tendencias paralelas.",
+       digits = 4)
 
 # Interpretación automática
 cat("\nINTERPRETACIÓN:\n")
@@ -641,12 +644,14 @@ test_gob_m3 <- test_tendencias_formales(BD_0, "IVIG_3_dt", fecha_corte_gobierno)
 
 # Mostrar resultados
 etable(test_gob_m1, test_gob_m2, test_gob_m3,
+        tex = TRUE,
        title = "Test Formal de Tendencias Paralelas (Pre-Gobierno)",
        headers = c("Método 1", "Método 2", "Método 3"),
        dict = c("tiempo" = "Tendencia temporal",
                 "grupo" = "Diferencia nivel (Trat-Control)",
                 "tiempo:grupo" = "Diferencia en tendencias (TEST)"),
-       notes = "Coeficiente clave: tiempo:grupo. Si p > 0.10, NO se rechaza tendencias paralelas.")
+       notes = "Coeficiente clave: tiempo:grupo. Si p > 0.10, NO se rechaza tendencias paralelas.",
+       digits = 4)
 
 # Interpretación automática
 cat("\nINTERPRETACIÓN:\n")
@@ -776,9 +781,10 @@ cat("============================================================\n\n")
 
 etable(modelo_covid_m1, modelo_covid_m2, modelo_covid_m3,
        title = "Efecto del Shock COVID-19 sobre Productividad Industrial",
-       headers = c("Método 1\n(Pesos iguales)", 
-                   "Método 2\n(Pesos informados)", 
-                   "Método 3\n(Varianza inversa)"),
+        tex = TRUE,
+       headers = c("M1", 
+                   "M2", 
+                   "M3"),
        dict = c("Shock_COVID:IVIG_1_dt" = "Shock COVID × Grupo Vulnerable (M1)",
                 "Shock_COVID:IVIG_2_dt" = "Shock COVID × Grupo Vulnerable (M2)",
                 "Shock_COVID:IVIG_3_dt" = "Shock COVID × Grupo Vulnerable (M3)",
@@ -787,11 +793,14 @@ etable(modelo_covid_m1, modelo_covid_m2, modelo_covid_m3,
                 "log(PIB_DPTO)" = "log(PIB departamental)",
                 "log(población)" = "log(Población)",
                 "log(SGP)" = "log(SGP)"),
-       notes = c("Errores estándar agrupados por departamento en paréntesis.",
+       notes = c("Método 1:(Pesos iguales)", "Método 2:(Pesos informados)", 
+                 "Método 3:(Varianza inversa)",
+                 "Errores estándar agrupados por departamento en paréntesis.",
                  "Efectos fijos por departamento y período (año-mes) incluidos.",
                  "El coeficiente de interés captura el efecto diferencial del shock COVID",
                  "en departamentos vulnerables (Grupo=1) relativo a departamentos control (Grupo=0)."),
-       fitstat = c("n", "r2", "wr2"))
+       fitstat = c("n", "r2", "wr2"),
+       digits = 4)
 
 
 
@@ -801,9 +810,10 @@ cat("============================================================\n\n")
 
 etable(modelo_gob_m1, modelo_gob_m2, modelo_gob_m3,
        title = "Efecto del Cambio de Gobierno sobre Productividad Industrial",
-       headers = c("Método 1\n(Pesos iguales)", 
-                   "Método 2\n(Pesos informados)", 
-                   "Método 3\n(Varianza inversa)"),
+        tex = TRUE,
+       headers = c("M1", 
+                   "M2", 
+                   "M3"),
        dict = c("Shock_Gobierno:IVIG_1_dt" = "Shock Gobierno × Grupo Vulnerable (M1)",
                 "Shock_Gobierno:IVIG_2_dt" = "Shock Gobierno × Grupo Vulnerable (M2)",
                 "Shock_Gobierno:IVIG_3_dt" = "Shock Gobierno × Grupo Vulnerable (M3)",
@@ -812,11 +822,14 @@ etable(modelo_gob_m1, modelo_gob_m2, modelo_gob_m3,
                 "log(PIB_DPTO)" = "log(PIB departamental)",
                 "log(población)" = "log(Población)",
                 "log(SGP)" = "log(SGP)"),
-       notes = c("Errores estándar agrupados por departamento en paréntesis.",
+       notes = c("Método 1:(Pesos iguales)", "Método 2:(Pesos informados)", 
+                 "Método 3:(Varianza inversa)",
+                 "Errores estándar agrupados por departamento en paréntesis.",
                  "Efectos fijos por departamento y período (año-mes) incluidos.",
                  "El coeficiente de interés captura el efecto diferencial del cambio de política energética",
                  "en departamentos vulnerables (Grupo=1) relativo a departamentos control (Grupo=0)."),
-       fitstat = c("n", "r2", "wr2"))
+       fitstat = c("n", "r2", "wr2"),
+       digits = 4)
 
 
 ```
