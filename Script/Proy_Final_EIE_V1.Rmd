@@ -578,7 +578,7 @@ test_tendencias_formales <- function(data, grupo_var, fecha_shock,
       grupo = !!sym(grupo_var)
     )
   
-  # Modelo: outcome ~ tiempo + grupo + tiempo×grupo + FE
+  # Modelo: Y ~ tendencia + diferencia_nivel + tendencia:diferencia + FE
   modelo <- feols(
     as.formula(paste(outcome, "~ tiempo + grupo + tiempo:grupo | departamento")),
     data = datos_pre,
