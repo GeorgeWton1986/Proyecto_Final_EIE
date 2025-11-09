@@ -129,7 +129,7 @@ p_load(haven,        #Leer archivos .dta
 ### Transformación de datos en R
 ```{r}
 # Definir URL del archivo en GitHub
-github_url <- "https://raw.githubusercontent.com/GeorgeWton1986/Proyecto_Final_EIE/main/Data/20251108_DB.xlsx"
+github_url <- "https://raw.githubusercontent.com/GeorgeWton1986/Proyecto_Final_EIE/main/Data/20251109_DB.xlsx"
 
 temp_file <- tempfile(fileext = ".xlsx")
 download.file(github_url, temp_file, mode = "wb")
@@ -182,7 +182,7 @@ max_costomolgas <- max(BD_pre$costomolgas, na.rm = TRUE)
 # Cálculo dependencia y estandarización de variables
 BD_0 <- BD_0 %>%
   mutate(
-    dependencia = 1 - (prod/consumo),
+    dependencia = pmax(0,1 - (prod/consumo)),
     est_costotransporte = (costotransporte - min_costotransporte) / 
                           (max_costotransporte - min_costotransporte),
     est_costomolgas = (costomolgas - min_costomolgas) / 
