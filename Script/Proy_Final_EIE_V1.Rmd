@@ -10,7 +10,7 @@ output:
 ---
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 knitr::opts_chunk$set(
-  echo = TRUE,
+  echo = FALSE,
   warning = FALSE,
   message = FALSE,
   fig.align = "center",
@@ -29,21 +29,6 @@ tinytex::tlmgr_install('makecell')
 ## 1.	Pregunta de investigación
 
 ¿Cuál es el impacto a la productividad industrial nominal en los departamentos colombianos bajo la condición de vulnerabilidad a la importación de Gas Natural y al cambio en las políticas de extracción de energías fósiles? O ¿la reactivación económica generada por el levantamiento de restricciones del COVID-19?
-
-<!-- \begin{align} -->
-<!-- y_{i}=α+\beta m_i+f(x_i)+ε_i\quad \nonumber \\ -->
-<!-- \end{align} -->
-
-<!-- Donde: -->
-
-<!-- - $y_i$ es la proporción de mujeres entre 15 y 20 años con educación secundaria completa en el año 2000. -->
-
-<!-- - $x_i$ es el margen de votos con el que ganó o perdió el candidato del partido islámico. -->
-
-<!-- - $f(⋅)$ es un polinomio de grado $n$ de la variable $x_i$. -->
-<!-- - $m_i$ es una dicótoma que toma el valor de uno si $x_i≥0$, es decir, si el alcalde que llegó al poder en 1994 era del partido Islámico. -->
-
-<!-- - $ε_i$ es el término del error. La ecuación es estimada en un vecindario alrededor del corte, el cual, en este caso, es cero. -->
 
 ## 2.	Motivación
 Colombia enfrenta un déficit de Gas Natural (GN) causado por la reducción del potencial de producción de los principales campos gasíferos, un aumento marginal sostenido de la demanda regulada, e industrial y una volatilidad de la demanda termoeléctrica  a razón del Fenómeno del Niño que puede representar incrementos significativos y estrés adicional al sistema., estas condiciones obligaron a que por primera vez en la historia se importara gas natural para atender la demanda de la industria y hogares colombianos. Según cifras del Gestor del Mercado de Gas Natural – GMGN, en lo corrido del año 2025 se ha importado cerca del 17% del total de la demanda nacional.
@@ -74,6 +59,58 @@ La información fue tomada de diferentes fuentes oficiales tales como el Gestor 
 
 ## 5.	Especificación econométrica
 
+\begin{align}
+Y_{dt}=\alpha_d+\lambda_t+\delta (Shock_t × Grupo)+X'_{dt}\theta+ε_{dt}\quad \nonumber \\
+\end{align}
+
+Donde:
+
+- $Y_{dt}$ Productividad industrial nominal a nivel $prodindnom_{df}$ o empleo sector industrial total $empleoindtotal_{dt}$  departamental (d) y mensual (t).
+- $\alpha_d$ Efecto fijo del departamento (d).
+- $Shock_t$ Dicótoma que toma el valor de 1 cuando el país cambia su gobierno o reactivación económica por causa del COVID-19.
+- $Grupo$ Define si un departamento (d) hace parte del grupo de tratamiento o de control basado en el índice de Vulnerabilidad a la Importación de Gas $IVIG_{dt}$
+
+-$X'_{dt}$ Matriz de controles que incluye:
+  $X_1$ Cobertura de gas en usuarios industriales 
+  $X_2$ Población por departamento por año.
+  $X_3$ Recursos girados del SGP por departamento por año.
+  
+- $ε_{dt}$ es el término del error. 
+
+Aunado a lo anterior, fue necesario la especificación del Índice de Vulnerabilidad de la Importación de Gas $IVIG_{dt}$, con el cual se calcula por departamento en función de la dependencia, costo del transporte del gal y costo de la molécula del gas previo al cambio de gobierno año 2022.
+
+\begin{align}
+IVIG_{dt}=\omega_1×(Dependecia)+\omega_2×(EstCostoTransporte_{dt}+\omega_3×(EstCostoMolGas_{dt})\quad \nonumber \\
+\end{align}
+
+Donde:
+\omega_i: Ponderaciones de cada variable que se establece a partir de la metodología de varianza inversa donde cada
+
+\begin{align}
+\omega_i=(1/\sigma^2_i)/\sum_{i=1}^{n} (1/\sigma^2_i)\quad \nonumber \\
+\end{align}
+
+- $Dependencia (a)$: Es el grado de dependencia que tiene el departamento de acuerdo con su producción de las plantas que se encuentran en sus fronteras y al consumo total de su industria. La interpretación del valor se establece de la siguiente manera, cercano a 1 es un departamento dependiente y 0 departamento autosuficiencia energética.
+
+\begin{align}
+Dependencia (a) = 1- (Produccion/Consumo)\quad \nonumber \\
+\end{align}
+
+$CostoTransporte(Dist)$: Es la estandarización permite comparar los costos de transporte por cada departamento. Los valores cercanos a 1, corresponden a departamentos que se abastecen de fuentes más lejanas y los valores cercanos 0 tienen disponibilidad de gas en el departamento.
+
+\begin{align}
+EstCostoTransporte_{dt}= T - min (T)/(max (t)-min(t))\quad \nonumber \\
+\end{align}
+
+$CostoGas(c)$: Es la estandarización entre 0 y 1. Permite obtener el costo del gas en relación con el rango histórico de la muestra.
+
+\begin{align}
+EstCostoMolGas_{dt}= C - min (C)/(max (C)-min(C))\quad \nonumber \\
+\end{align}
+
+Por lo tanto, el $IVIG_{dt}$ permite definir por medio de la mediana de la distribución la división entre los departamentos con alta vulnerabilidad (grupo de tratamiento) si el índice supera o es igual a la mediana, entonces la variable grupo será igual a 1. En caso contrario serán los departamentos con baja vulnerabilidad (grupo control) y la variable grupo será igual a 0. Con lo anterior, se podrá abordar de manera grafica el supuesto de identificación de DiD correspondiente a tendencias paralelas.
+
+Por último, los errores estándar se agrupan (cluster) a nivel departamental para controlar por posible correlación serial dentro de cada departamento y heterocedasticidad.
 
 ## 6.	Resultados esperados
 
@@ -96,7 +133,7 @@ De otro lado, se incluirán controles tales como, empleo en el sector industrial
 # Paso 3. Estadísticas descriptivas
 
 ### Generalidades de R
-```{r}
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 #Limpiar la consola
 cat("\f")
 
@@ -122,13 +159,15 @@ p_load(haven,        #Leer archivos .dta
        ggplot2,      #Gráficos
        rddensity,    #Test de McCrary
        readxl,       #Leer archivos Excel
-       rio           #Importar/exportar datos múltiples formatos
+       rio,         #Importar/exportar datos múltiples formatos
+       knitr,        #Tablas dinámicas
+       kablextra    #Tablas avanzadas
       )
 
 ```
 
 ### Transformación de datos en R
-```{r}
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Definir URL del archivo en GitHub
 github_url <- "https://raw.githubusercontent.com/GeorgeWton1986/Proyecto_Final_EIE/main/Data/20251109_DB.xlsx"
 
@@ -138,19 +177,34 @@ download.file(github_url, temp_file, mode = "wb")
 # Cargar datos usando readxl
 BD_0 <- read_excel(temp_file)
 
-# Ver estructura de los datos
-glimpse(BD_0)
-head(BD_0)
+# Mostrar los primeros 5 registros de la base de datos
+kable(head(BD_0, 5),
+      format = "latex",
+      booktabs = TRUE,
+      caption = "Primeros 5 registros de la base de datos",
+      digits = 2)%>%
+    kable_styling(font_size=7,
+                latex_options = c("hold_position","scale_down"))
 
-# Verificar los nombres de las columnas
-colnames(BD_0)
+# Tabla de estadísticas descriptivas
+estadisticas <- BD_0 %>%
+  summary() %>%
+  as.data.frame()
+
+kable(estadisticas,
+      format = "latex",
+      booktabs = TRUE,
+      caption = "Estadísticas descriptivas de la base de datos",
+      digits = 2)%>%
+  kable_styling(font_size=7,
+                latex_options = c("hold_position","scale_down"))
 
 # Eliminar archivo temporal
 unlink(temp_file)
 ```
 ## Imputación variable consumo
 
-```{r}
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Imputación de valores con 0 en la variable consumo con mediana
 
 BD_0 <- BD_0 %>%
@@ -163,12 +217,12 @@ BD_0 <- BD_0 %>%
 ```
 
 ### Cálculo de Índices de Vulnerabilidad
-```{r}
+```{r ECHO=FALSE, warning=FALSE, message=FALSE, results='asis'}
 
 # Definir el periodo de referencia pre-tratamiento
 
-fecha_corte_covid <- as.Date("2021-12-17")      # Ajusta según tu shock COVID
-fecha_corte_gobierno <- as.Date("2022-08-01")   # Agosto 2022
+fecha_corte_covid <- as.Date("2021-12-17")      # Según reactivación economica por COVID-19
+fecha_corte_gobierno <- as.Date("2022-08-01")   # Inicio de periodo precidencial GP
 
 # Filtrar la base según nuestro schock
 BD_pre <- BD_0 %>%
@@ -197,9 +251,9 @@ w<- 1/3
 # Cálculo de índice IVIG método 2
 ## Ponderación por autor 
 
-w1_2 <- 0.50  # Dependencia
-w2_2 <- 0.25  # CostoTransporte
-w3_2 <- 0.25  # CostoMolGas
+w1_2 <- 0.15  # Dependencia
+w2_2 <- 0.15  # CostoTransporte
+w3_2 <- 0.70  # CostoMolGas
 
 # Cálculo de índice IVIG método 3
 ## Ponderación inversa
@@ -264,14 +318,16 @@ correlaciones <- BD_0 %>%
   select(IVIG_1_cont, IVIG_2_cont, IVIG_3_cont) %>%
   cor(use = "complete.obs")
 
-print(round(correlaciones, 3))
-cat("\n")
-
+kable(round(correlaciones, 3), 
+      format = "latex",
+      booktabs = TRUE,
+      caption = "Correlaciones entre métodos (IVIG continuo)",
+      col.names = c("IVIG 1", "IVIG 2", "IVIG 3"))
 ```
 
 ### Compararacion entre los métodos
 
-```{r}
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Preparar datos para gráfico
 datos_plot <- BD_0 %>%
   filter(year == 2021) %>%
@@ -328,7 +384,7 @@ stats_table <- datos_plot %>%
 
 ### Clasificación de grupos
 
-```{r}
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Clasificación de grupos tratados y control según el IVIG
 
 BD_0 <- BD_0 %>%
@@ -342,7 +398,7 @@ BD_0 <- BD_0 %>%
 
 ### Graficar cada departamento
 
-```{r}
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Gráfico de cada despartamento en el tiempo
 
 ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = departamento)) +
@@ -354,8 +410,8 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = departamento)) +
 
 
 ```
-### Grafico de tendencias paralelas - Completo
-```{r}
+### Grafico de grupos en el tiempo - Completo
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 BD_0 <- BD_0 %>%
   mutate(date = as.Date(date))
 
@@ -425,17 +481,17 @@ plot_tendencias <- function(data, grupo_var, titulo, fecha_shock,
 
 # Método 1
 p1_covid <- plot_tendencias(BD_0, "grupo_IVIG_1_label", 
-                            "Tendencias Paralelas - Método 1 (Pesos iguales) - COVID",
+                            "Productividad Industrial Nominal - Método 1 (Pesos iguales) - COVID",
                             fecha_corte_covid)
 
 # Método 2
 p2_covid <- plot_tendencias(BD_0, "grupo_IVIG_2_label", 
-                            "Tendencias Paralelas - Método 2 (Pesos informados) - COVID",
+                            "Productividad Industrial Nominal - Método 2 (Pesos informados) - COVID",
                             fecha_corte_covid)
 
 # Método 3
 p3_covid <- plot_tendencias(BD_0, "grupo_IVIG_3_label", 
-                            "Tendencias Paralelas - Método 3 (Varianza inversa) - COVID",
+                            "Productividad Industrial Nominal  - Método 3 (Var. Inversa) - COVID",
                             fecha_corte_covid)
 
 # Mostrar gráficos
@@ -446,17 +502,17 @@ print(p3_covid)
 #OPCIÓN 2: Cambio de gobierno (agosto 2022)
 # Método 1
 p1_gob <- plot_tendencias(BD_0, "grupo_IVIG_1_label", 
-                          "Tendencias Paralelas - Método 1 (Pesos iguales) - Gobierno",
+                          "Productividad Industrial Nominal - Método 1 (Pesos iguales) - Gobierno",
                           fecha_corte_gobierno)
 
 # Método 2
 p2_gob <- plot_tendencias(BD_0, "grupo_IVIG_2_label", 
-                          "Tendencias Paralelas - Método 2 (Pesos informados) - Gobierno",
+                          "Productividad Industrial Nominal - Método 2 (Pesos informados) - Gobierno",
                           fecha_corte_gobierno)
 
 # Método 3
 p3_gob <- plot_tendencias(BD_0, "grupo_IVIG_3_label", 
-                          "Tendencias Paralelas - Método 3 (Varianza inversa) - Gobierno",
+                          "Productividad Industrial Nominal - Método 3 (Var. Inversa) - Gobierno",
                           fecha_corte_gobierno)
 
 # Mostrar gráficos
@@ -467,7 +523,7 @@ print(p3_gob)
 ```
 ### Grafico de tendencias paralelas - Pre-tratamiento
 
-```{r}
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Función para gráfico solo período pre-tratamiento
 plot_tendencias_pre <- function(data, grupo_var, titulo, fecha_shock,
                                 meses_antes = 24) {
@@ -519,12 +575,12 @@ plot_tendencias_pre <- function(data, grupo_var, titulo, fecha_shock,
 
 # Para shock COVID (24 meses antes)
 p_pre_covid_m1 <- plot_tendencias_pre(BD_0, "grupo_IVIG_1_label",
-                                      "Test de Tendencias Paralelas (Pre-COVID) - Método 1",
+                                      "Productividad Industrial Nominal (Pre-COVID) - Método 1",
                                       fecha_corte_covid, meses_antes = 24)
 
 # Para shock Gobierno (24 meses antes)
 p_pre_gob_m1 <- plot_tendencias_pre(BD_0, "grupo_IVIG_1_label",
-                                    "Test de Tendencias Paralelas (Pre-Gobierno) - Método 1",
+                                    "Productividad Industrial Nominal (Pre-Gobierno) - Método 1",
                                     fecha_corte_gobierno, meses_antes = 24)
 
 print(p_pre_covid_m1)
@@ -533,12 +589,12 @@ print(p_pre_gob_m1)
 #Metodo 2
 # Para shock COVID (24 meses antes)
 p_pre_covid_m2 <- plot_tendencias_pre(BD_0, "grupo_IVIG_2_label",
-                                      "Test de Tendencias Paralelas (Pre-COVID) - Método 2",
+                                      "Productividad Industrial Nominal (Pre-COVID) - Método 2",
                                       fecha_corte_covid, meses_antes = 24)
 
 # Para shock Gobierno (24 meses antes)
 p_pre_gob_m2 <- plot_tendencias_pre(BD_0, "grupo_IVIG_2_label",
-                                    "Test de Tendencias Paralelas (Pre-Gobierno) - Método 2",
+                                    "Productividad Industrial Nominal (Pre-Gobierno) - Método 2",
                                     fecha_corte_gobierno, meses_antes = 24)
 
 print(p_pre_covid_m2)
@@ -547,12 +603,12 @@ print(p_pre_gob_m2)
 #Metodo 3
 # Para shock COVID (24 meses antes)
 p_pre_covid_m3 <- plot_tendencias_pre(BD_0, "grupo_IVIG_3_label",
-                                      "Test de Tendencias Paralelas (Pre-COVID) - Método 3",
+                                      "Productividad Industrial Nominal (Pre-COVID) - Método 3",
                                       fecha_corte_covid, meses_antes = 24)
 
 # Para shock Gobierno (24 meses antes)
 p_pre_gob_m3 <- plot_tendencias_pre(BD_0, "grupo_IVIG_3_label",
-                                    "Test de Tendencias Paralelas (Pre-Gobierno) - Método 3",
+                                    "Productividad Industrial Nominal (Pre-Gobierno) - Método 3",
                                     fecha_corte_gobierno, meses_antes = 24)
 
 print(p_pre_covid_m3)
@@ -561,123 +617,378 @@ print(p_pre_gob_m3)
 
 ```
 
-#Test de tendencias paralelas
-```{r}
-### ============================================================
-### TEST FORMAL DE TENDENCIAS PARALELAS
-### ============================================================
+<!-- #Test de tendencias paralelas -->
+<!-- ```{r ECHO=FALSE, warning=FALSE, message=FALSE} -->
+<!-- ### ============================================================ -->
+<!-- ### TEST FORMAL DE TENDENCIAS PARALELAS -->
+<!-- ### ============================================================ -->
 
-# Función para test formal
-test_tendencias_formales <- function(data, grupo_var, fecha_shock, 
-                                    outcome = "ind_prod_nominal") {
+<!-- # Función para test formal -->
+<!-- test_tendencias_formales <- function(data, grupo_var, fecha_shock,  -->
+<!--                                     outcome = "ind_prod_nominal") { -->
+
+<!--   # Filtrar período pre-shock -->
+<!--   datos_pre <- data %>% -->
+<!--     filter(date < fecha_shock) %>% -->
+<!--     mutate( -->
+<!--       tiempo = as.numeric(date - min(date)),  # Tendencia temporal -->
+<!--       grupo = !!sym(grupo_var) -->
+<!--     ) -->
+
+<!--   # Modelo: Y ~ tendencia + diferencia_nivel + tendencia:diferencia + FE -->
+<!--   modelo <- feols( -->
+<!--     as.formula(paste(outcome, "~ tiempo + grupo + tiempo:grupo | departamento")), -->
+<!--     data = datos_pre, -->
+<!--     cluster = ~departamento -->
+<!--   ) -->
+
+<!--   # Test: coeficiente de tiempo×grupo debe ser ≈ 0 -->
+<!--   # Si es significativo, HAY DIFERENCIA en tendencias (viola supuesto) -->
+
+<!--   return(modelo) -->
+<!-- } -->
+
+<!-- cat("\n============================================================\n") -->
+<!-- cat("TEST FORMAL DE TENDENCIAS PARALELAS - SHOCK COVID\n") -->
+<!-- cat("============================================================\n\n") -->
+
+<!-- # Test para los 3 métodos (Shock Covid) -->
+
+<!-- test_covid_m1 <- test_tendencias_formales(BD_0, "IVIG_1_dt", fecha_corte_covid) -->
+<!-- test_covid_m2 <- test_tendencias_formales(BD_0, "IVIG_2_dt", fecha_corte_covid) -->
+<!-- test_covid_m3 <- test_tendencias_formales(BD_0, "IVIG_3_dt", fecha_corte_covid) -->
+
+<!-- # Mostrar resultados -->
+<!-- etable(test_covid_m1, test_covid_m2, test_covid_m3, -->
+<!--        tex = TRUE, -->
+<!--        title = "Test Formal de Tendencias Paralelas (Pre-Covid)", -->
+<!--        headers = c("Método 1", "Método 2", "Método 3"), -->
+<!--        dict = c("tiempo" = "Tendencia temporal", -->
+<!--                 "grupo" = "Diferencia nivel (Trat-Control)", -->
+<!--                 "tiempo:grupo" = "Diferencia en tendencias (TEST)"), -->
+<!--        notes = "Coeficiente clave: tiempo:grupo. Si p > 0.10, NO se rechaza tendencias paralelas.", -->
+<!--        digits = 4) -->
+
+<!-- # Interpretación automática -->
+<!-- cat("\nINTERPRETACIÓN:\n") -->
+<!-- for(i in 1:3) { -->
+<!--   modelo <- get(paste0("test_covid_m", i)) -->
+<!--   coef_interaccion <- coef(modelo)["tiempo:grupo"] -->
+<!--   pvalue <- pvalue(modelo)["tiempo:grupo"] -->
+
+<!--   cat(sprintf("\nMétodo %d:\n", i)) -->
+<!--   cat(sprintf("  Coeficiente tiempo×grupo: %.4f\n", coef_interaccion)) -->
+<!--   cat(sprintf("  P-value: %.4f\n", pvalue)) -->
+
+<!--   if(pvalue > 0.10) { -->
+<!--     cat("NO se rechaza H₀ → Tendencias paralelas VÁLIDAS\n") -->
+<!--   } else if(pvalue > 0.05) { -->
+<!--     cat("Evidencia débil contra tendencias paralelas (considerar con precaución)\n") -->
+<!--   } else { -->
+<!--     cat("Se rechaza H₀ → VIOLACIÓN de tendencias paralelas\n") -->
+<!--   } -->
+<!-- } -->
+
+<!-- cat("\n============================================================\n") -->
+<!-- cat("TEST FORMAL DE TENDENCIAS PARALELAS - SHOCK GOBIERNO\n") -->
+<!-- cat("============================================================\n\n") -->
+
+<!-- # Test para los 3 métodos (Shock Gobierno) -->
+<!-- test_gob_m1 <- test_tendencias_formales(BD_0, "IVIG_1_dt", fecha_corte_gobierno) -->
+<!-- test_gob_m2 <- test_tendencias_formales(BD_0, "IVIG_2_dt", fecha_corte_gobierno) -->
+<!-- test_gob_m3 <- test_tendencias_formales(BD_0, "IVIG_3_dt", fecha_corte_gobierno) -->
+
+<!-- # Mostrar resultados -->
+<!-- etable(test_gob_m1, test_gob_m2, test_gob_m3, -->
+<!--         tex = TRUE, -->
+<!--        title = "Test Formal de Tendencias Paralelas (Pre-Gobierno)", -->
+<!--        headers = c("Método 1", "Método 2", "Método 3"), -->
+<!--        dict = c("tiempo" = "Tendencia temporal", -->
+<!--                 "grupo" = "Diferencia nivel (Trat-Control)", -->
+<!--                 "tiempo:grupo" = "Diferencia en tendencias (TEST)"), -->
+<!--        notes = "Coeficiente clave: tiempo:grupo. Si p > 0.10, NO se rechaza tendencias paralelas.", -->
+<!--        digits = 4) -->
+
+<!-- # Interpretación automática -->
+<!-- cat("\nINTERPRETACIÓN:\n") -->
+<!-- for(i in 1:3) { -->
+<!--   modelo <- get(paste0("test_gob_m", i)) -->
+<!--   coef_interaccion <- coef(modelo)["tiempo:grupo"] -->
+<!--   pvalue <- pvalue(modelo)["tiempo:grupo"] -->
+
+<!--   cat(sprintf("\nMétodo %d:\n", i)) -->
+<!--   cat(sprintf("  Coeficiente tiempo×grupo: %.4f\n", coef_interaccion)) -->
+<!--   cat(sprintf("  P-value: %.4f\n", pvalue)) -->
+
+<!--   if(pvalue > 0.10) { -->
+<!--     cat("NO se rechaza H₀ → Tendencias paralelas VÁLIDAS\n") -->
+<!--   } else if(pvalue > 0.05) { -->
+<!--     cat("Evidencia débil contra tendencias paralelas (considerar con precaución)\n") -->
+<!--   } else { -->
+<!--     cat("Se rechaza H₀ → VIOLACIÓN de tendencias paralelas\n") -->
+<!--   } -->
+<!-- } -->
+
+<!-- ``` -->
+# Estudio de evento 
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Gráfica de estudio de evento
+
+# Crear la variable de tiempo relativo al shock
+# Shock COVID (marzo 2020)
+BD_0 <- BD_0 %>%
+  mutate(
+    tiempo_rel_covid = interval(date, fecha_corte_covid) %/% months(1),
+    periodo_covid = as.integer(tiempo_rel_covid)
+  )
+
+# Shock Gobierno (agosto 2022)
+BD_0 <- BD_0 %>%
+  mutate(
+    tiempo_rel_gob = interval(date, fecha_corte_gobierno) %/% months(1),
+    periodo_gob = as.integer(tiempo_rel_gob)
+  )
+
+# Verificar distribución por los shocks
+cat("Rango de períodos COVID:", 
+    range(BD_0$periodo_covid, na.rm = TRUE), "\n")
+cat("Rango de períodos Gobierno:", 
+    range(BD_0$periodo_gob, na.rm = TRUE), "\n\n")
+```
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Seleccionar los rangos de periodos
+
+# Definir ventana de análisis (ej: -24 a +24 meses)
+ventana_covid <- c(-12, 36)    # 24 meses antes, 36 meses después
+ventana_gob <- c(-12, 36)      # 48 meses antes, 36 meses después
+
+BD_event_covid <- BD_0 %>%
+  filter(periodo_covid >= ventana_covid[1] & 
+         periodo_covid <= ventana_covid[2])
+
+BD_event_gob <- BD_0 %>%
+  filter(periodo_gob >= ventana_gob[1] & 
+         periodo_gob <= ventana_gob[2])
+
+cat("Observaciones para Event Study COVID:", nrow(BD_event_covid), "\n")
+cat("Observaciones para Event Study Gobierno:", nrow(BD_event_gob), "\n\n")
+
+```
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+#Modelo con interacción periodo y grupo
+
+cat("Estimando modelos Event Study...\n\n")
+
+# EVENT STUDY - SHOCK COVID
+# Usar período -1 como referencia (omitido)
+modelo_event_covid <- feols(
+  ind_prod_nominal ~ i(periodo_covid, IVIG_3_dt, ref = -1) + 
+                     + cobertura + 
+                     log(población) + log(SGP) |
+                     departamento + ym,
+  data = BD_event_covid,
+  cluster = ~departamento
+)
+
+# EVENT STUDY - SHOCK GOBIERNO
+modelo_event_gob <- feols(
+  ind_prod_nominal ~ i(periodo_gob, IVIG_3_dt, ref = -1) + 
+                     cobertura +  
+                     log(población) + log(SGP) |
+                     departamento + ym,
+  data = BD_event_gob,
+  cluster = ~departamento
+)
+
+cat("✓ Modelos Event Study estimados\n\n")
+
+```
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Extraer coeficientes 
+
+# Función para extraer coeficientes del event study
+extraer_coefs_event <- function(modelo, nombre_var) {
+  # Obtener todos los coeficientes
+  coefs <- coef(modelo)
+  ses <- se(modelo)
   
-  # Filtrar período pre-shock
-  datos_pre <- data %>%
-    filter(date < fecha_shock) %>%
+  # Filtrar solo los de interacción (nombres contienen el período)
+  indices <- grep(nombre_var, names(coefs))
+  
+  # Extraer períodos de los nombres
+  # Ejemplo: "periodo_covid::-12:grupo_IVIG_3" → -12
+  periodos <- as.numeric(gsub(".*::([-]?[0-9]+):.*", "\\1", names(coefs)[indices]))
+  
+  # Crear data frame
+  df <- data.frame(
+    periodo = periodos,
+    coef = coefs[indices],
+    se = ses[indices]
+  ) %>%
     mutate(
-      tiempo = as.numeric(date - min(date)),  # Tendencia temporal
-      grupo = !!sym(grupo_var)
-    )
+      ci_low = coef - 1.96 * se,
+      ci_high = coef + 1.96 * se
+    ) %>%
+    arrange(periodo)
   
-  # Modelo: Y ~ tendencia + diferencia_nivel + tendencia:diferencia + FE
-  modelo <- feols(
-    as.formula(paste(outcome, "~ tiempo + grupo + tiempo:grupo | departamento")),
-    data = datos_pre,
-    cluster = ~departamento
+  # Agregar período de referencia (-1) con coef = 0
+  df_ref <- data.frame(
+    periodo = -1,
+    coef = 0,
+    se = 0,
+    ci_low = 0,
+    ci_high = 0
   )
   
-  # Test: coeficiente de tiempo×grupo debe ser ≈ 0
-  # Si es significativo, HAY DIFERENCIA en tendencias (viola supuesto)
+  df <- bind_rows(df, df_ref) %>%
+    arrange(periodo)
   
-  return(modelo)
+  return(df)
 }
 
-cat("\n============================================================\n")
-cat("TEST FORMAL DE TENDENCIAS PARALELAS - SHOCK COVID\n")
-cat("============================================================\n\n")
+# Extraer coeficientes
+coefs_covid <- extraer_coefs_event(modelo_event_covid, "periodo_covid")
+coefs_gob <- extraer_coefs_event(modelo_event_gob, "periodo_gob")
 
-# Test para los 3 métodos (Shock Covid)
+cat("Coeficientes extraídos:\n")
+cat("  COVID: N períodos =", nrow(coefs_covid), "\n")
+cat("  Gobierno: N períodos =", nrow(coefs_gob), "\n\n")
+```
 
-test_covid_m1 <- test_tendencias_formales(BD_0, "IVIG_1_dt", fecha_corte_covid)
-test_covid_m2 <- test_tendencias_formales(BD_0, "IVIG_2_dt", fecha_corte_covid)
-test_covid_m3 <- test_tendencias_formales(BD_0, "IVIG_3_dt", fecha_corte_covid)
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Gerenerar el gráfico de Evento
 
-# Mostrar resultados
-etable(test_covid_m1, test_covid_m2, test_covid_m3,
-       tex = TRUE,
-       title = "Test Formal de Tendencias Paralelas (Pre-Covid)",
-       headers = c("Método 1", "Método 2", "Método 3"),
-       dict = c("tiempo" = "Tendencia temporal",
-                "grupo" = "Diferencia nivel (Trat-Control)",
-                "tiempo:grupo" = "Diferencia en tendencias (TEST)"),
-       notes = "Coeficiente clave: tiempo:grupo. Si p > 0.10, NO se rechaza tendencias paralelas.",
-       digits = 4)
+cat("Generando gráficos...\n\n")
 
-# Interpretación automática
-cat("\nINTERPRETACIÓN:\n")
-for(i in 1:3) {
-  modelo <- get(paste0("test_covid_m", i))
-  coef_interaccion <- coef(modelo)["tiempo:grupo"]
-  pvalue <- pvalue(modelo)["tiempo:grupo"]
+# FUNCIÓN PARA GRAFICAR
+plot_event_study <- function(coefs_df, titulo, fecha_shock_label) {
   
-  cat(sprintf("\nMétodo %d:\n", i))
-  cat(sprintf("  Coeficiente tiempo×grupo: %.4f\n", coef_interaccion))
-  cat(sprintf("  P-value: %.4f\n", pvalue))
+  # Identificar período pre/post
+  coefs_df <- coefs_df %>%
+    mutate(
+      fase = ifelse(periodo < 0, "Pre-shock", "Post-shock"),
+      significativo = ifelse(ci_low > 0 | ci_high < 0, "Sí", "No")
+    )
   
-  if(pvalue > 0.10) {
-    cat("NO se rechaza H₀ → Tendencias paralelas VÁLIDAS\n")
-  } else if(pvalue > 0.05) {
-    cat("Evidencia débil contra tendencias paralelas (considerar con precaución)\n")
-  } else {
-    cat("Se rechaza H₀ → VIOLACIÓN de tendencias paralelas\n")
-  }
+  p <- ggplot(coefs_df, aes(x = periodo, y = coef)) +
+    # Banda de confianza
+    geom_ribbon(aes(ymin = ci_low, ymax = ci_high), 
+                alpha = 0.2, fill = "steelblue") +
+    
+    # Línea de referencia en cero
+    geom_hline(yintercept = 0, linetype = "solid", 
+               color = "black", linewidth = 0.5) +
+    
+    # Línea vertical en el shock (período 0)
+    geom_vline(xintercept = -0.5, linetype = "dashed", 
+               color = "red", linewidth = 1) +
+    
+    # Línea de coeficientes
+    geom_line(color = "steelblue", linewidth = 1) +
+    
+    # Puntos (diferentes para sig/no sig)
+    geom_point(aes(color = significativo, shape = significativo), 
+               size = 3) +
+    
+    # Etiquetas y tema
+    labs(
+      title = titulo,
+      subtitle = paste("Línea vertical roja:", fecha_shock_label),
+      x = "Meses relativos al shock",
+      y = "Efecto en productividad industrial\n(diferencia Tratamiento - Control)",
+      caption = "Notas: Bandas grises = IC 95%. Período -1 omitido como referencia.\nPuntos rojos = coeficientes estadísticamente significativos (IC no incluye cero)."
+    ) +
+    
+    theme_minimal() +
+    theme(
+      plot.title = element_text(size = 14, face = "bold"),
+      plot.subtitle = element_text(size = 11),
+      axis.title = element_text(size = 11),
+      legend.position = "bottom",
+      panel.grid.minor = element_blank()
+    ) +
+    
+    scale_color_manual(
+      name = "Significativo (95%):",
+      values = c("No" = "steelblue", "Sí" = "red")
+    ) +
+    
+    scale_shape_manual(
+      name = "Significativo (95%):",
+      values = c("No" = 16, "Sí" = 17)
+    ) +
+    
+    # Anotar el shock
+    annotate("text", x = 1, y = max(coefs_df$ci_high, na.rm = TRUE) * 0.9,
+             label = "Shock", color = "red", size = 4, hjust = 0)
+  
+  return(p)
 }
 
-cat("\n============================================================\n")
-cat("TEST FORMAL DE TENDENCIAS PARALELAS - SHOCK GOBIERNO\n")
-cat("============================================================\n\n")
+# Crear gráficos
+p_event_covid <- plot_event_study(
+  coefs_covid,
+  "Event Study: Efecto Dinámico del Shock COVID-19",
+  "Diciembre 2021"
+)
 
-# Test para los 3 métodos (Shock Gobierno)
-test_gob_m1 <- test_tendencias_formales(BD_0, "IVIG_1_dt", fecha_corte_gobierno)
-test_gob_m2 <- test_tendencias_formales(BD_0, "IVIG_2_dt", fecha_corte_gobierno)
-test_gob_m3 <- test_tendencias_formales(BD_0, "IVIG_3_dt", fecha_corte_gobierno)
+p_event_gob <- plot_event_study(
+  coefs_gob,
+  "Event Study: Efecto Dinámico del Cambio de Gobierno",
+  "Agosto 2022"
+)
 
-# Mostrar resultados
-etable(test_gob_m1, test_gob_m2, test_gob_m3,
-        tex = TRUE,
-       title = "Test Formal de Tendencias Paralelas (Pre-Gobierno)",
-       headers = c("Método 1", "Método 2", "Método 3"),
-       dict = c("tiempo" = "Tendencia temporal",
-                "grupo" = "Diferencia nivel (Trat-Control)",
-                "tiempo:grupo" = "Diferencia en tendencias (TEST)"),
-       notes = "Coeficiente clave: tiempo:grupo. Si p > 0.10, NO se rechaza tendencias paralelas.",
-       digits = 4)
+# Mostrar
+print(p_event_covid)
+print(p_event_gob)
 
-# Interpretación automática
-cat("\nINTERPRETACIÓN:\n")
-for(i in 1:3) {
-  modelo <- get(paste0("test_gob_m", i))
-  coef_interaccion <- coef(modelo)["tiempo:grupo"]
-  pvalue <- pvalue(modelo)["tiempo:grupo"]
-  
-  cat(sprintf("\nMétodo %d:\n", i))
-  cat(sprintf("  Coeficiente tiempo×grupo: %.4f\n", coef_interaccion))
-  cat(sprintf("  P-value: %.4f\n", pvalue))
-  
-  if(pvalue > 0.10) {
-    cat("NO se rechaza H₀ → Tendencias paralelas VÁLIDAS\n")
-  } else if(pvalue > 0.05) {
-    cat("Evidencia débil contra tendencias paralelas (considerar con precaución)\n")
-  } else {
-    cat("Se rechaza H₀ → VIOLACIÓN de tendencias paralelas\n")
-  }
+```
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Test conjunto: todos los coeficientes pre-shock = 0
+test_pre_covid <- coefs_covid %>%
+  filter(periodo < -1) %>%  # Excluir referencia
+  summarise(
+    n_coefs = n(),
+    n_sig = sum(ci_low > 0 | ci_high < 0),
+    max_abs_coef = max(abs(coef))
+  )
+
+test_pre_gob <- coefs_gob %>%
+  filter(periodo < -1) %>%
+  summarise(
+    n_coefs = n(),
+    n_sig = sum(ci_low > 0 | ci_high < 0),
+    max_abs_coef = max(abs(coef))
+  )
+
+cat("SHOCK COVID:\n")
+cat("  N coeficientes pre-shock:", test_pre_covid$n_coefs, "\n")
+cat("  N significativos:", test_pre_covid$n_sig, "\n")
+cat("  Máximo coeficiente (abs):", round(test_pre_covid$max_abs_coef, 3), "\n")
+if(test_pre_covid$n_sig == 0) {
+  cat("  ✅ Ningún coeficiente pre-shock significativo → Tendencias paralelas VÁLIDAS\n\n")
+} else {
+  cat("  ⚠️  Algunos coeficientes pre-shock significativos → Posible violación\n\n")
+}
+
+cat("SHOCK GOBIERNO:\n")
+cat("  N coeficientes pre-shock:", test_pre_gob$n_coefs, "\n")
+cat("  N significativos:", test_pre_gob$n_sig, "\n")
+cat("  Máximo coeficiente (abs):", round(test_pre_gob$max_abs_coef, 3), "\n")
+if(test_pre_gob$n_sig == 0) {
+  cat("Ningún coeficiente pre-shock significativo → Tendencias paralelas VÁLIDAS\n\n")
+} else {
+  cat("Algunos coeficientes pre-shock significativos → Posible violación\n\n")
 }
 
 ```
 
 #Estimacion del modelo de DID
-
-```{r}
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 
 cat("\n============================================================\n")
 cat("ESTIMANDO MODELOS DiD\n")
@@ -699,7 +1010,7 @@ if(!"Shock_Covid" %in% colnames(BD_0)) {
 # Método 1: Pesos iguales
 modelo_covid_m1 <- feols(
   ind_prod_nominal ~ Shock_COVID:IVIG_1_dt + 
-                     ind_empleo + cobertura + log(PIB_DPTO) + 
+                     cobertura + 
                      log(población) + log(SGP) | 
                      departamento + ym,
   data = BD_0,
@@ -709,7 +1020,7 @@ modelo_covid_m1 <- feols(
 # Método 2: Pesos informados
 modelo_covid_m2 <- feols(
   ind_prod_nominal ~ Shock_COVID:IVIG_2_dt + 
-                     ind_empleo + cobertura + log(PIB_DPTO) + 
+                     cobertura + 
                      log(población) + log(SGP) | 
                      departamento + ym,
   data = BD_0,
@@ -719,7 +1030,7 @@ modelo_covid_m2 <- feols(
 # Método 3: Varianza inversa
 modelo_covid_m3 <- feols(
   ind_prod_nominal ~ Shock_COVID:IVIG_3_dt + 
-                     ind_empleo + cobertura + log(PIB_DPTO) + 
+                     cobertura + 
                      log(población) + log(SGP) | 
                      departamento + ym,
   data = BD_0,
@@ -746,7 +1057,7 @@ if(!"Shock_Gobierno" %in% colnames(BD_0)) {
 # Método 1: Pesos iguales
 modelo_gob_m1 <- feols(
   ind_prod_nominal ~ Shock_Gobierno:IVIG_1_dt + 
-                     ind_empleo + cobertura + log(PIB_DPTO) + 
+                     cobertura + 
                      log(población) + log(SGP) | 
                      departamento + ym,
   data = BD_0,
@@ -756,7 +1067,7 @@ modelo_gob_m1 <- feols(
 # Método 2: Pesos informados
 modelo_gob_m2 <- feols(
   ind_prod_nominal ~ Shock_Gobierno:IVIG_2_dt + 
-                     ind_empleo + cobertura + log(PIB_DPTO) + 
+                     cobertura + 
                      log(población) + log(SGP) | 
                      departamento + ym,
   data = BD_0,
@@ -766,7 +1077,7 @@ modelo_gob_m2 <- feols(
 # Método 3: Varianza inversa
 modelo_gob_m3 <- feols(
   ind_prod_nominal ~ Shock_Gobierno:IVIG_3_dt + 
-                     ind_empleo + cobertura + log(PIB_DPTO) + 
+                     cobertura + 
                      log(población) + log(SGP) | 
                      departamento + ym,
   data = BD_0,
@@ -830,9 +1141,8 @@ etable(modelo_gob_m1, modelo_gob_m2, modelo_gob_m3,
                  "en departamentos vulnerables (Grupo=1) relativo a departamentos control (Grupo=0)."),
        fitstat = c("n", "r2", "wr2"),
        digits = 4)
-
-
 ```
+
 # Paso 4. Síntesis estado del arte
 La evidencia para Colombia y la región muestra que los choques y los arreglos institucionales en los sectores de hidrocarburos y energía generan efectos heterogéneos a nivel territorial y, en muchos casos, solo parcialmente favorables sobre el bienestar y la actividad económica. En términos generales, la literatura latinoamericana sobre el tema comparte enfoques metodológicos y conceptuales similares al del presente trabajo, aunque con variaciones en contexto y alcance. En el caso colombiano, la reciente necesidad de importar gas natural para abastecer la demanda nacional constituye un hecho sin precedentes. Este shock de importación abre un espacio de análisis poco explorado, dado que la literatura previa se ha centrado en aspectos fiscales (como las regalías) o macroeconómicos, pero no en los efectos productivos departamentales asociados a la dependencia energética.
  
