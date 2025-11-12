@@ -1,0 +1,19 @@
+import pandas as pd
+import statsmodels.formula.api as smf
+
+path = "C:/Users/JuanGuillermoSanchez/Downloads/20251109_DB.xlsx"
+df = pd.read_excel(path)
+
+df["did"]=df["IVIG_fijo"]*df["Shock_COVID"]
+
+formula = """ ind_prod_nominal ~ IVIG_fijo * Shock_COVID + ind_empleo + cobertura + PIB_DPTO + población + SGP + C(departamento) + C(date) """
+model = smf.ols(formula=formula, data=df).fit(cov_type="cluster", cov_kwds={"groups": df["departamento"]})
+
+# --- Resultados principales ---
+print("\n--- Resultados principales ---")
+print("Efecto DiD (IVIG_fijo:Shock_COVID):", round(model.params["IVIG_fijo:Shock_COVID"], 4))
+print("p-value:", round(model.pvalues["IVIG_fijo:Shock_COVID"], 4))
+print("IC 95%:", model.conf_int().loc["IVIG_fijo:Shock_COVID"].tolist())
+
+# --- Resumen completo ---
+print(model.summary())

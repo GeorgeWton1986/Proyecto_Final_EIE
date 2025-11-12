@@ -1,16 +1,16 @@
 ---
-title: "EVALUACIÓN DE IMPACTO - TALLER 5"
-author: "SANCHEZ, JUAN GUILLERMO Y VIÁFARA MORALES, JORGE ELIECER"
+title: "EVALUACIÓN DE IMPACTO - PROYECTO FINAL"
+author: "JACOME, NICOLAS; SANCHEZ, JUAN GUILLERMO; VIÁFARA, JORGE ELIECER"
 date: "2025-10-25"
 output:
   pdf_document:
     latex_engine: xelatex
     keep_tex: false
-    extra_dependencies: ["booktabs"]
+    extra_dependencies: ["makecell","booktabs"]
 ---
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 knitr::opts_chunk$set(
-  echo = TRUE,
+  echo = FALSE,
   warning = FALSE,
   message = FALSE,
   fig.align = "center",
@@ -21,6 +21,7 @@ knitr::opts_chunk$set(
 # Configurar opciones
 options(modelsummary_factory_default = "gt")
 options(kableExtra.latex.load_packages = FALSE)
+tinytex::tlmgr_install('makecell')
 
 ```
 
@@ -28,21 +29,6 @@ options(kableExtra.latex.load_packages = FALSE)
 ## 1.	Pregunta de investigación
 
 ¿Cuál es el impacto a la productividad industrial nominal en los departamentos colombianos bajo la condición de vulnerabilidad a la importación de Gas Natural y al cambio en las políticas de extracción de energías fósiles? O ¿la reactivación económica generada por el levantamiento de restricciones del COVID-19?
-
-<!-- \begin{align} -->
-<!-- y_{i}=α+\beta m_i+f(x_i)+ε_i\quad \nonumber \\ -->
-<!-- \end{align} -->
-
-<!-- Donde: -->
-
-<!-- - $y_i$ es la proporción de mujeres entre 15 y 20 años con educación secundaria completa en el año 2000. -->
-
-<!-- - $x_i$ es el margen de votos con el que ganó o perdió el candidato del partido islámico. -->
-
-<!-- - $f(⋅)$ es un polinomio de grado $n$ de la variable $x_i$. -->
-<!-- - $m_i$ es una dicótoma que toma el valor de uno si $x_i≥0$, es decir, si el alcalde que llegó al poder en 1994 era del partido Islámico. -->
-
-<!-- - $ε_i$ es el término del error. La ecuación es estimada en un vecindario alrededor del corte, el cual, en este caso, es cero. -->
 
 ## 2.	Motivación
 Colombia enfrenta un déficit de Gas Natural (GN) causado por la reducción del potencial de producción de los principales campos gasíferos, un aumento marginal sostenido de la demanda regulada, e industrial y una volatilidad de la demanda termoeléctrica  a razón del Fenómeno del Niño que puede representar incrementos significativos y estrés adicional al sistema., estas condiciones obligaron a que por primera vez en la historia se importara gas natural para atender la demanda de la industria y hogares colombianos. Según cifras del Gestor del Mercado de Gas Natural – GMGN, en lo corrido del año 2025 se ha importado cerca del 17% del total de la demanda nacional.
@@ -73,6 +59,58 @@ La información fue tomada de diferentes fuentes oficiales tales como el Gestor 
 
 ## 5.	Especificación econométrica
 
+\begin{align}
+Y_{dt}=\alpha_d+\lambda_t+\delta (Shock_t × Grupo)+X'_{dt}\theta+ε_{dt}\quad \nonumber \\
+\end{align}
+
+Donde:
+
+- $Y_{dt}$ Productividad industrial nominal a nivel $prodindnom_{df}$ o empleo sector industrial total $empleoindtotal_{dt}$  departamental (d) y mensual (t).
+- $\alpha_d$ Efecto fijo del departamento (d).
+- $Shock_t$ Dicótoma que toma el valor de 1 cuando el país cambia su gobierno o reactivación económica por causa del COVID-19.
+- $Grupo$ Define si un departamento (d) hace parte del grupo de tratamiento o de control basado en el índice de Vulnerabilidad a la Importación de Gas $IVIG_{dt}$
+
+-$X'_{dt}$ Matriz de controles que incluye:
+  $X_1$ Cobertura de gas en usuarios industriales 
+  $X_2$ Población por departamento por año.
+  $X_3$ Recursos girados del SGP por departamento por año.
+  
+- $ε_{dt}$ es el término del error. 
+
+Aunado a lo anterior, fue necesario la especificación del Índice de Vulnerabilidad de la Importación de Gas $IVIG_{dt}$, con el cual se calcula por departamento en función de la dependencia, costo del transporte del gal y costo de la molécula del gas previo al cambio de gobierno año 2022.
+
+\begin{align}
+IVIG_{dt}=\omega_1×(Dependecia)+\omega_2×(EstCostoTransporte_{dt}+\omega_3×(EstCostoMolGas_{dt})\quad \nonumber \\
+\end{align}
+
+Donde:
+\omega_i: Ponderaciones de cada variable que se establece a partir de la metodología de varianza inversa donde cada
+
+\begin{align}
+\omega_i=(1/\sigma^2_i)/\sum_{i=1}^{n} (1/\sigma^2_i)\quad \nonumber \\
+\end{align}
+
+- $Dependencia (a)$: Es el grado de dependencia que tiene el departamento de acuerdo con su producción de las plantas que se encuentran en sus fronteras y al consumo total de su industria. La interpretación del valor se establece de la siguiente manera, cercano a 1 es un departamento dependiente y 0 departamento autosuficiencia energética.
+
+\begin{align}
+Dependencia (a) = 1- (Produccion/Consumo)\quad \nonumber \\
+\end{align}
+
+$CostoTransporte(Dist)$: Es la estandarización permite comparar los costos de transporte por cada departamento. Los valores cercanos a 1, corresponden a departamentos que se abastecen de fuentes más lejanas y los valores cercanos 0 tienen disponibilidad de gas en el departamento.
+
+\begin{align}
+EstCostoTransporte_{dt}= T - min (T)/(max (t)-min(t))\quad \nonumber \\
+\end{align}
+
+$CostoGas(c)$: Es la estandarización entre 0 y 1. Permite obtener el costo del gas en relación con el rango histórico de la muestra.
+
+\begin{align}
+EstCostoMolGas_{dt}= C - min (C)/(max (C)-min(C))\quad \nonumber \\
+\end{align}
+
+Por lo tanto, el $IVIG_{dt}$ permite definir por medio de la mediana de la distribución la división entre los departamentos con alta vulnerabilidad (grupo de tratamiento) si el índice supera o es igual a la mediana, entonces la variable grupo será igual a 1. En caso contrario serán los departamentos con baja vulnerabilidad (grupo control) y la variable grupo será igual a 0. Con lo anterior, se podrá abordar de manera grafica el supuesto de identificación de DiD correspondiente a tendencias paralelas.
+
+Por último, los errores estándar se agrupan (cluster) a nivel departamental para controlar por posible correlación serial dentro de cada departamento y heterocedasticidad.
 
 ## 6.	Resultados esperados
 
@@ -95,7 +133,7 @@ De otro lado, se incluirán controles tales como, empleo en el sector industrial
 # Paso 3. Estadísticas descriptivas
 
 ### Generalidades de R
-```{r}
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 #Limpiar la consola
 cat("\f")
 
@@ -121,15 +159,17 @@ p_load(haven,        #Leer archivos .dta
        ggplot2,      #Gráficos
        rddensity,    #Test de McCrary
        readxl,       #Leer archivos Excel
-       rio           #Importar/exportar datos múltiples formatos
+       rio,         #Importar/exportar datos múltiples formatos
+       knitr,        #Tablas dinámicas
+       kablextra    #Tablas avanzadas
       )
 
 ```
 
 ### Transformación de datos en R
-```{r}
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Definir URL del archivo en GitHub
-github_url <- "https://raw.githubusercontent.com/GeorgeWton1986/Proyecto_Final_EIE/main/Data/20251108_DB.xlsx"
+github_url <- "https://raw.githubusercontent.com/GeorgeWton1986/Proyecto_Final_EIE/main/Data/20251109_DB.xlsx"
 
 temp_file <- tempfile(fileext = ".xlsx")
 download.file(github_url, temp_file, mode = "wb")
@@ -137,78 +177,971 @@ download.file(github_url, temp_file, mode = "wb")
 # Cargar datos usando readxl
 BD_0 <- read_excel(temp_file)
 
-# Ver estructura de los datos
-glimpse(BD_0)
-head(BD_0)
+# Mostrar los primeros 5 registros de la base de datos
+kable(head(BD_0, 5),
+      format = "latex",
+      booktabs = TRUE,
+      caption = "Primeros 5 registros de la base de datos",
+      digits = 2)%>%
+    kable_styling(font_size=7,
+                latex_options = c("hold_position","scale_down"))
 
-# Verificar los nombres de las columnas
-colnames(BD_0)
+# Tabla de estadísticas descriptivas
+estadisticas <- BD_0 %>%
+  summary() %>%
+  as.data.frame()
+
+kable(estadisticas,
+      format = "latex",
+      booktabs = TRUE,
+      caption = "Estadísticas descriptivas de la base de datos",
+      digits = 2)%>%
+  kable_styling(font_size=7,
+                latex_options = c("hold_position","scale_down"))
 
 # Eliminar archivo temporal
 unlink(temp_file)
 ```
-## imputación variable consumo
+## Imputación variable consumo
 
-```{r}
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Imputación de valores con 0 en la variable consumo con mediana
 
 BD_0 <- BD_0 %>%
   mutate(
-    consumo = ifelse(consumo == 0, median(consumo[consumo != 0], na.rm = TRUE), consumo)
+    consumo = ifelse(consumo == 0, median(consumo[consumo != 0], na.rm = TRUE), consumo),
+    costotransporte = ifelse(costotransporte == 0, median(costotransporte[costotransporte != 0], na.rm = TRUE), costotransporte),
+    costomolgas = ifelse(costomolgas == 0, median(costomolgas[costomolgas != 0], na.rm = TRUE), costomolgas)
   )
 
 ```
 
-### Calculo de Indices de Vulnerabilidad
-```{r}
+### Cálculo de Índices de Vulnerabilidad
+```{r ECHO=FALSE, warning=FALSE, message=FALSE, results='asis'}
 
-# Cáluclo de autosuficiencia y estandarización de costos
+# Definir el periodo de referencia pre-tratamiento
 
+fecha_corte_covid <- as.Date("2021-12-17")      # Según reactivación economica por COVID-19
+fecha_corte_gobierno <- as.Date("2022-08-01")   # Inicio de periodo precidencial GP
+
+# Filtrar la base según nuestro schock
+BD_pre <- BD_0 %>%
+  filter(date < fecha_corte_covid) #Opción 1
+
+# Calcular min/max pre-tratamiento según schock
+min_costotransporte <- min(BD_pre$costotransporte, na.rm = TRUE)
+max_costotransporte <- max(BD_pre$costotransporte, na.rm = TRUE)
+min_costomolgas <- min(BD_pre$costomolgas, na.rm = TRUE)
+max_costomolgas <- max(BD_pre$costomolgas, na.rm = TRUE)
+
+# Cálculo dependencia y estandarización de variables
 BD_0 <- BD_0 %>%
   mutate(
-    autosuficiencia = (1 -(prod/consumo)), 
-    est_costotransporte = (costotransporte - min(costotransporte, na.rm = TRUE)) / (max(costotransporte, na.rm = TRUE) - min(costotransporte, na.rm = TRUE)),
-    est_costomolgas = (costomolgas - min(costomolgas, na.rm = TRUE)) / (max(costomolgas, na.rm = TRUE) - min(costomolgas, na.rm = TRUE))
-    )
+    dependencia = pmax(0,1 - (prod/consumo)),
+    est_costotransporte = (costotransporte - min_costotransporte) / 
+                          (max_costotransporte - min_costotransporte),
+    est_costomolgas = (costomolgas - min_costomolgas) / 
+                      (max_costomolgas - min_costomolgas)
+  )
 
-# Calculo de indice IVIG metodo 1
-## Ponderacion fija 1/3
-
+# Cálculo de índice IVIG método 1
+## Ponderación fija 1/3
 w<- 1/3
 
-# Calculo de indice IVIG metodo 2
-## Ponderacion por autores
+# Cálculo de índice IVIG método 2
+## Ponderación por autor 
 
-w1_2<- 1/3
-w2_2<- 1/3
-w3_2<- 1/3
+w1_2 <- 0.15  # Dependencia
+w2_2 <- 0.15  # CostoTransporte
+w3_2 <- 0.70  # CostoMolGas
 
-#Calculo de indice IVIG metodo 3
-## Ponderacion por varianza inversa
+# Cálculo de índice IVIG método 3
+## Ponderación inversa
 
-w1_3<- (1/var(BD_0$autosuficiencia, na.rm = TRUE))/sum((1/var(BD_0$autosuficiencia, na.rm = TRUE)))
-w2_3<- (1/var(BD_0$est_costotransporte, na.rm = TRUE))/sum((1/var(BD_0$est_costotransporte, na.rm = TRUE)))
-w3_3<- (1/var(BD_0$est_costomolgas, na.rm = TRUE))/sum((1/var(BD_0$est_costomolgas, na.rm = TRUE)))
+# Promedio por departamento en el año 2021
 
-# Calculo de IVIG (continuo)
+datos_ref <- BD_0 %>%
+  filter(year == 2021) %>%
+  group_by(departamento) %>%
+  summarise(
+    dependencia_mean = mean(dependencia, na.rm = TRUE),
+    est_costotransporte_mean = mean(est_costotransporte, na.rm = TRUE),
+    est_costomolgas_mean = mean(est_costomolgas, na.rm = TRUE)
+  ) %>%
+  ungroup()
+
+#Calcular varianzas entre departamentos
+
+var_dependencia <- var(datos_ref$dependencia_mean, na.rm = TRUE)
+var_est_costotransporte <- var(datos_ref$est_costotransporte_mean, na.rm = TRUE)
+var_est_costomolgas <- var(datos_ref$est_costomolgas_mean, na.rm = TRUE)
+
+# Calcular ponderaciones de varianza inversa
+inv_var_dependencia <- 1 / var_dependencia
+inv_var_est_costotransporte <- 1 / var_est_costotransporte
+inv_var_est_costomolgas <- 1 / var_est_costomolgas
+
+sum_inv_vars <- inv_var_dependencia + inv_var_est_costotransporte + inv_var_est_costomolgas
+
+w1_3 <- inv_var_dependencia / sum_inv_vars
+w2_3 <- inv_var_est_costotransporte / sum_inv_vars
+w3_3 <- inv_var_est_costomolgas / sum_inv_vars
+
+# Cálculo de IVIG (continuo)
 BD_0 <- BD_0 %>%
   mutate(
-    IVIG_1_cont = (w * autosuficiencia) + (w * est_costotransporte) + (w * est_costomolgas),
-    IVIG_2_cont = (w1_2 * autosuficiencia) + (w2_2 * est_costotransporte) + (w3_2 * est_costomolgas),
-    IVIG_3_cont= (w1_3 * autosuficiencia) + (w2_3 * est_costotransporte) + (w3_3 * est_costomolgas)
+    IVIG_1_cont = (w * dependencia) + (w * est_costotransporte) + (w * est_costomolgas),
+    IVIG_2_cont = (w1_2 * dependencia) + (w2_2 * est_costotransporte) + (w3_2 * est_costomolgas),
+    IVIG_3_cont = (w1_3 * dependencia) + (w2_3 * est_costotransporte) + (w3_3 * est_costomolgas)
   )
 
-# Calculo de IVIG (dicotoma)
+# Cálculo de IVIG (dicotoma)
+
+# Calcular medianas en período pre-tratamiento (año 2021)
+medianas_pre <- BD_0 %>%
+  filter(year == 2021) %>%
+  summarise(
+    mediana_IVIG_1 = median(IVIG_1_cont, na.rm = TRUE),
+    mediana_IVIG_2 = median(IVIG_2_cont, na.rm = TRUE),
+    mediana_IVIG_3 = median(IVIG_3_cont, na.rm = TRUE)
+  )
+
 BD_0 <- BD_0 %>%
   mutate(
-    IVIG_1_dt = ifelse(IVIG_1_cont >= 0.5, 1, 0),
-    IVIG_2_dt = ifelse(IVIG_2_cont >=0.5, 1, 0),
-    IVIG_3_dt = ifelse(IVIG_3_cont >=0.5, 1, 0)
+    IVIG_1_dt = ifelse(IVIG_1_cont >= medianas_pre$mediana_IVIG_1, 1, 0),
+    IVIG_2_dt = ifelse(IVIG_2_cont >= medianas_pre$mediana_IVIG_2, 1, 0),
+    IVIG_3_dt = ifelse(IVIG_3_cont >= medianas_pre$mediana_IVIG_3, 1, 0)
+  )
+
+cat("Correlaciones entre métodos (IVIG continuo):\n")
+correlaciones <- BD_0 %>%
+  select(IVIG_1_cont, IVIG_2_cont, IVIG_3_cont) %>%
+  cor(use = "complete.obs")
+
+kable(round(correlaciones, 3), 
+      format = "latex",
+      booktabs = TRUE,
+      caption = "Correlaciones entre métodos (IVIG continuo)",
+      col.names = c("IVIG 1", "IVIG 2", "IVIG 3"))
+```
+
+### Compararacion entre los métodos
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Preparar datos para gráfico
+datos_plot <- BD_0 %>%
+  filter(year == 2021) %>%
+  select(departamento, IVIG_1_cont, IVIG_2_cont, IVIG_3_cont) %>%
+  pivot_longer(cols = starts_with("IVIG"), 
+               names_to = "Método", 
+               values_to = "IVIG") %>%
+  mutate(Método = case_when(
+    Método == "IVIG_1_cont" ~ "Método 1: Pesos iguales",
+    Método == "IVIG_2_cont" ~ "Método 2: Pesos informados",
+    Método == "IVIG_3_cont" ~ "Método 3: Varianza inversa"
+  ))
+
+# Gráfico de densidad
+ggplot(datos_plot, aes(x = IVIG, fill = Método)) +
+  geom_density(alpha = 0.5) +
+  geom_vline(data = datos_plot %>% 
+               group_by(Método) %>% 
+               summarise(mediana = median(IVIG, na.rm = TRUE)),
+             aes(xintercept = mediana, color = Método),
+             linetype = "dashed", size = 1) +
+  labs(title = "Distribución del IVIG según método de ponderación",
+       subtitle = "Año 2021 (pre-tratamiento)",
+       x = "IVIG",
+       y = "Densidad") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+# Boxplot comparativo
+ggplot(datos_plot, aes(x = Método, y = IVIG, fill = Método)) +
+  geom_boxplot(alpha = 0.7) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "red") +
+  labs(title = "Comparación de métodos de cálculo del IVIG",
+       subtitle = "Año 2021 (pre-tratamiento)",
+       x = "",
+       y = "IVIG") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 15, hjust = 1))
+
+# Tabla de estadísticas descriptivas por método
+stats_table <- datos_plot %>%
+  group_by(Método) %>%
+  summarise(
+    Media = mean(IVIG, na.rm = TRUE),
+    Mediana = median(IVIG, na.rm = TRUE),
+    SD = sd(IVIG, na.rm = TRUE),
+    Min = min(IVIG, na.rm = TRUE),
+    Max = max(IVIG, na.rm = TRUE),
+    N_alta_vuln = sum(IVIG >= median(IVIG, na.rm = TRUE))
+  )
+```
+
+
+### Clasificación de grupos
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Clasificación de grupos tratados y control según el IVIG
+
+BD_0 <- BD_0 %>%
+  mutate(
+    grupo_IVIG_1_label = ifelse(IVIG_1_dt == 1, "Tratado", "Control"),
+    grupo_IVIG_2_label = ifelse(IVIG_2_dt == 1, "Tratado", "Control"),
+    grupo_IVIG_3_label = ifelse(IVIG_3_dt == 1, "Tratado", "Control")
   )
 
 ```
 
-### Cálculo de 
+### Graficar cada departamento
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Gráfico de cada despartamento en el tiempo
+
+ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = departamento)) +
+  geom_line() +
+  labs(title = "Productividad Industrial Nominal por Departamento",
+       x = "Fecha",
+       y = "Productividad Industrial Nominal") +
+  theme_minimal()
+
+
+```
+### Grafico de grupos en el tiempo - Completo
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+BD_0 <- BD_0 %>%
+  mutate(date = as.Date(date))
+
+# Verificar que ahora es Date
+cat("Clase de 'date' después de conversión:", class(BD_0$date), "\n")
+
+# También convertir las fechas de corte a Date (por consistencia)
+fecha_corte_covid <- as.Date("2021-12-17")
+fecha_corte_gobierno <- as.Date("2022-08-01")
+
+# Función para crear gráfico de tendencias paralelas
+plot_tendencias <- function(data, grupo_var, titulo, fecha_shock, 
+                           periodo_pre_inicio = NULL) {
+  
+  # Si no se especifica inicio del período pre, usar toda la data antes del shock
+  if(is.null(periodo_pre_inicio)) {
+    periodo_pre_inicio <- min(data$date, na.rm = TRUE)
+  }
+  
+  # Preparar datos agregados por fecha y grupo
+  datos_plot <- data %>%
+    group_by(date, !!sym(grupo_var)) %>%
+    summarise(
+      prod_mean = mean(ind_prod_nominal, na.rm = TRUE),
+      prod_se = sd(ind_prod_nominal, na.rm = TRUE) / sqrt(n()),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      periodo = ifelse(date < fecha_shock, "Pre-shock", "Post-shock")
+    )
+  
+  # Crear gráfico
+  p <- ggplot(datos_plot, aes(x = date, y = prod_mean, 
+                               color = !!sym(grupo_var),
+                               linetype = periodo)) +
+    geom_line(linewidth = 1) +
+    geom_ribbon(aes(ymin = prod_mean - 1.96*prod_se, 
+                    ymax = prod_mean + 1.96*prod_se,
+                    fill = !!sym(grupo_var)),
+                alpha = 0.2, color = NA) +
+    geom_vline(xintercept = fecha_shock,
+               linetype = "dashed", color = "red", linewidth = 1) +
+    annotate("text", x = fecha_shock, y = max(datos_plot$prod_mean, na.rm=TRUE),
+             label = "Shock", color = "red", hjust = -0.1, size = 4) +
+    labs(title = titulo,
+         subtitle = paste("Línea vertical roja:", format(fecha_shock, "%b %Y")),
+         x = "Fecha",
+         y = "Productividad Industrial Nominal (promedio)",
+         color = "Grupo",
+         fill = "Grupo",
+         linetype = "Período") +
+    theme_minimal() +
+    theme(
+      plot.title = element_text(size = 14, face = "bold"),
+      legend.position = "bottom",
+      panel.grid.minor = element_blank()
+    ) +
+    scale_color_manual(values = c("Control" = "#0072B2", 
+                                   "Tratado" = "#D55E00")) +  # ✅ CORREGIDO: "Tratado" en lugar de "Tratamiento"
+    scale_fill_manual(values = c("Control" = "#0072B2", 
+                                  "Tratado" = "#D55E00"))
+  
+  return(p)
+}
+
+#OPCIÓN 1: Shock COVID (marzo 2020)
+
+# Método 1
+p1_covid <- plot_tendencias(BD_0, "grupo_IVIG_1_label", 
+                            "Productividad Industrial Nominal - Método 1 (Pesos iguales) - COVID",
+                            fecha_corte_covid)
+
+# Método 2
+p2_covid <- plot_tendencias(BD_0, "grupo_IVIG_2_label", 
+                            "Productividad Industrial Nominal - Método 2 (Pesos informados) - COVID",
+                            fecha_corte_covid)
+
+# Método 3
+p3_covid <- plot_tendencias(BD_0, "grupo_IVIG_3_label", 
+                            "Productividad Industrial Nominal  - Método 3 (Var. Inversa) - COVID",
+                            fecha_corte_covid)
+
+# Mostrar gráficos
+print(p1_covid)
+print(p2_covid)
+print(p3_covid)
+
+#OPCIÓN 2: Cambio de gobierno (agosto 2022)
+# Método 1
+p1_gob <- plot_tendencias(BD_0, "grupo_IVIG_1_label", 
+                          "Productividad Industrial Nominal - Método 1 (Pesos iguales) - Gobierno",
+                          fecha_corte_gobierno)
+
+# Método 2
+p2_gob <- plot_tendencias(BD_0, "grupo_IVIG_2_label", 
+                          "Productividad Industrial Nominal - Método 2 (Pesos informados) - Gobierno",
+                          fecha_corte_gobierno)
+
+# Método 3
+p3_gob <- plot_tendencias(BD_0, "grupo_IVIG_3_label", 
+                          "Productividad Industrial Nominal - Método 3 (Var. Inversa) - Gobierno",
+                          fecha_corte_gobierno)
+
+# Mostrar gráficos
+print(p1_gob)
+print(p2_gob)
+print(p3_gob)
+
+```
+### Grafico de tendencias paralelas - Pre-tratamiento
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Función para gráfico solo período pre-tratamiento
+plot_tendencias_pre <- function(data, grupo_var, titulo, fecha_shock,
+                                meses_antes = 24) {
+  
+  fecha_inicio <- fecha_shock %m-% months(meses_antes)
+  
+  datos_plot <- data %>%
+    filter(date >= fecha_inicio & date < fecha_shock) %>%
+    group_by(date, !!sym(grupo_var)) %>%
+    summarise(
+      prod_mean = mean(ind_prod_nominal, na.rm = TRUE),
+      prod_se = sd(ind_prod_nominal, na.rm = TRUE) / sqrt(n()),
+      .groups = "drop"
+    )
+  
+  p <- ggplot(datos_plot, aes(x = date, y = prod_mean, 
+                               color = !!sym(grupo_var))) +
+    geom_line(linewidth = 1.2) +
+    geom_point(size = 2) +
+    geom_ribbon(aes(ymin = prod_mean - 1.96*prod_se, 
+                    ymax = prod_mean + 1.96*prod_se,
+                    fill = !!sym(grupo_var)),
+                alpha = 0.15, color = NA) +
+    labs(title = titulo,
+         subtitle = paste("Período pre-shock:", 
+                         format(fecha_inicio, "%b %Y"), "a", 
+                         format(fecha_shock %m-% months(1), "%b %Y")),
+         x = "Fecha",
+         y = "Productividad Industrial Nominal (promedio)",
+         color = "Grupo",
+         fill = "Grupo") +
+    theme_minimal() +
+    theme(
+      plot.title = element_text(size = 13, face = "bold"),
+      legend.position = "bottom",
+      panel.grid.minor = element_blank()
+    ) +
+    scale_color_manual(values = c("Control" = "#0072B2", 
+                                   "Tratado" = "#D55E00")) +
+    scale_fill_manual(values = c("Control" = "#0072B2", 
+                                  "Tratado" = "#D55E00"))
+  
+  return(p)
+}
+
+#Gráfico pre-tratamiento Covid y Gobierno
+
+#Metodo 1
+
+# Para shock COVID (24 meses antes)
+p_pre_covid_m1 <- plot_tendencias_pre(BD_0, "grupo_IVIG_1_label",
+                                      "Productividad Industrial Nominal (Pre-COVID) - Método 1",
+                                      fecha_corte_covid, meses_antes = 24)
+
+# Para shock Gobierno (24 meses antes)
+p_pre_gob_m1 <- plot_tendencias_pre(BD_0, "grupo_IVIG_1_label",
+                                    "Productividad Industrial Nominal (Pre-Gobierno) - Método 1",
+                                    fecha_corte_gobierno, meses_antes = 24)
+
+print(p_pre_covid_m1)
+print(p_pre_gob_m1)
+
+#Metodo 2
+# Para shock COVID (24 meses antes)
+p_pre_covid_m2 <- plot_tendencias_pre(BD_0, "grupo_IVIG_2_label",
+                                      "Productividad Industrial Nominal (Pre-COVID) - Método 2",
+                                      fecha_corte_covid, meses_antes = 24)
+
+# Para shock Gobierno (24 meses antes)
+p_pre_gob_m2 <- plot_tendencias_pre(BD_0, "grupo_IVIG_2_label",
+                                    "Productividad Industrial Nominal (Pre-Gobierno) - Método 2",
+                                    fecha_corte_gobierno, meses_antes = 24)
+
+print(p_pre_covid_m2)
+print(p_pre_gob_m2)
+
+#Metodo 3
+# Para shock COVID (24 meses antes)
+p_pre_covid_m3 <- plot_tendencias_pre(BD_0, "grupo_IVIG_3_label",
+                                      "Productividad Industrial Nominal (Pre-COVID) - Método 3",
+                                      fecha_corte_covid, meses_antes = 24)
+
+# Para shock Gobierno (24 meses antes)
+p_pre_gob_m3 <- plot_tendencias_pre(BD_0, "grupo_IVIG_3_label",
+                                    "Productividad Industrial Nominal (Pre-Gobierno) - Método 3",
+                                    fecha_corte_gobierno, meses_antes = 24)
+
+print(p_pre_covid_m3)
+print(p_pre_gob_m3)
+
+
+```
+
+<!-- #Test de tendencias paralelas -->
+<!-- ```{r ECHO=FALSE, warning=FALSE, message=FALSE} -->
+<!-- ### ============================================================ -->
+<!-- ### TEST FORMAL DE TENDENCIAS PARALELAS -->
+<!-- ### ============================================================ -->
+
+<!-- # Función para test formal -->
+<!-- test_tendencias_formales <- function(data, grupo_var, fecha_shock,  -->
+<!--                                     outcome = "ind_prod_nominal") { -->
+
+<!--   # Filtrar período pre-shock -->
+<!--   datos_pre <- data %>% -->
+<!--     filter(date < fecha_shock) %>% -->
+<!--     mutate( -->
+<!--       tiempo = as.numeric(date - min(date)),  # Tendencia temporal -->
+<!--       grupo = !!sym(grupo_var) -->
+<!--     ) -->
+
+<!--   # Modelo: Y ~ tendencia + diferencia_nivel + tendencia:diferencia + FE -->
+<!--   modelo <- feols( -->
+<!--     as.formula(paste(outcome, "~ tiempo + grupo + tiempo:grupo | departamento")), -->
+<!--     data = datos_pre, -->
+<!--     cluster = ~departamento -->
+<!--   ) -->
+
+<!--   # Test: coeficiente de tiempo×grupo debe ser ≈ 0 -->
+<!--   # Si es significativo, HAY DIFERENCIA en tendencias (viola supuesto) -->
+
+<!--   return(modelo) -->
+<!-- } -->
+
+<!-- cat("\n============================================================\n") -->
+<!-- cat("TEST FORMAL DE TENDENCIAS PARALELAS - SHOCK COVID\n") -->
+<!-- cat("============================================================\n\n") -->
+
+<!-- # Test para los 3 métodos (Shock Covid) -->
+
+<!-- test_covid_m1 <- test_tendencias_formales(BD_0, "IVIG_1_dt", fecha_corte_covid) -->
+<!-- test_covid_m2 <- test_tendencias_formales(BD_0, "IVIG_2_dt", fecha_corte_covid) -->
+<!-- test_covid_m3 <- test_tendencias_formales(BD_0, "IVIG_3_dt", fecha_corte_covid) -->
+
+<!-- # Mostrar resultados -->
+<!-- etable(test_covid_m1, test_covid_m2, test_covid_m3, -->
+<!--        tex = TRUE, -->
+<!--        title = "Test Formal de Tendencias Paralelas (Pre-Covid)", -->
+<!--        headers = c("Método 1", "Método 2", "Método 3"), -->
+<!--        dict = c("tiempo" = "Tendencia temporal", -->
+<!--                 "grupo" = "Diferencia nivel (Trat-Control)", -->
+<!--                 "tiempo:grupo" = "Diferencia en tendencias (TEST)"), -->
+<!--        notes = "Coeficiente clave: tiempo:grupo. Si p > 0.10, NO se rechaza tendencias paralelas.", -->
+<!--        digits = 4) -->
+
+<!-- # Interpretación automática -->
+<!-- cat("\nINTERPRETACIÓN:\n") -->
+<!-- for(i in 1:3) { -->
+<!--   modelo <- get(paste0("test_covid_m", i)) -->
+<!--   coef_interaccion <- coef(modelo)["tiempo:grupo"] -->
+<!--   pvalue <- pvalue(modelo)["tiempo:grupo"] -->
+
+<!--   cat(sprintf("\nMétodo %d:\n", i)) -->
+<!--   cat(sprintf("  Coeficiente tiempo×grupo: %.4f\n", coef_interaccion)) -->
+<!--   cat(sprintf("  P-value: %.4f\n", pvalue)) -->
+
+<!--   if(pvalue > 0.10) { -->
+<!--     cat("NO se rechaza H₀ → Tendencias paralelas VÁLIDAS\n") -->
+<!--   } else if(pvalue > 0.05) { -->
+<!--     cat("Evidencia débil contra tendencias paralelas (considerar con precaución)\n") -->
+<!--   } else { -->
+<!--     cat("Se rechaza H₀ → VIOLACIÓN de tendencias paralelas\n") -->
+<!--   } -->
+<!-- } -->
+
+<!-- cat("\n============================================================\n") -->
+<!-- cat("TEST FORMAL DE TENDENCIAS PARALELAS - SHOCK GOBIERNO\n") -->
+<!-- cat("============================================================\n\n") -->
+
+<!-- # Test para los 3 métodos (Shock Gobierno) -->
+<!-- test_gob_m1 <- test_tendencias_formales(BD_0, "IVIG_1_dt", fecha_corte_gobierno) -->
+<!-- test_gob_m2 <- test_tendencias_formales(BD_0, "IVIG_2_dt", fecha_corte_gobierno) -->
+<!-- test_gob_m3 <- test_tendencias_formales(BD_0, "IVIG_3_dt", fecha_corte_gobierno) -->
+
+<!-- # Mostrar resultados -->
+<!-- etable(test_gob_m1, test_gob_m2, test_gob_m3, -->
+<!--         tex = TRUE, -->
+<!--        title = "Test Formal de Tendencias Paralelas (Pre-Gobierno)", -->
+<!--        headers = c("Método 1", "Método 2", "Método 3"), -->
+<!--        dict = c("tiempo" = "Tendencia temporal", -->
+<!--                 "grupo" = "Diferencia nivel (Trat-Control)", -->
+<!--                 "tiempo:grupo" = "Diferencia en tendencias (TEST)"), -->
+<!--        notes = "Coeficiente clave: tiempo:grupo. Si p > 0.10, NO se rechaza tendencias paralelas.", -->
+<!--        digits = 4) -->
+
+<!-- # Interpretación automática -->
+<!-- cat("\nINTERPRETACIÓN:\n") -->
+<!-- for(i in 1:3) { -->
+<!--   modelo <- get(paste0("test_gob_m", i)) -->
+<!--   coef_interaccion <- coef(modelo)["tiempo:grupo"] -->
+<!--   pvalue <- pvalue(modelo)["tiempo:grupo"] -->
+
+<!--   cat(sprintf("\nMétodo %d:\n", i)) -->
+<!--   cat(sprintf("  Coeficiente tiempo×grupo: %.4f\n", coef_interaccion)) -->
+<!--   cat(sprintf("  P-value: %.4f\n", pvalue)) -->
+
+<!--   if(pvalue > 0.10) { -->
+<!--     cat("NO se rechaza H₀ → Tendencias paralelas VÁLIDAS\n") -->
+<!--   } else if(pvalue > 0.05) { -->
+<!--     cat("Evidencia débil contra tendencias paralelas (considerar con precaución)\n") -->
+<!--   } else { -->
+<!--     cat("Se rechaza H₀ → VIOLACIÓN de tendencias paralelas\n") -->
+<!--   } -->
+<!-- } -->
+
+<!-- ``` -->
+# Estudio de evento 
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Gráfica de estudio de evento
+
+# Crear la variable de tiempo relativo al shock
+# Shock COVID (marzo 2020)
+BD_0 <- BD_0 %>%
+  mutate(
+    tiempo_rel_covid = interval(date, fecha_corte_covid) %/% months(1),
+    periodo_covid = as.integer(tiempo_rel_covid)
+  )
+
+# Shock Gobierno (agosto 2022)
+BD_0 <- BD_0 %>%
+  mutate(
+    tiempo_rel_gob = interval(date, fecha_corte_gobierno) %/% months(1),
+    periodo_gob = as.integer(tiempo_rel_gob)
+  )
+
+# Verificar distribución por los shocks
+cat("Rango de períodos COVID:", 
+    range(BD_0$periodo_covid, na.rm = TRUE), "\n")
+cat("Rango de períodos Gobierno:", 
+    range(BD_0$periodo_gob, na.rm = TRUE), "\n\n")
+```
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Seleccionar los rangos de periodos
+
+# Definir ventana de análisis (ej: -24 a +24 meses)
+ventana_covid <- c(-12, 36)    # 24 meses antes, 36 meses después
+ventana_gob <- c(-12, 36)      # 48 meses antes, 36 meses después
+
+BD_event_covid <- BD_0 %>%
+  filter(periodo_covid >= ventana_covid[1] & 
+         periodo_covid <= ventana_covid[2])
+
+BD_event_gob <- BD_0 %>%
+  filter(periodo_gob >= ventana_gob[1] & 
+         periodo_gob <= ventana_gob[2])
+
+cat("Observaciones para Event Study COVID:", nrow(BD_event_covid), "\n")
+cat("Observaciones para Event Study Gobierno:", nrow(BD_event_gob), "\n\n")
+
+```
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+#Modelo con interacción periodo y grupo
+
+cat("Estimando modelos Event Study...\n\n")
+
+# EVENT STUDY - SHOCK COVID
+# Usar período -1 como referencia (omitido)
+modelo_event_covid <- feols(
+  ind_prod_nominal ~ i(periodo_covid, IVIG_3_dt, ref = -1) + 
+                     + cobertura + 
+                     log(población) + log(SGP) |
+                     departamento + ym,
+  data = BD_event_covid,
+  cluster = ~departamento
+)
+
+# EVENT STUDY - SHOCK GOBIERNO
+modelo_event_gob <- feols(
+  ind_prod_nominal ~ i(periodo_gob, IVIG_3_dt, ref = -1) + 
+                     cobertura +  
+                     log(población) + log(SGP) |
+                     departamento + ym,
+  data = BD_event_gob,
+  cluster = ~departamento
+)
+
+cat("✓ Modelos Event Study estimados\n\n")
+
+```
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Extraer coeficientes 
+
+# Función para extraer coeficientes del event study
+extraer_coefs_event <- function(modelo, nombre_var) {
+  # Obtener todos los coeficientes
+  coefs <- coef(modelo)
+  ses <- se(modelo)
+  
+  # Filtrar solo los de interacción (nombres contienen el período)
+  indices <- grep(nombre_var, names(coefs))
+  
+  # Extraer períodos de los nombres
+  # Ejemplo: "periodo_covid::-12:grupo_IVIG_3" → -12
+  periodos <- as.numeric(gsub(".*::([-]?[0-9]+):.*", "\\1", names(coefs)[indices]))
+  
+  # Crear data frame
+  df <- data.frame(
+    periodo = periodos,
+    coef = coefs[indices],
+    se = ses[indices]
+  ) %>%
+    mutate(
+      ci_low = coef - 1.96 * se,
+      ci_high = coef + 1.96 * se
+    ) %>%
+    arrange(periodo)
+  
+  # Agregar período de referencia (-1) con coef = 0
+  df_ref <- data.frame(
+    periodo = -1,
+    coef = 0,
+    se = 0,
+    ci_low = 0,
+    ci_high = 0
+  )
+  
+  df <- bind_rows(df, df_ref) %>%
+    arrange(periodo)
+  
+  return(df)
+}
+
+# Extraer coeficientes
+coefs_covid <- extraer_coefs_event(modelo_event_covid, "periodo_covid")
+coefs_gob <- extraer_coefs_event(modelo_event_gob, "periodo_gob")
+
+cat("Coeficientes extraídos:\n")
+cat("  COVID: N períodos =", nrow(coefs_covid), "\n")
+cat("  Gobierno: N períodos =", nrow(coefs_gob), "\n\n")
+```
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Gerenerar el gráfico de Evento
+
+cat("Generando gráficos...\n\n")
+
+# FUNCIÓN PARA GRAFICAR
+plot_event_study <- function(coefs_df, titulo, fecha_shock_label) {
+  
+  # Identificar período pre/post
+  coefs_df <- coefs_df %>%
+    mutate(
+      fase = ifelse(periodo < 0, "Pre-shock", "Post-shock"),
+      significativo = ifelse(ci_low > 0 | ci_high < 0, "Sí", "No")
+    )
+  
+  p <- ggplot(coefs_df, aes(x = periodo, y = coef)) +
+    # Banda de confianza
+    geom_ribbon(aes(ymin = ci_low, ymax = ci_high), 
+                alpha = 0.2, fill = "steelblue") +
+    
+    # Línea de referencia en cero
+    geom_hline(yintercept = 0, linetype = "solid", 
+               color = "black", linewidth = 0.5) +
+    
+    # Línea vertical en el shock (período 0)
+    geom_vline(xintercept = -0.5, linetype = "dashed", 
+               color = "red", linewidth = 1) +
+    
+    # Línea de coeficientes
+    geom_line(color = "steelblue", linewidth = 1) +
+    
+    # Puntos (diferentes para sig/no sig)
+    geom_point(aes(color = significativo, shape = significativo), 
+               size = 3) +
+    
+    # Etiquetas y tema
+    labs(
+      title = titulo,
+      subtitle = paste("Línea vertical roja:", fecha_shock_label),
+      x = "Meses relativos al shock",
+      y = "Efecto en productividad industrial\n(diferencia Tratamiento - Control)",
+      caption = "Notas: Bandas grises = IC 95%. Período -1 omitido como referencia.\nPuntos rojos = coeficientes estadísticamente significativos (IC no incluye cero)."
+    ) +
+    
+    theme_minimal() +
+    theme(
+      plot.title = element_text(size = 14, face = "bold"),
+      plot.subtitle = element_text(size = 11),
+      axis.title = element_text(size = 11),
+      legend.position = "bottom",
+      panel.grid.minor = element_blank()
+    ) +
+    
+    scale_color_manual(
+      name = "Significativo (95%):",
+      values = c("No" = "steelblue", "Sí" = "red")
+    ) +
+    
+    scale_shape_manual(
+      name = "Significativo (95%):",
+      values = c("No" = 16, "Sí" = 17)
+    ) +
+    
+    # Anotar el shock
+    annotate("text", x = 1, y = max(coefs_df$ci_high, na.rm = TRUE) * 0.9,
+             label = "Shock", color = "red", size = 4, hjust = 0)
+  
+  return(p)
+}
+
+# Crear gráficos
+p_event_covid <- plot_event_study(
+  coefs_covid,
+  "Event Study: Efecto Dinámico del Shock COVID-19",
+  "Diciembre 2021"
+)
+
+p_event_gob <- plot_event_study(
+  coefs_gob,
+  "Event Study: Efecto Dinámico del Cambio de Gobierno",
+  "Agosto 2022"
+)
+
+# Mostrar
+print(p_event_covid)
+print(p_event_gob)
+
+```
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Test conjunto: todos los coeficientes pre-shock = 0
+test_pre_covid <- coefs_covid %>%
+  filter(periodo < -1) %>%  # Excluir referencia
+  summarise(
+    n_coefs = n(),
+    n_sig = sum(ci_low > 0 | ci_high < 0),
+    max_abs_coef = max(abs(coef))
+  )
+
+test_pre_gob <- coefs_gob %>%
+  filter(periodo < -1) %>%
+  summarise(
+    n_coefs = n(),
+    n_sig = sum(ci_low > 0 | ci_high < 0),
+    max_abs_coef = max(abs(coef))
+  )
+
+cat("SHOCK COVID:\n")
+cat("  N coeficientes pre-shock:", test_pre_covid$n_coefs, "\n")
+cat("  N significativos:", test_pre_covid$n_sig, "\n")
+cat("  Máximo coeficiente (abs):", round(test_pre_covid$max_abs_coef, 3), "\n")
+if(test_pre_covid$n_sig == 0) {
+  cat("  ✅ Ningún coeficiente pre-shock significativo → Tendencias paralelas VÁLIDAS\n\n")
+} else {
+  cat("  ⚠️  Algunos coeficientes pre-shock significativos → Posible violación\n\n")
+}
+
+cat("SHOCK GOBIERNO:\n")
+cat("  N coeficientes pre-shock:", test_pre_gob$n_coefs, "\n")
+cat("  N significativos:", test_pre_gob$n_sig, "\n")
+cat("  Máximo coeficiente (abs):", round(test_pre_gob$max_abs_coef, 3), "\n")
+if(test_pre_gob$n_sig == 0) {
+  cat("Ningún coeficiente pre-shock significativo → Tendencias paralelas VÁLIDAS\n\n")
+} else {
+  cat("Algunos coeficientes pre-shock significativos → Posible violación\n\n")
+}
+
+```
+
+#Estimacion del modelo de DID
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+
+cat("\n============================================================\n")
+cat("ESTIMANDO MODELOS DiD\n")
+cat("============================================================\n\n")
+
+# ------------------------------------------------------------
+# OPCIÓN 1: SHOCK COVID-19
+# ------------------------------------------------------------
+
+cat("Estimando modelos con Shock COVID...\n")
+
+# Primero, crear variable Shock_Gobierno si no existe
+if(!"Shock_Covid" %in% colnames(BD_0)) {
+  BD_0 <- BD_0 %>%
+    mutate(Shock_Covid = ifelse(date >= fecha_corte_covid, 1, 0))
+  cat("→ Variable Shock_Covid creada\n")
+}
+
+# Método 1: Pesos iguales
+modelo_covid_m1 <- feols(
+  ind_prod_nominal ~ Shock_COVID:IVIG_1_dt + 
+                     cobertura + 
+                     log(población) + log(SGP) | 
+                     departamento + ym,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+# Método 2: Pesos informados
+modelo_covid_m2 <- feols(
+  ind_prod_nominal ~ Shock_COVID:IVIG_2_dt + 
+                     cobertura + 
+                     log(población) + log(SGP) | 
+                     departamento + ym,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+# Método 3: Varianza inversa
+modelo_covid_m3 <- feols(
+  ind_prod_nominal ~ Shock_COVID:IVIG_3_dt + 
+                     cobertura + 
+                     log(población) + log(SGP) | 
+                     departamento + ym,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+cat("✓ Modelos COVID estimados\n\n")
+
+
+
+# ------------------------------------------------------------
+# OPCIÓN 2: SHOCK CAMBIO DE GOBIERNO
+# ------------------------------------------------------------
+
+cat("Estimando modelos con Shock Gobierno...\n")
+
+# Primero, crear variable Shock_Gobierno si no existe
+if(!"Shock_Gobierno" %in% colnames(BD_0)) {
+  BD_0 <- BD_0 %>%
+    mutate(Shock_Gobierno = ifelse(date >= fecha_corte_gobierno, 1, 0))
+  cat("→ Variable Shock_Gobierno creada\n")
+}
+
+# Método 1: Pesos iguales
+modelo_gob_m1 <- feols(
+  ind_prod_nominal ~ Shock_Gobierno:IVIG_1_dt + 
+                     cobertura + 
+                     log(población) + log(SGP) | 
+                     departamento + ym,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+# Método 2: Pesos informados
+modelo_gob_m2 <- feols(
+  ind_prod_nominal ~ Shock_Gobierno:IVIG_2_dt + 
+                     cobertura + 
+                     log(población) + log(SGP) | 
+                     departamento + ym,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+# Método 3: Varianza inversa
+modelo_gob_m3 <- feols(
+  ind_prod_nominal ~ Shock_Gobierno:IVIG_3_dt + 
+                     cobertura + 
+                     log(población) + log(SGP) | 
+                     departamento + ym,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+cat("✓ Modelos Gobierno estimados\n\n")
+
+cat("\n============================================================\n")
+cat("RESULTADOS - SHOCK COVID-19\n")
+cat("============================================================\n\n")
+
+etable(modelo_covid_m1, modelo_covid_m2, modelo_covid_m3,
+       title = "Efecto del Shock COVID-19 sobre Productividad Industrial",
+        tex = TRUE,
+       headers = c("M1", 
+                   "M2", 
+                   "M3"),
+       dict = c("Shock_COVID:IVIG_1_dt" = "Shock COVID × Grupo Vulnerable (M1)",
+                "Shock_COVID:IVIG_2_dt" = "Shock COVID × Grupo Vulnerable (M2)",
+                "Shock_COVID:IVIG_3_dt" = "Shock COVID × Grupo Vulnerable (M3)",
+                "ind_empleo" = "Empleo industrial",
+                "cobertura" = "Cobertura de gas",
+                "log(PIB_DPTO)" = "log(PIB departamental)",
+                "log(población)" = "log(Población)",
+                "log(SGP)" = "log(SGP)"),
+       notes = c("Método 1:(Pesos iguales)", "Método 2:(Pesos informados)", 
+                 "Método 3:(Varianza inversa)",
+                 "Errores estándar agrupados por departamento en paréntesis.",
+                 "Efectos fijos por departamento y período (año-mes) incluidos.",
+                 "El coeficiente de interés captura el efecto diferencial del shock COVID",
+                 "en departamentos vulnerables (Grupo=1) relativo a departamentos control (Grupo=0)."),
+       fitstat = c("n", "r2", "wr2"),
+       digits = 4)
+
+
+
+cat("\n============================================================\n")
+cat("RESULTADOS - SHOCK CAMBIO DE GOBIERNO\n")
+cat("============================================================\n\n")
+
+etable(modelo_gob_m1, modelo_gob_m2, modelo_gob_m3,
+       title = "Efecto del Cambio de Gobierno sobre Productividad Industrial",
+        tex = TRUE,
+       headers = c("M1", 
+                   "M2", 
+                   "M3"),
+       dict = c("Shock_Gobierno:IVIG_1_dt" = "Shock Gobierno × Grupo Vulnerable (M1)",
+                "Shock_Gobierno:IVIG_2_dt" = "Shock Gobierno × Grupo Vulnerable (M2)",
+                "Shock_Gobierno:IVIG_3_dt" = "Shock Gobierno × Grupo Vulnerable (M3)",
+                "ind_empleo" = "Empleo industrial",
+                "cobertura" = "Cobertura de gas",
+                "log(PIB_DPTO)" = "log(PIB departamental)",
+                "log(población)" = "log(Población)",
+                "log(SGP)" = "log(SGP)"),
+       notes = c("Método 1:(Pesos iguales)", "Método 2:(Pesos informados)", 
+                 "Método 3:(Varianza inversa)",
+                 "Errores estándar agrupados por departamento en paréntesis.",
+                 "Efectos fijos por departamento y período (año-mes) incluidos.",
+                 "El coeficiente de interés captura el efecto diferencial del cambio de política energética",
+                 "en departamentos vulnerables (Grupo=1) relativo a departamentos control (Grupo=0)."),
+       fitstat = c("n", "r2", "wr2"),
+       digits = 4)
+```
 
 # Paso 4. Síntesis estado del arte
 La evidencia para Colombia y la región muestra que los choques y los arreglos institucionales en los sectores de hidrocarburos y energía generan efectos heterogéneos a nivel territorial y, en muchos casos, solo parcialmente favorables sobre el bienestar y la actividad económica. En términos generales, la literatura latinoamericana sobre el tema comparte enfoques metodológicos y conceptuales similares al del presente trabajo, aunque con variaciones en contexto y alcance. En el caso colombiano, la reciente necesidad de importar gas natural para abastecer la demanda nacional constituye un hecho sin precedentes. Este shock de importación abre un espacio de análisis poco explorado, dado que la literatura previa se ha centrado en aspectos fiscales (como las regalías) o macroeconómicos, pero no en los efectos productivos departamentales asociados a la dependencia energética.
@@ -241,409 +1174,3 @@ Moyano, L. F. (2016). Regalías y pobreza en el Caribe colombiano: un análisis 
 Alcaraz, C. (2017). The effect of natural gas shortages on the Mexican economy. Energy Economics, 66, 77–86. https://doi.org/10.1016/j.eneco.2017.05.011
 Yépez-García, A. (2021). Productivity and energy intensity in Latin America. Inter-American Development Bank (IDB), Energy Division Working Paper. https://publications.iadb.org/en/productivity-and-energy-intensity-latin-america
 Wang, C., & Garduño-Rivera, R. (2022). The growing US-Mexico natural gas trade and its regional economic impacts in Mexico. arXiv preprint. https://arxiv.org/abs/2207.09391
-
-
-
-
-## Segundo Punto
-2.	Para cada género, presenten en una tabla los resultados de estimar las siguientes especificaciones
-
-
-
-
-```{r}
-# Incluir la semilla con mi código de estudiante
-set.seed(202415176)
-
-# Eliminar aleatoriamente el 5% de las observaciones
-BD_1 <- BD_0 %>% sample_frac(0.95)
-
-# Incluir la variable dicotoma, si gano el partido Islamico en 1994
-
-BD_1 <- BD_1 %>%
-  mutate(
-    islamic_mayor_1994 = ifelse(ilmvsm1994 >= 0, 1, 0)
-  )
-
-# Verificar dimensiones
-cat("Observaciones después de eliminar 5%:", nrow(BD_1), "\n")
-
-# Valor de la banda optimo
-
-h_hat <- 0.24
-
-# Submuestra 1
-
-BD_h <- BD_1 %>%
-  filter(abs(ilmvsm1994) <= h_hat)
-
-# Submuestra 2
-
-BD_h2 <- BD_1 %>%
-  filter(abs(ilmvsm1994) <= h_hat/2)
-
-cat("Observaciones completa:", nrow(BD_1), "\n")
-cat("Observaciones en submuestra h=0,24:", nrow(BD_h), "\n")
-cat("Observaciones en submuestra h/2=0,12:", nrow(BD_h2), "\n")
-
-#Controles
-
-controles <- c("vshr_islam1994", "partycount", "lpop1994",
-               "ageshr19", "ageshr60", "sexr", "shhs",
-               "merkezi", "merkezp", "buyuk", "subbuyuk")
-
-#Incluir los controles a la base principal
-
-controles_disponibles <- controles[controles %in% colnames(BD_1)]
-cat("Controles disponibles:", paste(controles_disponibles, collapse=", "), "\n")
-
-```
-
-**Respuesta:** A continuación, presentamos el desarrollo de los modelos.
-
-### Solución Segundo Punto
-
-a) Ecuación principal, para toda la muestra, sin incluir controles.
-```{r warning=FALSE, message=FALSE}
-# Modelo a
-
-# Caso mujeres
-
-modelo_2m_a <- feols(
-  hischshr1520f ~ islamic_mayor_1994,
-  data = BD_1,
-  cluster = ~prov
-)
-
-# Caso hombre
-
-modelo_2h_a <- feols(
-  hischshr1520m ~ islamic_mayor_1994,
-  data = BD_1,
-  cluster = ~prov
-)
-```
-
-b) Ecuación principal, para toda la muestra, con controles.
-```{r warning=FALSE, message=FALSE}
-# Modelo b
-
-# formula compacta con controles mujeres
-
-formula_m_b <- as.formula(paste(
-  "hischshr1520f ~ islamic_mayor_1994 + ilmvsm1994 + ilmvsm1994:islamic_mayor_1994 +",
-  paste(controles_disponibles, collapse = " + ")
-))
-
-# Especificación completa con controles mujeres
-
-modelo_2m_b <- feols(
-  formula_m_b,
-  data = BD_1,
-  cluster = ~prov
-)
-
-# formula compacta con controles hombre
-
-formula_h_b <- as.formula(paste(
-  "hischshr1520m ~ islamic_mayor_1994 + ilmvsm1994 + ilmvsm1994:islamic_mayor_1994 +",
-  paste(controles_disponibles, collapse = " + ")
-))
-
-# Especificación completa con controles hombres
-
-modelo_2h_b <- feols(
-  formula_h_b,
-  data = BD_1,
-  cluster = ~prov
-)
-
-```
-
-c) Ecuación principal, para la submuestra a  $\hat{h}$ unidades alrededor del corte, con controles.
-```{r warning=FALSE, message=FALSE}
-# Modelo c
-
-# Especificación con submuestra $\hat{h}$ = 0,24 mujeres
-
-modelo_2m_c <- feols(
-  formula_m_b,
-  data = BD_h,
-  cluster = ~prov
-)
-
-# Especificación con submuestra $\hat{h}$ = 0,24 hombres
-
-modelo_2h_c <- feols(
-  formula_h_b,
-  data = BD_h,
-  cluster = ~prov
-)
-
-```
-
-d) Ecuación principal, para la submuestra a  $\hat{h}/2$ unidades alrededor del corte, con controles.
-
-donde $\hat{h}=0,24$ es el ancho de banda óptimo estimado por los autores. Para las especificaciones con controles, supongan que: 
-
-\begin{align}
-f(x_i)=\gamma x_i+\delta x_i×m_i \quad \nonumber \\
-\end{align}
-
-Es decir, un polinomio de grado uno con pendiente distinta a cada lado del corte.  Para las especificaciones sin controles, no incluyan ningún polinomio. Todas las especificaciones deben usar errores estándar clúster a nivel de provincia. 
-
-```{r warning=FALSE, message=FALSE}
-# Modelo d
-
-# Especificación con submuestra $\hat{h}/2$ = 0,12 mujeres
-
-modelo_2m_d <- feols(
-  formula_m_b,
-  data = BD_h2,
-  cluster = ~prov
-)
-
-# Especificación con submuestra $\hat{h}/2$ = 0,12 hombres
-
-modelo_2h_d <- feols(
-  formula_h_b,
-  data = BD_h2,
-  cluster = ~prov
-)
-
-```
-
-A continuación, se presenta la tabla de resultados.
-
-```{r warning=FALSE, message=FALSE}
-# Tabla de resultados para mujeres entre 15 y 20 años educadas hasta secundaria.
-
-#Tabla 1 Efecto en la educación de las mujeres
-
-etable(
-  modelo_2m_a, modelo_2m_b, modelo_2m_c, modelo_2m_d,
-  tex = TRUE,
-  title = "Efecto de Gobierno Islámico en Educación Femenina",
-  headers = c("(a)", "(b)", "(c)", "(d)"),
-  dict = c("islamic_mayor_1994" = "Islamic Mayor 1994"),
-  keep = "Islamic",
-  extralines = list(
-    "Controles" = c("No", "Sí", "Sí", "Sí"),
-    "Muestra" = c("Completa", "Completa", "h=0.24", "h=0.12"),
-    "Polinomio flexible" = c("No", "Sí", "Sí", "Sí")
-  ),
-  notes = "Nota: Errores estándar clustered por provincia entre paréntesis.",
-  fontsize = "small",
-  digits = 4,
-  digits.stats = 1
-)
-
-```
-
-Resultado del efecto en la eduación de los hombres:
-```{r warning=FALSE, message=FALSE}
-
-#Tabla 2 Efecto en la educación de la hombres
-
-etable(
-  modelo_2h_a, modelo_2h_b, modelo_2h_c, modelo_2h_d,
-  tex = TRUE,
-  title = "Efecto de Gobierno Islámico en Educación Masculina",
-  headers = c("(a)", "(b)", "(c)", "(d)"),
-  dict = c("islamic_mayor_1994" = "Islamic Mayor 1994"),
-  keep = "Islamic",
-  extralines = list(
-    "Controles" = c("No", "Sí", "Sí", "Sí"),
-    "Muestra" = c("Completa", "Completa", "h=0.24", "h=0.12")
-  ),
-  notes = "Nota: Errores estándar clustered por provincia entre paréntesis.",
-  fontsize = "small",
-  digits = 4,
-  digits.stats = 1
-)
-
-```
-
-
-## Tercer Punto
-3.	A partir de los resultados encontrados en el anterior punto, respondan:
-
-### Solución tercer Punto
-a) ¿Por qué cambian los coeficientes entre especificaciones?
-
-**Respuesta:** Los cambios en los coeficientes obedecen a la inclusión o no de controles, al tamaño de la muestra (amplitud de la banda) y cada uno de los modelos tienen diferentes problemas de identificación. Veamos:
-
-**Modelo a Sin controles:** El coeficiente estimado (-0.027)*** presenta una correlación entre la variable eduación secundaria en niñas entre los 15 y 20 años y la varible dicótoma que repesenta la victoria del partido islámico en las elecciones de 1994. Por lo tanto, el coeficiente puede estar sesgado, por omisión de variables y no puede ser interpretados como un efecto causal.
-
-**Modelo b Con controles:** El coeficiente estimado (0.012)* se ajusta al incluir las varibales de control, a tal punto que el signo del coeficiente cambio respecto del modelo a. Además, el ajuste de la especificación permitió que los sesgos de selección se redujeran por lo controles. No obstante, los municipios son dispares entre sí.
-
-**Modelo c h=0.24:** El coeficiente estimado (0.025)*** tiene una especificación con controles y una amplitud de banda de 0.24, indicando que se realiza una comparación entre los municipios más cercanos al umbral ($c=0$), asegurando así, que la selección es casi aleatoria. Por lo tanto, se puede establecer que se minimiza el sesgo y este coeficiente puede ser interpretado como un efecto causal local (LATE).
-
-**Modelo d h=0.12:** El coeficiente estimado (0.029)** fue calculado con una especificación con controles y una amplitud de banda de 0.12, estas características disminuyen en número de observaciones y generan homogeniedad en la muestra de municipios que se estan comparando al rededor del umbral ($c=0$). Sin embargo, la disminución en el número de observaciones puede aumentar la varianza del estimador. Ahora, en términos generales, el coeficiente tiene un valor cercano al modelo c, que puede sugerir una validación por robustez.
-
-b) ¿Cuál parece ser el impacto de la llegada al poder del Partido Islámico para las mujeres? 
-
-**Respuesta:** De conformidad con la tabla 1 columna 3 (0.025)***, el efecto de la llegada al poder del Partido Islámico para las mujeres entre 15 y 20 años con secundaria completa, es positivo y significativo al 1%. Entonces, su interpretación sería la siguiente: La llegada de un alcalde islámico en 1994, incrementó en promedio 2.5 puntos percetuales la proporción de mujeres entre 15 y 20 años con educación secundaria completa en el año 2000, en los municipios cercanos al umbral de victoria electoral. En terminos relativos, se puede establecer que fue de 2.5/16.3=15.34% (Proporción promedio de mujeres con secundaria completa en 2000). Los resultado obtenidos por Meyersson son aproximadamente del 20%, esto valida el resultado obtenido.
-
-¿Parece ser este impacto robusto a las especificaciones?
-
-**Respuesta:** Si, el impacto es robusto cuando se comparan las columnas 3 y 4 de la tabla 1, entendiendo que los coeficientes son positivos y sus significancias estadísticas varian entre el 1% y el 5%. Puede existir otra manera de comparación frente a la columna 1, donde la especificación genera una correlación y el estimados es negativo. En conclusión, el cambio del signo entre los modelos confirma el efecto causal robusto.  
-
-## Cuarto Punto
-
-4. Finalmente, presenten evidencia a favor (o en contra) del supuesto de identificación. Para esto,
-
-### Solución cuarto Punto
-a) Presenten en una gráfica la distribución kernel o el histograma  de la variable de asignación $x_i$. ¿Parece haber manipulación?
-
-```{r warning=FALSE, message=FALSE}
-
-# Figura 1 Histograma con 99 bins
-p1 <- ggplot(BD_1, aes(x = ilmvsm1994)) +
-  geom_histogram(bins = 99, fill = "steelblue", color = "black", alpha = 0.7) +
-  geom_vline(xintercept = 0, linetype = "dashed", color = "red", size = 1.2) +
-  labs(
-    title = "Figura 1: Test de Manipulación - Distribución del Margen de Victoria",
-    subtitle = "McCrary (2008) Density Test",
-    x = "Margen de victoria del partido islámico (ilmvsm1994)",
-    y = "Frecuencia",
-    caption = "Nota: Si hay salto en x=0 → evidencia de manipulación"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5)
-  )
-
-print(p1)
-ggsave("figura1_manipulacion.png", width = 10, height = 6)
-
-# Figura 2 Densidad kernel
-p2 <- ggplot(BD_1, aes(x = ilmvsm1994)) +
-  geom_density(fill = "steelblue", alpha = 0.5, color = "darkblue", size = 1) +
-  geom_vline(xintercept = 0, linetype = "dashed", color = "red", size = 1.2) +
-  labs(
-    title = "Figura 2: Densidad Kernel del Margen de Victoria",
-    x = "Margen de victoria del partido islámico",
-    y = "Densidad",
-    caption = "Nota: Si hay salto en x=0 → evidencia de manipulación"
-  ) +
-  theme_minimal() + 
-    theme(
-    plot.title = element_text(hjust = 0.5, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5)
-  )
-
-print(p2)
-ggsave("figura2_densidad_Kernel.png", width = 10, height = 6)
-
-```
-
-```{r warning=FALSE, message=FALSE}
-
-# Test formal
-density_test <- rddensity(
-  X = BD_1$ilmvsm1994,
-  c = 0,
-  p = 2,              # Polinomio local orden 2
-  q = 3,              # Bias correction orden 3
-  kernel = "triangular",
-  fitselect = "unrestricted"
-)
-
-# Mostrar resumen
-summary(density_test)
-
-# Extraer resultados clave
-test_stat <- density_test$test$t_jk
-pvalue <- density_test$test$p_jk
-bandwidth_izq <- density_test$h$left
-bandwidth_der <- density_test$h$right
-
-# Crear el objeto con histograma para obtener los datos
-rdplot_obj <- rdplotdensity(
-  rdd = density_test,
-  X = BD_1$ilmvsm1994,
-  plotRange = c(-0.5, 0.5),
-  plotN = 25,
-  plotGrid = c("es","qs"),
-  type = "points",
-  CIshade = 0.2,
-  hist = FALSE,
-  histBreaks = NULL,
-  histFillCol = "gray90",
-  histLineCol = "white",
-  title = "Figura 3: Test de McCrary",
-  xlabel = "Islamic win margin (ilmvsm1994)",
-  ylabel = "Density"
-)
-
-dev.copy(png, "figura3_Test_mccrary.png", width = 2400, height = 1800, res = 300)
-dev.off()
-
-```
-
-**Respuesta:** A partir de los resultados observados en el figura 1 (Histograma) y la figura 2 (Densidad de Kernel), no se observa un salto en la distribución de la variable $x_i$ (ilmvsm1994) - es el margen de votos con el que ganó o perdió el candidato del partido islámico-. Información que concuerda con el Autor Meyersson, quien no encuentra evidencia de manipulación en la variable de asignación alrededor del umbral ($c=0$).
-
-Adicional, se realizó el test de McCrary (2008) para verificar estadisticamente la existencia de manipulación por lo partidos políticos. El resultado obtenido fue: $T=-1.24$ con un p-valor de $0.213$, lo cual indica que no es significativo al 10%. Por lo tanto, no se rechaza la hipótesis nula de no manipulación en la variable de asignación alrededor del umbral ($c=0$).
-
-b) En una tabla presenten los resultados de estimar la ecuación de interés, sin controles, pero incluyendo $f(x_i)$, tomando como variables dependientes: i) la elección de un alcalde del partido Islámico en 1984 $(i89)$ y ii) el logaritmo de la población en 1994 $(lpop1994)$. Para esto, usen únicamente la muestra de elecciones alrededor del ancho de banda óptimo. Dados sus resultados, ¿parece haber continuidad en estas variables?
-
-```{r warning=FALSE, message=FALSE}
-
-# Test 1: Islamic mayor 1989
-test_i89 <- feols(
-  i89 ~ islamic_mayor_1994 + ilmvsm1994 + ilmvsm1994:islamic_mayor_1994,
-  data = BD_h,
-  cluster = ~prov
-)
-
-# Test 2: Log población 1994
-test_lpop <- feols(
-  lpop1994 ~ islamic_mayor_1994 + ilmvsm1994 + ilmvsm1994:islamic_mayor_1994,
-  data = BD_h,
-  cluster = ~prov
-)
-
-# Extraer p-values
-pval_i89 <- summary(test_i89)$coeftable["islamic_mayor_1994", "Pr(>|t|)"]
-pval_lpop <- summary(test_lpop)$coeftable["islamic_mayor_1994", "Pr(>|t|)"]
-
-# Tabla 3 Tests de Balance
-
-etable(
-  test_i89, test_lpop,
-  tex = TRUE,
-  title = "Tests de Balance con P-valores",
-  headers = c("Islamic 1989", "Log Población 1994"),
-  dict = c("islamic_mayor_1994" = "Islamic Mayor 1994"),
-  keep = "Islamic",
-  extralines = list(
-    "P-value" = c(sprintf("%.4f", pval_i89), sprintf("%.4f", pval_lpop)),
-    "Balanceado?" = c(
-      ifelse(pval_i89 > 0.10, "Sí", "No"),
-      ifelse(pval_lpop > 0.10, "Sí", "No")
-    )
-  ),
-  digits = 4
-)
-
-
-```
-
-**Respuesta:** A partir de los resultados presentados en la tabla 3 (Tests de Balance), se realiza un prueba de hipótesis para cada una de las variables dependientes:
-
-
-**-Ho:** No hay discontinuidad con alcalde islámico 5 años atras. El p-valor es mayor a 0.10, por lo tanto, no se rechaza Ho. Los municipios que estan cerca al umbral son similares en términos de la variable $i89$.
-
-**-Ho:** No hay discontinuidad en tamaño poblacional. El p-valor es mayor a 0.10, por lo tanto, no se rechaza Ho. Los municipios pequeños o grandes tienen igual probabilidad de estar cerca del umbral.
-
-En conclusión, no hay evidencia de discontinuidad en las variables analizadas en el tabla 3, toda vez las pruebas de hipótesis resultaron en No rechazo de la Ho. En consecuencia la Regresión Discontinua (RD) identifica el efecto causal local (LATE) de manera valida alrededor del umbral ($c=0$).
-
-c) Dados sus resultados en los incisos a y b, ¿es plausible el supuesto de identificación? Expliquen por qué.
-
-**Respuesta:** El supuesto de identificación para una RD, se basa en la manipulación y el test de balance. Luego de corroborar estas mediciones que se resolvieron en los puntos a y b, se puede concluir que el supuesto de identificación es plausible, ya que:
-
-1. No existe evidencia de manipulación, la distribución es continua en el umbral ($c=0$). Esto sugiere que los candidatos no pudieron controlar los resultados electorales.
-
-2. Balanceo, la características previas al tratamiento (elección de alcalde islámico en 1989 y tamaño poblacional en 1994) no presentan discontinuidad en el umbral ($c=0$). Esto indica que los municipios cercanos al umbral son comparables.
