@@ -1,0 +1,758 @@
+---
+title: "EVALUACIÓN DE IMPACTO - PROYECTO FINAL"
+author: "JACOME, NICOLAS; SANCHEZ, JUAN GUILLERMO; VIÁFARA, JORGE ELIECER"
+date: "2025-10-25"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    keep_tex: false
+    extra_dependencies: ["makecell","booktabs"]
+---
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  fig.align = "center",
+  fig.pos = "H",
+  results = 'asis'
+)
+
+# Configurar opciones
+options(modelsummary_factory_default = "gt")
+options(kableExtra.latex.load_packages = FALSE)
+tinytex::tlmgr_install('makecell')
+
+```
+
+# Paso 1. ¿Cuál es su pregunta de investigación? ¿Qué ideas tiene su grupo para contestar?
+## 1.	Pregunta de investigación
+
+¿Cuál es el impacto a la productividad industrial nominal en los departamentos colombianos bajo la condición de vulnerabilidad a la importación de Gas Natural y al cambio en las políticas de extracción de energías fósiles? O ¿la reactivación económica generada por el levantamiento de restricciones del COVID-19?
+
+## 2.	Motivación
+Colombia enfrenta un déficit de Gas Natural (GN) causado por la reducción del potencial de producción de los principales campos gasíferos, un aumento marginal sostenido de la demanda regulada, e industrial y una volatilidad de la demanda termoeléctrica  a razón del Fenómeno del Niño que puede representar incrementos significativos y estrés adicional al sistema., estas condiciones obligaron a que por primera vez en la historia se importara gas natural para atender la demanda de la industria y hogares colombianos. Según cifras del Gestor del Mercado de Gas Natural – GMGN, en lo corrido del año 2025 se ha importado cerca del 17% del total de la demanda nacional.
+
+Desde 2016, el Gas Natural Importado – GNI se ha venido incorporando al mercado por medio de la planta regasificadora instalada en Cartagena – SPEC, infraestructura que fue pensada como respaldo para las plantas termoeléctricas de la costa (grupo térmico), más no como una planta de abastecimiento para la demanda general.
+
+En términos de balance entre la oferta y la demanda, gracias a la disposición de la infraestructura de transporte y limitaciones en las capacidades de intercambio entre sistemas, es necesario separar el mercado entre la zona Caribe y el interior. Con referencia a la zona Caribe, se identifican proyectos de producción de Gas Natural más jóvenes y con potencial de producción creciente, de otro lado, con una demanda relativamente estable con una participación importante del grupo térmico de la costa y con un balance superavitario del energético. Respecto a la zona interior, se presenta un potencial de producción que refleja la caída de los grandes campos tradicionales (Cuciana, Cupiagua y Pauto) y una demanda en crecimiento, resultando en un balance deficitario de Gas Natural. 
+
+Ahora, de acuerdo con el Ministerio de Minas y Energía - MME a cierre de 2024, la cobertura para el sector residencial es el 78% (36 millones de colombianos) de los usuarios residenciales anillados, de los cuales, el 20% se encuentran en la zona caribe y el 85% de estos usuarios residenciales pertenecen a los estratos 1, 2 y 3. Además, se estima que los usuarios nuevos incrementen aproximadamente 3.2%. En consecuencia, continúa ampliándose la brecha entre la oferta de producción nacional y la demanda.
+
+Teniendo en cuenta lo anterior, el Gestor del Mercado de Gas Natural – GMGN estimó un déficit creciente de 8.2% de la demanda en 2025 y de 20.6% en año 2026. De esta manera, se ha tomado la determinación de comercializar en el mercado primario el GNI para los sectores industriales, comercial, vehicular y residencial (esenciales), iniciando desde noviembre de 2024. Este hecho, es de suma relevancia dado que el servicio público en el sector residencial tiene una participación en la demanda cercano al 20% 
+
+Por lo tanto, resulta fundamental evaluar los efectos en la productividad industrial nominal sobre la dependencia o autosuficiencia de Gas Natural al sector industrial y el cambio en las políticas públicas frente a la extracción de energías fósiles, estas decisiones pueden tener efectos diferenciales dependiendo del departamento.
+
+
+## 3.	Expectativas de la investigación
+Los estudios en el sector del Gas Natural se orientan en estimar la producción anual nacional, aproximar las reservas probadas (P1), reservas probables (P2), recursos contingentes C1 y C2 tanto en tierra firme como costa afuera. Además, presentan hechos relevantes de ámbito nacional que les permite justificar las cifras de producción anual, por cada una de las fuentes de extracción. De otro lado, se presentan escenarios de demanda agregada, la cual en su conjunto buscan identificar el desbalance en términos volumétricos.
+
+Aunado a lo anterior, los documentos que caracterizan a este sector son planes a Largo Plazo, que describen las diferentes actividades de la prestación del servicio público, como producción, importación, suministro, transporte, comercialización, con un enfoque de transición energética, que se encaminan a identificar necesidades y proponer soluciones. No obstante, dejan atrás el análisis causal de los cambios que se están presentando en el mercado.
+
+En contraste, la presente investigación tomará la información del sector del Gas Natural y la coyuntura actual de dependencia de las importaciones de este recurso energético para atender la demanda industrial. 
+Así mismo, se vincularán variables relevantes como empleos en sector industrial, cobertura de usuarios, PIB, población, SGP.
+
+Como resultado, la investigación permitirá tener un estudio acorde a la actualidad energética de Colombia con el cual se podría establecer efectos causales bajo metodologías de evaluación de impacto económico que permitirán generar recomendaciones de política pública que para ser implementadas por los entes incumbentes.   
+
+## 4.	Los datos
+La información fue tomada de diferentes fuentes oficiales tales como el Gestor del Mercado de Gas Natural- – GMGN en Colombia donde se centralizan las operaciones y transacciones del sector, también de los repositorios de información internacional como, la Agencia Nacional de Hidrocarburos – ANH, y de la Encuesta Mensual Manufacturera con Enfoque Territorial (EMMET) del DANE, del SICODIS se obtuvieron los Recursos distribuidos del Sistema General de Participaciones (SGP), del O3 de la SSPD, se obtuvieron los costos históricos del costos promedio unitario de la molécula y de su transporte, del MME se extrajeron los datos de cobertura industrial del gas y el PIB departamentos y las proyecciones de población del DANE. La frecuencia de la información es mensual desde enero de 2018 hasta abril de 2025 a nivel de departamentos en Colombia.
+
+## 5.	Especificación econométrica
+
+\begin{align}
+Y_{dt}=\alpha_d+\lambda_t+\delta (Shock_t × Grupo)+X'_{dt}\theta+ε_{dt}\quad \nonumber \\
+\end{align}
+
+Donde:
+
+- $Y_{dt}$ Productividad industrial nominal a nivel $prodindnom_{df}$ o empleo sector industrial total $empleoindtotal_{dt}$  departamental (d) y mensual (t).
+- $\alpha_d$ Efecto fijo del departamento (d).
+- $Shock_t$ Dicótoma que toma el valor de 1 cuando el país cambia su gobierno o reactivación económica por causa del COVID-19.
+- $Grupo$ Define si un departamento (d) hace parte del grupo de tratamiento o de control basado en el índice de Vulnerabilidad a la Importación de Gas $IVIG_{dt}$
+
+-$X'_{dt}$ Matriz de controles que incluye:
+  $X_1$ Cobertura de gas en usuarios industriales 
+  $X_2$ Población por departamento por año.
+  $X_3$ Recursos girados del SGP por departamento por año.
+  
+- $ε_{dt}$ es el término del error. 
+
+Aunado a lo anterior, fue necesario la especificación del Índice de Vulnerabilidad de la Importación de Gas $IVIG_{dt}$, con el cual se calcula por departamento en función de la dependencia, costo del transporte del gal y costo de la molécula del gas previo al cambio de gobierno año 2022.
+
+\begin{align}
+IVIG_{dt}=\omega_1×(Dependecia)+\omega_2×(EstCostoTransporte_{dt}+\omega_3×(EstCostoMolGas_{dt})\quad \nonumber \\
+\end{align}
+
+Donde:
+\omega_i: Ponderaciones de cada variable que se establece a partir de la metodología de varianza inversa donde cada
+
+\begin{align}
+\omega_i=(1/\sigma^2_i)/\sum_{i=1}^{n} (1/\sigma^2_i)\quad \nonumber \\
+\end{align}
+
+- $Dependencia (a)$: Es el grado de dependencia que tiene el departamento de acuerdo con su producción de las plantas que se encuentran en sus fronteras y al consumo total de su industria. La interpretación del valor se establece de la siguiente manera, cercano a 1 es un departamento dependiente y 0 departamento autosuficiencia energética.
+
+\begin{align}
+Dependencia (a) = 1- (Produccion/Consumo)\quad \nonumber \\
+\end{align}
+
+$CostoTransporte(Dist)$: Es la estandarización permite comparar los costos de transporte por cada departamento. Los valores cercanos a 1, corresponden a departamentos que se abastecen de fuentes más lejanas y los valores cercanos 0 tienen disponibilidad de gas en el departamento.
+
+\begin{align}
+EstCostoTransporte_{dt}= T - min (T)/(max (t)-min(t))\quad \nonumber \\
+\end{align}
+
+$CostoGas(c)$: Es la estandarización entre 0 y 1. Permite obtener el costo del gas en relación con el rango histórico de la muestra.
+
+\begin{align}
+EstCostoMolGas_{dt}= C - min (C)/(max (C)-min(C))\quad \nonumber \\
+\end{align}
+
+Por lo tanto, el $IVIG_{dt}$ permite definir por medio de la mediana de la distribución la división entre los departamentos con alta vulnerabilidad (grupo de tratamiento) si el índice supera o es igual a la mediana, entonces la variable grupo será igual a 1. En caso contrario serán los departamentos con baja vulnerabilidad (grupo control) y la variable grupo será igual a 0. Con lo anterior, se podrá abordar de manera grafica el supuesto de identificación de DiD correspondiente a tendencias paralelas.
+
+Por último, los errores estándar se agrupan (cluster) a nivel departamental para controlar por posible correlación serial dentro de cada departamento y heterocedasticidad.
+
+## 6.	Resultados esperados
+
+Los resultados obtenidos permitirán responder directamente a la pregunta de investigación porque el modelo de diferencias en diferencias estima cuánto cambia la productividad industrial nominal bajo las condiciones de políticas públicas y las decisiones de importar Gas Natural entre los departamentos con o sin vulnerabilidad. Por lo tanto, esto nos permitirá cuantificar el efecto de las decisiones y acciones.
+
+En términos de política pública, los resultados tendrían al menos dos implicaciones concretas. Primero, evidenciarían el cambio en la productividad industrial por haber perdido autosuficiencia energética y el segundo, aportará insumos para la discusión sobre la necesidad de promover la exploración y producción de gas natural local.
+
+En general, los resultados de nuestra estimación no solo cuantificarán el efecto causal de las importaciones sobre el precio de suministro, sino que también servirán como alerta sobre la fragilidad del actual esquema energético colombiano y como evidencia para orientar la política pública hacia un balance más sostenible en el trilema energético.
+
+# Paso 2. ¿Qué estrategia propone y cuál es su supuesto de identificación?
+
+Para desarrollar esta evaluación de impacto se llevará a cabo un modelo de diferencias en diferencias con efecto fijo temporal y por departamento, en el que se busca estimar el efecto del cambio en las políticas de extracción de energía fósil y el grado de vulnerabilidad del departamento en la productividad industrial nominal.
+ 
+La estrategia de identificación descansa en el supuesto de tendencias paralelas, según el cual, en ausencia del cambio en las políticas de extracción de energía fósil (a partir del año 2022), los departamentos que superan 0,5 el índice de Vulnerabilidad a la Importación de Gas (IVIG_dt) (grupo tratado) y aquellos departamentos que son menores o iguales a 0,5 el Índice de Vulnerabilidad a la Importación de Gas (IVIG_dt) (grupo control) mantienen la productividad industrial nominal similar en todos los periodos de análisis. 
+
+Para reforzar la validez de este supuesto se realizarán gráficas de tendencias paralelas pre-tratamiento. Además, se realizarán test de Placebo en periodos anteriores al 2022 para verificar que no se estén sobreestimando los resultados. 
+
+De otro lado, se incluirán controles tales como, empleo en el sector industrial, cobertura de gas a usuarios industriales, PIB, población y SGP. De esta forma, el coeficiente Delta (δ) asociado a la interacción (Shock_t× Grupo) puede interpretarse como el efecto causal del cambio en la política de extracción de energía fósil interactuada con el Índice de Vulnerabilidad a la Importación de Gas.
+
+# Paso 3. Estadísticas descriptivas
+
+### Generalidades de R
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+#Limpiar la consola
+cat("\f")
+
+#Limpiar el Global Environment
+rm(list = ls())
+
+#Incluir las librerias
+if(!require(pacman)) install.packages("pacman") ; require(pacman)
+p_load(haven,        #Leer archivos .dta
+       dplyr,        #Manipular datos
+       stargazer,    #Visualizar tablas de regresión
+       fixest,       #Calcular los efectos fijos
+       plm,          #Datos de panel
+       knitr,        #Visualizar tablas adicionales
+       ivreg,        #Regresiones por variables instrumentales
+       broom,        #Extraer resultados de regresiones
+       AER,          #Regresiones por variables instrumentales
+       sandwich,     #Errores estándar robustos
+       lmtest,       #Pruebas estadísticas
+       kableExtra,   #Tablas avanzadas
+       tidyverse,    #Conjunto de paquetes para ciencia de datos
+       modelsummary, #Resumir modelos
+       ggplot2,      #Gráficos
+       rddensity,    #Test de McCrary
+       readxl,       #Leer archivos Excel
+       rio,         #Importar/exportar datos múltiples formatos
+       knitr,        #Tablas dinámicas
+       kablextra    #Tablas avanzadas
+      )
+
+```
+
+### Transformación de datos en R
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Definir URL del archivo en GitHub
+github_url <- "https://raw.githubusercontent.com/GeorgeWton1986/Proyecto_Final_EIE/main/Data/20251109_DB.xlsx"
+
+temp_file <- tempfile(fileext = ".xlsx")
+download.file(github_url, temp_file, mode = "wb")
+
+# Cargar datos usando readxl
+BD_0 <- read_excel(temp_file)
+
+# Mostrar los primeros 5 registros de la base de datos
+kable(head(BD_0, 5),
+      format = "latex",
+      booktabs = TRUE,
+      caption = "Primeros 5 registros de la base de datos",
+      digits = 2)%>%
+    kable_styling(font_size=7,
+                latex_options = c("hold_position","scale_down"))
+
+# Tabla de estadísticas descriptivas
+estadisticas <- BD_0 %>%
+  summary() %>%
+  as.data.frame()
+
+kable(estadisticas,
+      format = "latex",
+      booktabs = TRUE,
+      caption = "Estadísticas descriptivas de la base de datos",
+      digits = 2)%>%
+  kable_styling(font_size=7,
+                latex_options = c("hold_position","scale_down"))
+
+# Eliminar archivo temporal
+unlink(temp_file)
+```
+## Imputación variable consumo
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Imputación de valores con 0 en la variable consumo con mediana
+
+BD_0 <- BD_0 %>%
+  mutate(
+    consumo = ifelse(consumo == 0, median(consumo[consumo != 0], na.rm = TRUE), consumo),
+    costotransporte = ifelse(costotransporte == 0, median(costotransporte[costotransporte != 0], na.rm = TRUE), costotransporte),
+    costomolgas = ifelse(costomolgas == 0, median(costomolgas[costomolgas != 0], na.rm = TRUE), costomolgas)
+  )
+
+```
+
+### Cálculo de Índices de Vulnerabilidad
+```{r ECHO=FALSE, warning=FALSE, message=FALSE, results='asis'}
+
+# Definir el periodo de referencia pre-tratamiento
+
+fecha_corte_importacion <- as.Date("2024-12-01")   # Inicio importación GNI
+
+
+# Filtrar la base según nuestro schock
+BD_pre <- BD_0 %>%
+  filter(date < fecha_corte_importacion)
+
+# Calcular min/max pre-tratamiento según schock
+min_costotransporte <- min(BD_pre$costotransporte, na.rm = TRUE)
+max_costotransporte <- max(BD_pre$costotransporte, na.rm = TRUE)
+min_costomolgas <- min(BD_pre$costomolgas, na.rm = TRUE)
+max_costomolgas <- max(BD_pre$costomolgas, na.rm = TRUE)
+
+# Cálculo dependencia y estandarización de variables
+BD_0 <- BD_0 %>%
+  mutate(
+    dependencia = pmax(0,1 - (prod/consumo)),
+    est_costotransporte = (costotransporte - min_costotransporte) / 
+                          (max_costotransporte - min_costotransporte),
+    est_costomolgas = (costomolgas - min_costomolgas) / 
+                      (max_costomolgas - min_costomolgas)
+  )
+
+# Cálculo de índice IVIG
+## Ponderación inversa
+
+# Promedio por departamento en el año 2023
+
+datos_ref <- BD_0 %>%
+  filter(year == 2023) %>%
+  group_by(departamento) %>%
+  summarise(
+    dependencia_mean = mean(dependencia, na.rm = TRUE),
+    est_costotransporte_mean = mean(est_costotransporte, na.rm = TRUE),
+    est_costomolgas_mean = mean(est_costomolgas, na.rm = TRUE)
+  ) %>%
+  ungroup()
+
+#Calcular varianzas entre departamentos
+
+var_dependencia <- var(datos_ref$dependencia_mean, na.rm = TRUE)
+var_est_costotransporte <- var(datos_ref$est_costotransporte_mean, na.rm = TRUE)
+var_est_costomolgas <- var(datos_ref$est_costomolgas_mean, na.rm = TRUE)
+
+# Calcular ponderaciones de varianza inversa
+inv_var_dependencia <- 1 / var_dependencia
+inv_var_est_costotransporte <- 1 / var_est_costotransporte
+inv_var_est_costomolgas <- 1 / var_est_costomolgas
+
+sum_inv_vars <- inv_var_dependencia + inv_var_est_costotransporte + inv_var_est_costomolgas
+
+w1_3 <- inv_var_dependencia / sum_inv_vars
+w2_3 <- inv_var_est_costotransporte / sum_inv_vars
+w3_3 <- inv_var_est_costomolgas / sum_inv_vars
+
+# Cálculo de IVIG (continuo)
+BD_0 <- BD_0 %>%
+  mutate(
+    IVIG_3_cont = (w1_3 * dependencia) + (w2_3 * est_costotransporte) + (w3_3 * est_costomolgas)
+  )
+
+# Cálculo de IVIG (dicotoma)
+
+# Calcular medianas en período pre-tratamiento (año 2021)
+medianas_pre <- BD_0 %>%
+  filter(year == 2023) %>%
+  summarise(
+    mediana_IVIG_3 = median(IVIG_3_cont, na.rm = TRUE)
+  )
+
+BD_0 <- BD_0 %>%
+  mutate(
+    IVIG_3_dt = ifelse(IVIG_3_cont >= medianas_pre$mediana_IVIG_3, 1, 0)
+  )
+
+cat("Correlaciones entre métodos (IVIG continuo):\n")
+correlaciones <- BD_0 %>%
+  select(IVIG_3_cont) %>%
+  cor(use = "complete.obs")
+
+kable(round(correlaciones, 3), 
+      format = "latex",
+      booktabs = TRUE,
+      caption = "Correlaciones entre métodos (IVIG continuo)",
+      col.names = c("IVIG 3"))
+```
+
+### Compararacion entre los métodos
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Preparar datos para gráfico
+datos_plot <- BD_0 %>%
+  filter(year == 2023) %>%
+  select(departamento, IVIG_3_cont) %>%
+  pivot_longer(cols = starts_with("IVIG"), 
+               names_to = "Método", 
+               values_to = "IVIG") %>%
+  mutate(Método = case_when(
+    Método == "IVIG_3_cont" ~ "Varianza inversa"
+  ))
+
+# Gráfico de densidad
+ggplot(datos_plot, aes(x = IVIG, fill = Método)) +
+  geom_density(alpha = 0.5) +
+  geom_vline(data = datos_plot %>% 
+               group_by(Método) %>% 
+               summarise(mediana = median(IVIG, na.rm = TRUE)),
+             aes(xintercept = mediana, color = Método),
+             linetype = "dashed", size = 1) +
+  labs(title = "Distribución del IVIG",
+       subtitle = "Año 2023 (pre-tratamiento)",
+       x = "IVIG",
+       y = "Densidad") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+# Boxplot comparativo
+ggplot(datos_plot, aes(x = Método, y = IVIG, fill = Método)) +
+  geom_boxplot(alpha = 0.7) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "red") +
+  labs(title = "Métodos de cálculo del IVIG",
+       subtitle = "Año 2023 (pre-tratamiento)",
+       x = "",
+       y = "IVIG") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 15, hjust = 1))
+
+# Tabla de estadísticas descriptivas
+stats_table <- datos_plot %>%
+  group_by(Método) %>%
+  summarise(
+    Media = mean(IVIG, na.rm = TRUE),
+    Mediana = median(IVIG, na.rm = TRUE),
+    SD = sd(IVIG, na.rm = TRUE),
+    Min = min(IVIG, na.rm = TRUE),
+    Max = max(IVIG, na.rm = TRUE),
+    N_alta_vuln = sum(IVIG >= median(IVIG, na.rm = TRUE))
+  )
+```
+
+
+### Clasificación de grupos
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Clasificación de grupos tratados y control según el IVIG
+
+BD_0 <- BD_0 %>%
+  mutate(
+    grupo_IVIG_3_label = ifelse(IVIG_3_dt == 1, "Tratado", "Control")
+  )
+
+```
+
+### Graficar cada departamento
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Gráfico de cada despartamento en el tiempo
+
+ggplot(BD_0, aes(x = date, y = ind_empleo, color = departamento)) +
+  geom_line() +
+  labs(title = "Indice de empleo por Departamento",
+       x = "Fecha",
+       y = "Indice de empleo") +
+  theme_minimal()
+
+
+```
+### Grafico de grupos en el tiempo - Completo
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+BD_0 <- BD_0 %>%
+  mutate(date = as.Date(date))
+
+# Verificar que ahora es Date
+cat("Clase de 'date' después de conversión:", class(BD_0$date), "\n")
+
+# También convertir las fechas de corte a Date (por consistencia)
+fecha_corte_importacion <- as.Date("2024-12-01")  
+
+
+# Función para crear gráfico de tendencias paralelas
+plot_tendencias <- function(data, grupo_var, titulo, fecha_shock, 
+                           periodo_pre_inicio = NULL) {
+  
+  # Si no se especifica inicio del período pre, usar toda la data antes del shock
+  if(is.null(periodo_pre_inicio)) {
+    periodo_pre_inicio <- min(data$date, na.rm = TRUE)
+  }
+  
+  # Preparar datos agregados por fecha y grupo
+  datos_plot <- data %>%
+    group_by(date, !!sym(grupo_var)) %>%
+    summarise(
+      empleo_mean = mean(ind_empleo, na.rm = TRUE),
+      empleo_se = sd(ind_empleo, na.rm = TRUE) / sqrt(n()),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      periodo = ifelse(date < fecha_shock, "Pre-shock", "Post-shock")
+    )
+  
+  # Crear gráfico
+  p <- ggplot(datos_plot, aes(x = date, y = empleo_mean, 
+                               color = !!sym(grupo_var),
+                               linetype = periodo)) +
+    geom_line(linewidth = 1) +
+    geom_ribbon(aes(ymin = empleo_mean - 1.96*empleo_se, 
+                    ymax = empleo_mean + 1.96*empleo_se,
+                    fill = !!sym(grupo_var)),
+                alpha = 0.2, color = NA) +
+    geom_vline(xintercept = fecha_shock,
+               linetype = "dashed", color = "red", linewidth = 1) +
+    annotate("text", x = fecha_shock, y = max(datos_plot$empleo_mean, na.rm=TRUE),
+             label = "Shock", color = "red", hjust = -0.1, size = 4) +
+    labs(title = titulo,
+         subtitle = paste("Línea vertical roja:", format(fecha_shock, "%b %Y")),
+         x = "Fecha",
+         y = "Indice de empleo (promedio)",
+         color = "Grupo",
+         fill = "Grupo",
+         linetype = "Período") +
+    theme_minimal() +
+    theme(
+      plot.title = element_text(size = 14, face = "bold"),
+      legend.position = "bottom",
+      panel.grid.minor = element_blank()
+    ) +
+    scale_color_manual(values = c("Control" = "#0072B2", 
+                                   "Tratado" = "#D55E00")) +  
+    scale_fill_manual(values = c("Control" = "#0072B2", 
+                                  "Tratado" = "#D55E00"))
+  
+  return(p)
+}
+
+# Importación GNI (dic 2024)
+p3_imp <- plot_tendencias(BD_0, "grupo_IVIG_3_label",
+                          "Indice de empleo - Método 3 Importación GNI",
+                          fecha_corte_importacion)  
+
+print(p3_imp)  
+
+
+```
+
+# Estudio de evento 
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Gráfica de estudio de evento
+
+# Crear la variable de tiempo relativo al shock
+
+# Shock Importación (dic 2024)
+BD_0 <- BD_0 %>%                                                
+  mutate(                                                        
+    tiempo_rel_imp = interval(fecha_corte_importacion, date) %/% months(1),  
+    periodo_imp = as.integer(tiempo_rel_imp)                                  
+  )     
+
+# Verificar distribución por los shocks
+cat("Rango de períodos Importación:", 
+    range(BD_0$periodo_imp, na.rm = TRUE), "\n\n")  
+```
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Seleccionar los rangos de periodos
+
+# Definir ventana de análisis (ej: -24 a +24 meses)
+ventana_imp <- c(-12, 4)       # 6 meses antes, 6 meses después
+
+BD_event_imp <- BD_0 %>%                                         
+  filter(periodo_imp >= ventana_imp[1] &                          
+         periodo_imp <= ventana_imp[2])                           
+
+cat("Observaciones para Event Study Importación:", nrow(BD_event_imp), "\n\n")  
+
+
+```
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+#Modelo con interacción periodo y grupo
+
+cat("Estimando modelos Event Study...\n\n")
+
+# EVENT STUDY - SHOCK IMPORTACIÓN
+modelo_event_imp <- feols(                                        
+  ind_empleo ~ i(periodo_imp, IVIG_3_dt, ref = -1) +        
+                     cobertura +                                   
+                     log(población) + log(SGP) |                  
+                     departamento + ym,                            
+  data = BD_event_imp,                                            
+  cluster = ~departamento                                         
+)                    
+
+cat("✓ Modelos Event Study estimados\n\n")
+
+```
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Extraer coeficientes 
+
+# Función para extraer coeficientes del event study
+extraer_coefs_event <- function(modelo, nombre_var) {
+  # Obtener todos los coeficientes
+  coefs <- coef(modelo)
+  ses <- se(modelo)
+  
+  # Filtrar solo los de interacción (nombres contienen el período)
+  indices <- grep(nombre_var, names(coefs))
+  
+  # Extraer períodos de los nombres
+  # Ejemplo: "periodo_covid::-12:grupo_IVIG_3" → -12
+  periodos <- as.numeric(gsub(".*::([-]?[0-9]+):.*", "\\1", names(coefs)[indices]))
+  
+  # Crear data frame
+  df <- data.frame(
+    periodo = periodos,
+    coef = coefs[indices],
+    se = ses[indices]
+  ) %>%
+    mutate(
+      ci_low = coef - 1.96 * se,
+      ci_high = coef + 1.96 * se
+    ) %>%
+    arrange(periodo)
+  
+  # Agregar período de referencia (-1) con coef = 0
+  df_ref <- data.frame(
+    periodo = -1,
+    coef = 0,
+    se = 0,
+    ci_low = 0,
+    ci_high = 0
+  )
+  
+  df <- bind_rows(df, df_ref) %>%
+    arrange(periodo)
+  
+  return(df)
+}
+
+# Extraer coeficientes
+coefs_imp <- extraer_coefs_event(modelo_event_imp, "periodo_imp")   
+
+
+cat("Coeficientes extraídos:\n")
+cat("  Importación: N períodos =", nrow(coefs_imp), "\n\n")  
+
+```
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Gerenerar el gráfico de Evento
+
+cat("Generando gráficos...\n\n")
+
+# FUNCIÓN PARA GRAFICAR
+plot_event_study <- function(coefs_df, titulo, fecha_shock_label) {
+  
+  # Identificar período pre/post
+  coefs_df <- coefs_df %>%
+    mutate(
+      fase = ifelse(periodo < 0, "Pre-shock", "Post-shock"),
+      significativo = ifelse(ci_low > 0 | ci_high < 0, "Sí", "No")
+    )
+  
+  p <- ggplot(coefs_df, aes(x = periodo, y = coef)) +
+    # Banda de confianza
+    geom_ribbon(aes(ymin = ci_low, ymax = ci_high), 
+                alpha = 0.2, fill = "steelblue") +
+    
+    # Línea de referencia en cero
+    geom_hline(yintercept = 0, linetype = "solid", 
+               color = "black", linewidth = 0.5) +
+    
+    # Línea vertical en el shock (período 0)
+    geom_vline(xintercept = -0.5, linetype = "dashed", 
+               color = "red", linewidth = 1) +
+    
+    # Línea de coeficientes
+    geom_line(color = "steelblue", linewidth = 1) +
+    
+    # Puntos (diferentes para sig/no sig)
+    geom_point(aes(color = significativo, shape = significativo), 
+               size = 3) +
+    
+    # Etiquetas y tema
+    labs(
+      title = titulo,
+      subtitle = paste("Línea vertical roja:", fecha_shock_label),
+      x = "Meses relativos al shock",
+      y = "Efecto en indice de empleo\n(diferencia Tratamiento - Control)",
+      caption = "Notas: Bandas grises = IC 95%. Período -1 omitido como referencia.\nPuntos rojos = coeficientes estadísticamente significativos (IC no incluye cero)."
+    ) +
+    
+    theme_minimal() +
+    theme(
+      plot.title = element_text(size = 14, face = "bold"),
+      plot.subtitle = element_text(size = 11),
+      axis.title = element_text(size = 11),
+      legend.position = "bottom",
+      panel.grid.minor = element_blank()
+    ) +
+    
+    scale_color_manual(
+      name = "Significativo (95%):",
+      values = c("No" = "steelblue", "Sí" = "red")
+    ) +
+    
+    scale_shape_manual(
+      name = "Significativo (95%):",
+      values = c("No" = 16, "Sí" = 17)
+    ) +
+    
+    # Anotar el shock
+    annotate("text", x = 1, y = max(coefs_df$ci_high, na.rm = TRUE) * 0.9,
+             label = "Shock", color = "red", size = 4, hjust = 0)
+  
+  return(p)
+}
+
+# Crear gráficos
+
+p_event_imp <- plot_event_study(                             
+  coefs_imp,                                                 
+  "Event Study: Efecto Dinámico de la Importación de Gas (GNI)",  
+  "Diciembre 2024"                                           
+)
+
+# Mostrar
+print(p_event_imp)   
+
+
+```
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Test conjunto: todos los coeficientes pre-shock = 0
+
+test_pre_imp <- coefs_imp %>%                                     
+  filter(periodo < -1) %>%                                        
+  summarise(                                                       
+    n_coefs = n(),                                                 
+    n_sig = sum(ci_low > 0 | ci_high < 0),                         
+    max_abs_coef = max(abs(coef))                                  
+  )                                                                
+
+cat("SHOCK IMPORTACIÓN:\n")                                                    
+cat("  N coeficientes pre-shock:", test_pre_imp$n_coefs, "\n")                 
+cat("  N significativos:", test_pre_imp$n_sig, "\n")                           
+cat("  Máximo coeficiente (abs):", round(test_pre_imp$max_abs_coef, 3), "\n")  
+if(test_pre_imp$n_sig == 0) {                                                  
+  cat("  ✅ Ningún coeficiente pre-shock significativo → Tendencias paralelas VÁLIDAS\n\n") 
+} else {                                                                        
+  cat("  ⚠️  Algunos coeficientes pre-shock significativos → Posible violación\n\n")       
+}
+
+```
+
+#Estimacion del modelo de DID
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+
+cat("\n============================================================\n")
+cat("ESTIMANDO MODELOS DiD\n")
+cat("============================================================\n\n")
+
+
+# ------------------------------------------------------------
+# SHOCK IMPORTACIÓN (dic 2024)
+# ------------------------------------------------------------
+cat("Estimando modelos con Shock Importación...\n")                        
+if(!"Shock_Importacion" %in% colnames(BD_0)) {                             
+  BD_0 <- BD_0 %>%                                                         
+    mutate(Shock_Importacion = ifelse(date >= fecha_corte_importacion, 1, 0)) 
+  cat("→ Variable Shock_Importacion creada\n")                              
+}
+
+modelo_imp_m3 <- feols(                                                    
+  ind_empleo ~ Shock_Importacion + Shock_Importacion:IVIG_3_dt + IVIG_3_dt +                        
+                     cobertura +                                           
+                     log(población) + log(SGP) |                           
+                     departamento + ym,                                    
+  data = BD_0,                                                             
+  cluster = ~departamento                                                  
+)
+cat("✓ Modelos Importación estimados\n\n")                                  
+
+cat("\n============================================================\n")                 
+cat("RESULTADOS - SHOCK IMPORTACIÓN (GNI)\n")                                       
+cat("============================================================\n\n")              
+etable(modelo_imp_m3,                                 
+       title = "Efecto de la Importación de Gas (GNI) sobre Productividad Industrial", 
+       tex = TRUE,                                                                   
+       headers = c("Importación"),                                                  
+       dict = c("Shock_Importacion:IVIG_3_dt" = "Importación × Grupo Vulnerable",
+                "cobertura" = "Cobertura de gas",                                     
+                "log(población)" = "log(Población)",                                   
+                "log(SGP)" = "log(SGP)"),                                             
+       notes = c("Método 3:(Varianza inversa)",                                       
+                 "Errores estándar agrupados por departamento en paréntesis.",        
+                 "Efectos fijos por departamento y período (año-mes) incluidos.",     
+                 "El coeficiente de interés captura el efecto diferencial de la importación", 
+                 "en departamentos vulnerables (Grupo=1) relativo a departamentos control (Grupo=0)."), 
+       fitstat = c("n","r2","wr2"),                                                   
+       digits = 4)                                                                    
+```
+
+# Paso 4. Síntesis estado del arte
+La evidencia para Colombia y la región muestra que los choques y los arreglos institucionales en los sectores de hidrocarburos y energía generan efectos heterogéneos a nivel territorial y, en muchos casos, solo parcialmente favorables sobre el bienestar y la actividad económica. En términos generales, la literatura latinoamericana sobre el tema comparte enfoques metodológicos y conceptuales similares al del presente trabajo, aunque con variaciones en contexto y alcance. En el caso colombiano, la reciente necesidad de importar gas natural para abastecer la demanda nacional constituye un hecho sin precedentes. Este shock de importación abre un espacio de análisis poco explorado, dado que la literatura previa se ha centrado en aspectos fiscales (como las regalías) o macroeconómicos, pero no en los efectos productivos departamentales asociados a la dependencia energética.
+ 
+Para el caso de Colombia específicamente se encuentra un trabajo relevante porque muestra cómo los shocks asociados al sector de hidrocarburos, ya sea en ingresos o en oferta, no necesariamente se transforman automáticamente en beneficios reales para las regiones productoras. Moyano (2016) analiza la reforma del sistema general de regalías de 2012 bajo un enfoque de diferencias en diferencias y encuentra impactos débiles o nulos sobre la pobreza. El autor destaca que las transferencias por regalías no se tradujeron de manera homogénea en bienestar, pues su efectividad depende de la capacidad institucional y la eficiencia en la gestión de los recursos a nivel territorial. 
+ 
+Por su parte, Alcaraz (2017) documenta para México que los episodios de escasez de gas natural tuvieron efectos negativos y diferenciados sobre la producción industrial y el crecimiento económico regional. Usando un modelo de panel con efectos fijos, el autor muestra que las regiones más dependientes del gas enfrentaron caídas más pronunciadas en su actividad económica durante los periodos de restricción. Este hallazgo es central para la investigación propuesta, pues evidencia que los shocks energéticos, ya sean por escasez o dependencia de importaciones, pueden traducirse en heterogeneidades productivas entre regiones, especialmente en sectores intensivos en energía.
+ 
+En un nivel más estructural, Yépez-García (2021) explora la relación entre intensidad energética y productividad industrial en América Latina. Su análisis, basado en un modelo de panel two-way fixed effects, muestra que los sectores con mayor eficiencia energética tienden a presentar una productividad más alta. Aunque el estudio no identifica un shock exógeno, aporta evidencia sólida sobre el vínculo entre energía y desempeño productivo, reforzando la idea de que los patrones de consumo energético están estrechamente ligados a la competitividad industrial.
+ 
+Finalmente, Wang y Garduño-Rivera (2022) analizan los efectos del creciente comercio transfronterizo de gas entre Estados Unidos y México. A través de un modelo de panel con efectos fijos e instrumentos geográficos (distancia a gasoductos), los autores identifican que los estados más expuestos a las importaciones experimentaron aumentos en el empleo manufacturero y en la actividad económica, aunque con variaciones regionales marcadas. Su diseño se asemeja a un modelo de diferencias en diferencias, donde la exposición preexistente al shock define la intensidad del tratamiento.
+ 
+En conjunto, esta literatura profundiza en tres elementos fundamentales para la presente investigación. Primero, los shocks energéticos y las transformaciones en el suministro, ya sea por reformas, escasez o dependencia de importaciones, generan consecuencias reales sobre la productividad y el bienestar departamental. Segundo, la exposición diferencial o “vulnerabilidad” de las regiones es un canal clave que explica la magnitud de dichos efectos, lo cual justifica la construcción de un índice de vulnerabilidad energética como tratamiento continuo. Y tercero, la metodología panel con efectos fijos, o two-way fixed effects, está presente para capturar estas relaciones causales en presencia de variación temporal y espacial, garantizando un enfoque robusto frente a factores no observados.
+
+#Aporte a la literatura y factor diferencial
+
+Como ya se dijo anteriormente, Colombia es un país que ha contado con un superávit energético durante los años recientes y la necesidad de importación de productos como el gas no se ha dado en el pasado. Este shock de importación, intensificado a partir de 2024, constituye un punto de quiebre estructural que aún no ha sido abordado por la literatura nacional, ni desde el punto de vista de su impacto en la productividad ni desde su dimensión territorial.
+ 
+Hasta ahora, la evidencia existente para Colombia se ha concentrado en temas como la distribución de regalías y su relación con la pobreza (Moyano, 2016) o en análisis agregados del sector energético y macroeconómico, sin vincularlos con efectos reales sobre la actividad industrial o la competitividad regional. En cambio, los estudios latinoamericanos más cercanos, como Alcaraz (2017) y Wang & Garduño-Rivera (2022), sí exploran shocks energéticos, pero en contextos donde la dependencia del gas ya era estructural (México), o desde una óptica del empleo y la producción agregada, no de la productividad manufacturera subnacional.
+ 
+De esta manera, el estudio amplía la frontera de la literatura sobre energía y desarrollo regional en América Latina, aportando evidencia novedosa sobre cómo los cambios en la composición del suministro energético, particularmente la pérdida de autosuficiencia y la exposición a importaciones, pueden tener consecuencias diferenciadas sobre la actividad productiva interna, incluso en sectores no directamente vinculados a la extracción.
+
+# Paso 5. Interpretación de resultados
+
+# Paso 6. Aplicación de la Teoría de Cambio
+
+## Bibliografía
+
+Moyano, L. F. (2016). Regalías y pobreza en el Caribe colombiano: un análisis de impacto distributivo del Sistema General de Regalías. Universidad del Norte. https://manglar.uninorte.edu.co/handle/10584/7374
+Alcaraz, C. (2017). The effect of natural gas shortages on the Mexican economy. Energy Economics, 66, 77–86. https://doi.org/10.1016/j.eneco.2017.05.011
+Yépez-García, A. (2021). Productivity and energy intensity in Latin America. Inter-American Development Bank (IDB), Energy Division Working Paper. https://publications.iadb.org/en/productivity-and-energy-intensity-latin-america
+Wang, C., & Garduño-Rivera, R. (2022). The growing US-Mexico natural gas trade and its regional economic impacts in Mexico. arXiv preprint. https://arxiv.org/abs/2207.09391
