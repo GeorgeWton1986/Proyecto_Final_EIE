@@ -226,7 +226,7 @@ fecha_corte_importacion <- as.Date("2024-12-01")   # Inicio importación GNI
 
 # Filtrar la base según nuestro schock
 BD_pre <- BD_0 %>%
-  filter(date < fecha_corte_importacion) #Opción 2
+  filter(date < fecha_corte_importacion)
 
 # Calcular min/max pre-tratamiento según schock
 min_costotransporte <- min(BD_pre$costotransporte, na.rm = TRUE)
@@ -319,7 +319,7 @@ datos_plot <- BD_0 %>%
                names_to = "Método", 
                values_to = "IVIG") %>%
   mutate(Método = case_when(
-    Método == "IVIG_3_cont" ~ "Método 3: Varianza inversa"
+    Método == "IVIG_3_cont" ~ "Varianza inversa"
   ))
 
 # Gráfico de densidad
