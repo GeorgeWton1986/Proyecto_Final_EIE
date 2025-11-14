@@ -488,7 +488,7 @@ cat("Rango de períodos Importación:",
 # Seleccionar los rangos de periodos
 
 # Definir ventana de análisis (ej: -24 a +24 meses)
-ventana_imp <- c(-12, 4)       # 6 meses antes, 6 meses después
+ventana_imp <- c(-12, 5)       # 6 meses antes, 6 meses después
 
 BD_event_imp <- BD_0 %>%                                         
   filter(periodo_imp >= ventana_imp[1] &                          
@@ -512,7 +512,13 @@ modelo_event_imp <- feols(
                      departamento + ym,                            
   data = BD_event_imp,                                            
   cluster = ~departamento                                         
-)                    
+)
+
+etable(modelo_event_imp,                                        
+       digits = 4,                                              
+       depvar = FALSE,                                          
+       title = "Modelos Event Study - Importación GNI",        
+       notes = "Errores estándar agrupados por departamento entre paréntesis.")
 
 cat("✓ Modelos Event Study estimados\n\n")
 
@@ -703,7 +709,13 @@ modelo_imp_m3 <- feols(
   data = BD_0,                                                             
   cluster = ~departamento                                                  
 )
-cat("✓ Modelos Importación estimados\n\n")                                  
+cat("✓ Modelos Importación estimados\n\n")
+
+etable(modelo_imp_m3,                                 
+       digits = 4,                                                    
+       depvar = FALSE,                                               
+       title = "Modelos DiD - Importación GNI",                      
+       notes = "Errores estándar agrupados por departamento entre paréntesis.")
 
 cat("\n============================================================\n")                 
 cat("RESULTADOS - SHOCK IMPORTACIÓN (GNI)\n")                                       
