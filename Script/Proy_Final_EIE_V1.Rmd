@@ -228,7 +228,7 @@ fecha_corte_importacion <- as.Date("2024-12-01")   # Inicio importación GNI (te
 
 # Filtrar la base según nuestro schock
 BD_pre <- BD_0 %>%
-  filter(date < fecha_corte_covid) #Opción 1
+  filter(date < fecha_corte_importacion) #Opción 3
 
 # Calcular min/max pre-tratamiento según schock
 min_costotransporte <- min(BD_pre$costotransporte, na.rm = TRUE)
@@ -800,9 +800,9 @@ cat("Rango de períodos Importación:",
 # Seleccionar los rangos de periodos
 
 # Definir ventana de análisis (ej: -24 a +24 meses)
-ventana_covid <- c(-12, 36)    # 24 meses antes, 36 meses después
-ventana_gob <- c(-12, 36)      # 48 meses antes, 36 meses después
-ventana_imp <- c(-6, 6)      # 
+ventana_covid <- c(-36, 12)    # 12 meses antes, 36 meses después
+ventana_gob <- c(-36, 12)      # 12 meses antes, 36 meses después
+ventana_imp <- c(-36, 4)       # 6 meses antes, 6 meses después
 
 BD_event_covid <- BD_0 %>%
   filter(periodo_covid >= ventana_covid[1] & 
@@ -1173,6 +1173,7 @@ modelo_gob_m3 <- feols(
 )
 
 cat("✓ Modelos Gobierno estimados\n\n")
+
 
 # ------------------------------------------------------------
 # OPCIÓN 3: SHOCK IMPORTACIÓN (dic 2024)
