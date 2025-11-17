@@ -361,8 +361,6 @@ BD_0 <- BD_0 %>%
 ### Graficar cada departamento y cada industria
 
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
-# Gráfico de cada despartamento en el tiempo
-
 # Gráfico por departamento
 ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = departamento)) +
   geom_line(linewidth = 0.4) +
@@ -390,7 +388,7 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = industria)) +
         legend.text = element_text(size = 4))
 
 
-# Si prefieres facetas separadas por departamento
+# Gráfico separados por departamento
 ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
   geom_line(color = "steelblue", linewidth = 0.4) +
   facet_wrap(~departamento, scales = "free_y") +
@@ -402,7 +400,7 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
         axis.text.y = element_text (hjust = 1, size = 6),
         strip.text = element_text(size = 4))
 
-# Si prefieres facetas separadas por industria
+# Gráfico separados separados por industria
 ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
   geom_line(color = "darkgreen", linewidth = 0.4) +
   facet_wrap(~industria, scales = "free_y") +
@@ -637,7 +635,7 @@ plot_event_study <- function(coefs_df, titulo, fecha_shock_label) {
       title = titulo,
       subtitle = paste("Línea vertical roja:", fecha_shock_label),
       x = "Meses relativos al shock",
-      y = "Efecto en productividad industrial\n(diferencia Tratamiento - Control)",
+      y = "Efecto en Producción industrial\n(diferencia Tratamiento - Control)",
       caption = "Notas: Bandas grises = IC 95%. Período -1 omitido como referencia.\nPuntos rojos = coeficientes estadísticamente significativos (IC no incluye cero)."
     ) +
     
