@@ -169,7 +169,7 @@ p_load(haven,        #Leer archivos .dta
 ### Transformación de datos en R
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Definir URL del archivo en GitHub
-github_url <- "https://raw.githubusercontent.com/GeorgeWton1986/Proyecto_Final_EIE/main/Data/20251109_DB.xlsx"
+github_url <- "https://raw.githubusercontent.com/GeorgeWton1986/Proyecto_Final_EIE/main/Data/20251116_DB.xlsx"
 
 temp_file <- tempfile(fileext = ".xlsx")
 download.file(github_url, temp_file, mode = "wb")
@@ -202,37 +202,24 @@ kable(estadisticas,
 # Eliminar archivo temporal
 unlink(temp_file)
 ```
-## Imputación variable consumo
-
-```{r ECHO=FALSE, warning=FALSE, message=FALSE}
-# Imputación de valores con 0 en la variable consumo con mediana
-
-BD_0 <- BD_0 %>%
-  mutate(
-    consumo = ifelse(consumo == 0, median(consumo[consumo != 0], na.rm = TRUE), consumo),
-    costotransporte = ifelse(costotransporte == 0, median(costotransporte[costotransporte != 0], na.rm = TRUE), costotransporte),
-    costomolgas = ifelse(costomolgas == 0, median(costomolgas[costomolgas != 0], na.rm = TRUE), costomolgas)
-  )
-
-```
 
 ### Cálculo de Índices de Vulnerabilidad
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE, results='asis'}
 
+
 # Definir el periodo de referencia pre-tratamiento
+fecha_pre_tratamiento <- as.Date("2024-12-01")   # Inicio importación GNI
 
-fecha_corte_importacion <- as.Date("2024-12-01")   # Inicio importación GNI
 
+# Filtrar la base según nuestro shock
+BD_pre_tratamiento <- BD_0 %>%
+  filter(date < fecha_pre_tratamiento)
 
-# Filtrar la base según nuestro schock
-BD_pre <- BD_0 %>%
-  filter(date < fecha_corte_importacion)
-
-# Calcular min/max pre-tratamiento según schock
-min_costotransporte <- min(BD_pre$costotransporte, na.rm = TRUE)
-max_costotransporte <- max(BD_pre$costotransporte, na.rm = TRUE)
-min_costomolgas <- min(BD_pre$costomolgas, na.rm = TRUE)
-max_costomolgas <- max(BD_pre$costomolgas, na.rm = TRUE)
+# Calcular min/max pre-tratamiento según shock
+min_costotransporte <- min(BD_pre_tratamiento$costotransporte, na.rm = TRUE)
+max_costotransporte <- max(BD_pre_tratamiento$costotransporte, na.rm = TRUE)
+min_costomolgas <- min(BD_pre_tratamiento$costomolgas, na.rm = TRUE)
+max_costomolgas <- max(BD_pre_tratamiento$costomolgas, na.rm = TRUE)
 
 # Cálculo dependencia y estandarización de variables
 BD_0 <- BD_0 %>%
@@ -246,10 +233,9 @@ BD_0 <- BD_0 %>%
 
 # Cálculo de índice IVIG
 ## Ponderación inversa
-
 # Promedio por departamento en el año 2023
 
-datos_ref <- BD_0 %>%
+datos_ref_depto <- BD_0 %>%
   filter(year == 2023) %>%
   group_by(departamento) %>%
   summarise(
@@ -261,9 +247,9 @@ datos_ref <- BD_0 %>%
 
 #Calcular varianzas entre departamentos
 
-var_dependencia <- var(datos_ref$dependencia_mean, na.rm = TRUE)
-var_est_costotransporte <- var(datos_ref$est_costotransporte_mean, na.rm = TRUE)
-var_est_costomolgas <- var(datos_ref$est_costomolgas_mean, na.rm = TRUE)
+var_dependencia <- var(datos_ref_depto$dependencia_mean, na.rm = TRUE)
+var_est_costotransporte <- var(datos_ref_depto$est_costotransporte_mean, na.rm = TRUE)
+var_est_costomolgas <- var(datos_ref_depto$est_costomolgas_mean, na.rm = TRUE)
 
 # Calcular ponderaciones de varianza inversa
 inv_var_dependencia <- 1 / var_dependencia
@@ -306,6 +292,7 @@ kable(round(correlaciones, 3),
       booktabs = TRUE,
       caption = "Correlaciones entre métodos (IVIG continuo)",
       col.names = c("IVIG 3"))
+
 ```
 
 ### Compararacion entre los métodos
@@ -382,7 +369,7 @@ BD_0 <- BD_0 %>%
 
 ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = departamento)) +
   geom_line() +
-  labs(title = "Productividad Industrial Nominal por Departamento",
+  labs(title = "Índice de Producción Industrial Nominal por Departamento",
        x = "Fecha",
        y = "Productividad Industrial Nominal") +
   theme_minimal()
@@ -396,10 +383,6 @@ BD_0 <- BD_0 %>%
 
 # Verificar que ahora es Date
 cat("Clase de 'date' después de conversión:", class(BD_0$date), "\n")
-
-# También convertir las fechas de corte a Date (por consistencia)
-fecha_corte_importacion <- as.Date("2024-12-01")  
-
 
 # Función para crear gráfico de tendencias paralelas
 plot_tendencias <- function(data, grupo_var, titulo, fecha_shock, 
@@ -459,7 +442,7 @@ plot_tendencias <- function(data, grupo_var, titulo, fecha_shock,
 # Importación GNI (dic 2024)
 p3_imp <- plot_tendencias(BD_0, "grupo_IVIG_3_label",
                           "Productividad Industrial Nominal - Método 3 Importación GNI",
-                          fecha_corte_importacion)  
+                          fecha_pre_tratamiento)  
 
 print(p3_imp)  
 
@@ -475,7 +458,7 @@ print(p3_imp)
 # Shock Importación (dic 2024)
 BD_0 <- BD_0 %>%                                                
   mutate(                                                        
-    tiempo_rel_imp = interval(fecha_corte_importacion, date) %/% months(1),  
+    tiempo_rel_imp = interval(fecha_pre_tratamiento, date) %/% months(1),  
     periodo_imp = as.integer(tiempo_rel_imp)                                  
   )     
 
@@ -505,15 +488,21 @@ cat("Observaciones para Event Study Importación:", nrow(BD_event_imp), "\n\n")
 cat("Estimando modelos Event Study...\n\n")
 
 # EVENT STUDY - SHOCK IMPORTACIÓN
-modelo_event_imp <- feols(                                        
-  ind_prod_nominal ~ i(periodo_imp, IVIG_3_dt, ref = -1) +        
+modelo_event_imp <- feols(ind_prod_nominal ~ i(periodo_imp, IVIG_3_dt, ref = -1) +        
                      cobertura +                                   
-                     log(población) + log(SGP) |                  
+                     log(poblacion) + log(SGP) |                  
                      departamento + ym,                            
   data = BD_event_imp,                                            
   cluster = ~departamento                                         
 )                    
 
+etable(modelo_event_imp,                                  
+       digits = 4,                                           
+       se = "cluster",                                       
+       cluster = "departamento",                              
+       title = "Modelos Event Study - Importación GNI",     
+       depvar = FALSE           
+)
 cat("✓ Modelos Event Study estimados\n\n")
 
 ```
@@ -634,7 +623,7 @@ plot_event_study <- function(coefs_df, titulo, fecha_shock_label) {
     ) +
     
     # Anotar el shock
-    annotate("text", x = 1, y = max(coefs_df$ci_high, na.rm = TRUE) * 0.9,
+    annotate("text", x = 1, y = max(coefs_df$ci_high, na.rm = TRUE) * 0.95,
              label = "Shock", color = "red", size = 4, hjust = 0)
   
   return(p)
@@ -691,14 +680,14 @@ cat("============================================================\n\n")
 cat("Estimando modelos con Shock Importación...\n")                        
 if(!"Shock_Importacion" %in% colnames(BD_0)) {                             
   BD_0 <- BD_0 %>%                                                         
-    mutate(Shock_Importacion = ifelse(date >= fecha_corte_importacion, 1, 0)) 
+    mutate(Shock_Importacion = ifelse(date >= fecha_pre_tratamiento, 1, 0)) 
   cat("→ Variable Shock_Importacion creada\n")                              
 }
 
-modelo_imp_m3 <- feols(                                                    
+modelo_imp_m1 <- feols(                                                    
   ind_prod_nominal ~ Shock_Importacion + Shock_Importacion:IVIG_3_dt + IVIG_3_dt +                        
                      cobertura +                                           
-                     log(población) + log(SGP) |                           
+                     log(poblacion) + log(SGP) |                           
                      departamento + ym,                                    
   data = BD_0,                                                             
   cluster = ~departamento                                                  
@@ -708,9 +697,9 @@ cat("✓ Modelos Importación estimados\n\n")
 cat("\n============================================================\n")                 
 cat("RESULTADOS - SHOCK IMPORTACIÓN (GNI)\n")                                       
 cat("============================================================\n\n")              
-etable(modelo_imp_m3,                                 
+etable(modelo_imp_m1,                                 
        title = "Efecto de la Importación de Gas (GNI) sobre Productividad Industrial", 
-       tex = TRUE,                                                                   
+       tex = FALSE,                                                                   
        headers = c("Importación"),                                                  
        dict = c("Shock_Importacion:IVIG_3_dt" = "Importación × Grupo Vulnerable",
                 "cobertura" = "Cobertura de gas",                                     
@@ -722,7 +711,42 @@ etable(modelo_imp_m3,
                  "El coeficiente de interés captura el efecto diferencial de la importación", 
                  "en departamentos vulnerables (Grupo=1) relativo a departamentos control (Grupo=0)."), 
        fitstat = c("n","r2","wr2"),                                                   
-       digits = 4)                                                                    
+       digits = 4)
+
+modelo_imp_m2 <- feols(                                                    
+  ind_prod_nominal ~ Shock_Importacion + Shock_Importacion:IVIG_3_dt + IVIG_3_dt +                        
+                     cobertura +                                           
+                     log(poblacion) + log(SGP) + gestion_inst + autonomia_fisc + tramites + ind_empleo|                           
+                     departamento + ym,                                    
+  data = BD_0,                                                             
+  cluster = ~departamento                                                  
+)
+cat("✓ Modelos Importación estimados\n\n")                                  
+
+cat("\n============================================================\n")                 
+cat("RESULTADOS - SHOCK IMPORTACIÓN (GNI)\n")                                       
+cat("============================================================\n\n")              
+etable(modelo_imp_m2,                                 
+       title = "Efecto de la Importación de Gas (GNI) sobre Productividad Industrial", 
+       tex = FALSE,                                                                   
+       headers = c("Importación"),                                                  
+       dict = c("Shock_Importacion:IVIG_3_dt" = "Importación × Grupo Vulnerable",
+                "cobertura" = "Cobertura de gas",                                     
+                "log(población)" = "log(Población)",                                   
+                "log(SGP)" = "log(SGP)",
+                "gestion_inst" = "Gestión Institucional",
+                "autonomia_fisc" = "Autonomía Fiscal",
+                "tramites" = "Trámites",
+                "ind_empleo" = "Empleo Industrial"),                                             
+       notes = c("Método 3:(Varianza inversa)",                                       
+                 "Errores estándar agrupados por departamento en paréntesis.",        
+                 "Efectos fijos por departamento y período (año-mes) incluidos.",     
+                 "El coeficiente de interés captura el efecto diferencial de la importación", 
+                 "en departamentos vulnerables (Grupo=1) relativo a departamentos control (Grupo=0)."), 
+       fitstat = c("n","r2","wr2"),                                                   
+       digits = 4)   
+
+
 ```
 
 # Paso 4. Síntesis estado del arte
