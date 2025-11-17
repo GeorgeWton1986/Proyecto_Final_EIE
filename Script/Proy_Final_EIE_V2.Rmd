@@ -206,6 +206,11 @@ unlink(temp_file)
 ### Cálculo de Índices de Vulnerabilidad
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE, results='asis'}
 
+#filtrar todos los departamentos sin cordoba y risaralda
+BD_0 <- BD_0 %>%
+  filter(departamento != "RISARALDA" & departamento != "CÓRDOBA",
+         industria != "Total")
+
 
 # Definir el periodo de referencia pre-tratamiento
 fecha_pre_tratamiento <- as.Date("2024-12-01")   # Inicio importación GNI
