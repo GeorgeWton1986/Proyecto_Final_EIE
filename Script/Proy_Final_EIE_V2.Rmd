@@ -208,8 +208,7 @@ unlink(temp_file)
 
 #filtrar todos los departamentos sin cordoba y risaralda
 BD_0 <- BD_0 %>%
-  filter(departamento != "RISARALDA" & departamento != "CÓRDOBA",
-         industria != "Total")
+  filter(departamento != "RISARALDA" & departamento != "CÓRDOBA")
 
 
 # Definir el periodo de referencia pre-tratamiento
@@ -476,7 +475,7 @@ cat("Rango de períodos Importación:",
 # Seleccionar los rangos de periodos
 
 # Definir ventana de análisis (ej: -24 a +24 meses)
-ventana_imp <- c(-12, 4)       # 6 meses antes, 6 meses después
+ventana_imp <- c(-12, 5)       # 6 meses antes, 6 meses después
 
 BD_event_imp <- BD_0 %>%                                         
   filter(periodo_imp >= ventana_imp[1] &                          
