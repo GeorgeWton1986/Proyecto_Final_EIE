@@ -206,9 +206,9 @@ unlink(temp_file)
 ### Cálculo de Índices de Vulnerabilidad
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE, results='asis'}
 
-#filtrar todos los departamentos sin cordoba y risaralda
+# #filtrar Textiles, confecciones y cuero
 BD_0 <- BD_0 %>%
-  filter(departamento != "RISARALDA" & departamento != "CÓRDOBA")
+  filter(industria != "Textiles, confecciones y cuero" )
 
 
 # Definir el periodo de referencia pre-tratamiento
@@ -495,7 +495,7 @@ cat("Estimando modelos Event Study...\n\n")
 modelo_event_imp <- feols(ind_prod_nominal ~ i(periodo_imp, IVIG_3_dt, ref = -1) +        
                      cobertura +                                   
                      log(poblacion) + log(SGP) |                  
-                     departamento + ym,                            
+                     departamento + ym_2,                            
   data = BD_event_imp,                                            
   cluster = ~departamento                                         
 )                    
@@ -692,7 +692,7 @@ modelo_imp_m1 <- feols(
   ind_prod_nominal ~ Shock_Importacion + Shock_Importacion:IVIG_3_dt + IVIG_3_dt +                        
                      cobertura +                                           
                      log(poblacion) + log(SGP) |                           
-                     departamento + ym,                                    
+                     departamento + ym_2,                                    
   data = BD_0,                                                             
   cluster = ~departamento                                                  
 )
@@ -720,8 +720,8 @@ etable(modelo_imp_m1,
 modelo_imp_m2 <- feols(                                                    
   ind_prod_nominal ~ Shock_Importacion + Shock_Importacion:IVIG_3_dt + IVIG_3_dt +                        
                      cobertura +                                           
-                     log(poblacion) + log(SGP) + gestion_inst + autonomia_fisc + tramites + ind_empleo|                           
-                     departamento + ym,                                    
+                     log(poblacion) + log(SGP) + gestion_inst + autonomia_fisc + tramites|                           
+                     departamento + ym_2,                                    
   data = BD_0,                                                             
   cluster = ~departamento                                                  
 )
@@ -740,8 +740,7 @@ etable(modelo_imp_m2,
                 "log(SGP)" = "log(SGP)",
                 "gestion_inst" = "Gestión Institucional",
                 "autonomia_fisc" = "Autonomía Fiscal",
-                "tramites" = "Trámites",
-                "ind_empleo" = "Empleo Industrial"),                                             
+                "tramites" = "Trámites"),                                             
        notes = c("Método 3:(Varianza inversa)",                                       
                  "Errores estándar agrupados por departamento en paréntesis.",        
                  "Efectos fijos por departamento y período (año-mes) incluidos.",     
