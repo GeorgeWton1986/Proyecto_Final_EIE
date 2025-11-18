@@ -120,7 +120,7 @@ En términos de política pública, los resultados tendrían al menos dos implic
 
 En general, los resultados de nuestra estimación no solo cuantificarán el efecto causal de las importaciones sobre el precio de suministro, sino que también servirán como alerta sobre la fragilidad del actual esquema energético colombiano y como evidencia para orientar la política pública hacia un balance más sostenible en el trilema energético.
 
-# Paso 2. ¿Qué estrategia propone y cuál es su supuesto de identificación?
+##Paso 2. ¿Qué estrategia propone y cuál es su supuesto de identificación?
 
 Para desarrollar esta evaluación de impacto se llevará a cabo un modelo de diferencias en diferencias con efecto fijo temporal y por departamento, en el que se busca estimar el efecto del cambio en las políticas de extracción de energía fósil y el grado de vulnerabilidad del departamento en la productividad industrial nominal.
  
@@ -130,7 +130,7 @@ Para reforzar la validez de este supuesto se realizarán gráficas de tendencias
 
 De otro lado, se incluirán controles tales como, empleo en el sector industrial, cobertura de gas a usuarios industriales, PIB, población y SGP. De esta forma, el coeficiente Delta (δ) asociado a la interacción (Shock_t× Grupo) puede interpretarse como el efecto causal del cambio en la política de extracción de energía fósil interactuada con el Índice de Vulnerabilidad a la Importación de Gas.
 
-# Paso 3. Estadísticas descriptivas
+##Paso 3. Estadísticas descriptivas
 
 ### Generalidades de R
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
@@ -410,7 +410,7 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1,size = 6), 
         axis.text.y = element_text (hjust = 1, size = 6),
-        strip.text = element_text(size = 4))
+        strip.text = element_text(size = 5))
 ```
 ### Grafico de grupos en el tiempo - Completo
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
@@ -702,6 +702,203 @@ if(test_pre_imp$n_sig == 0) {
 
 ```
 
+
+#Análisis de Heterogeneidad
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+
+cat("ANÁLISIS DE HETEROGENEIDAD\n")
+
+
+# 1. HETEROGENEIDAD POR INDUSTRIA
+
+cat("1. Estimando efectos por industria...\n")
+
+# Crear variable de shock
+if(!"Shock_Importacion" %in% colnames(BD_0)) {
+  BD_0 <- BD_0 %>%
+    mutate(Shock_Importacion = ifelse(date >= fecha_pre_tratamiento, 1, 0))
+}
+
+# Modelo con triple interacción: Shock × Grupo × Industria
+modelo_het_industria <- feols(
+  ind_prod_nominal ~ Shock_Importacion:IVIG_3_dt:industria + 
+                     Shock_Importacion:IVIG_3_dt +
+                     Shock_Importacion:industria +
+                     IVIG_3_dt:industria +
+                     cobertura + log(poblacion) + log(SGP) |
+                     departamento + ym_2,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+cat("✓ Modelo por industria estimado\n\n")
+
+# Mostrar resultados
+etable(modelo_het_industria,
+       title = "Heterogeneidad por Industria",
+       dict = c("Shock_Importacion:IVIG_3_dt" = "Importación × Vulnerable",
+                "cobertura" = "Cobertura de gas",
+                "log(poblacion)" = "log(Población)",
+                "log(SGP)" = "log(SGP)"),
+       fitstat = c("n", "r2", "wr2"),
+       digits = 4)
+
+
+# 2. HETEROGENEIDAD POR NIVEL DE VULNERABILIDAD (Continuo)
+
+cat("\n2. Estimando efectos usando IVIG continuo...\n")
+
+modelo_het_continuo <- feols(
+  ind_prod_nominal ~ Shock_Importacion:IVIG_3_cont +
+                     cobertura + log(poblacion) + log(SGP) |
+                     departamento + ym_2,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+cat("✓ Modelo con IVIG continuo estimado\n\n")
+
+etable(modelo_het_continuo,
+       title = "Efecto según Nivel de Vulnerabilidad (IVIG continuo)",
+       dict = c("Shock_Importacion:IVIG_3_cont" = "Importación × IVIG (continuo)",
+                "cobertura" = "Cobertura de gas",
+                "log(poblacion)" = "log(Población)",
+                "log(SGP)" = "log(SGP)"),
+       fitstat = c("n", "r2", "wr2"),
+       digits = 4)
+
+
+# 3. HETEROGENEIDAD POR DEPARTAMENTO ESPECÍFICO 
+
+cat("\n3. Estimando efectos por departamento\n")
+
+# Calcular efecto promedio post-shock para cada departamento y grupo
+efectos_depto_simple <- BD_0 %>%
+  mutate(
+    periodo = ifelse(Shock_Importacion == 1, "Post", "Pre")
+  ) %>%
+  group_by(departamento, IVIG_3_dt, periodo) %>%
+  summarise(
+    prod_mean = mean(ind_prod_nominal, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  pivot_wider(
+    names_from = c(IVIG_3_dt, periodo),
+    values_from = prod_mean,
+    names_prefix = "prod_"
+  ) %>%
+  mutate(
+    # Efecto DiD para cada departamento
+    efecto_did = (prod_1_Post - prod_1_Pre) - (prod_0_Post - prod_0_Pre)
+  ) %>%
+  select(departamento, efecto_did) %>%
+  arrange(desc(efecto_did))
+
+cat("✓ Efectos por departamento calculados\n\n")
+
+# Mostrar tabla
+kable(efectos_depto_simple,
+      format = "simple",
+      caption = "Efectos DiD por Departamento (Diferencias simples)",
+      digits = 3,
+      col.names = c("Departamento", "Efecto DiD"))
+
+# Gráfico
+ggplot(efectos_depto_simple, aes(x = reorder(departamento, efecto_did), 
+                                   y = efecto_did)) +
+  geom_col(aes(fill = efecto_did > 0), alpha = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  coord_flip() +
+  labs(title = "Efectos DiD por Departamento",
+       subtitle = "(Post - Pre) para Vulnerables vs Control",
+       x = "Departamento",
+       y = "Efecto DiD") +
+  theme_minimal() +
+  scale_fill_manual(values = c("TRUE" = "darkgreen", "FALSE" = "darkred"),
+                    guide = "none")
+```
+#Analisis de rebustez
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+
+cat("ANÁLISIS DE ROBUSTEZ\n")
+
+# 1. ESPECIFICACIÓN ALTERNATIVA: Sin controles
+
+cat("1. Modelo sin controles (solo efectos fijos)...\n")
+
+modelo_rob_sincontroles <- feols(
+  ind_prod_nominal ~ Shock_Importacion:IVIG_3_dt + IVIG_3_dt |
+                     departamento + ym_2,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+cat("✓ Modelo sin controles estimado\n\n")
+
+# 2. ESPECIFICACIÓN ALTERNATIVA: Umbral alternativo (percentil 75)
+
+cat("2. Modelo con umbral alternativo (P75)...\n")
+
+# Calcular percentil 75 en período pre-tratamiento
+p75_pre <- BD_0 %>%
+  filter(year == 2023) %>%
+  summarise(p75 = quantile(IVIG_3_cont, 0.75, na.rm = TRUE)) %>%
+  pull(p75)
+
+BD_0 <- BD_0 %>%
+  mutate(IVIG_3_dt_p75 = ifelse(IVIG_3_cont >= p75_pre, 1, 0))
+
+modelo_rob_p75 <- feols(
+  ind_prod_nominal ~ Shock_Importacion:IVIG_3_dt_p75 + IVIG_3_dt_p75 +
+                     cobertura + log(poblacion) + log(SGP) |
+                     departamento + ym_2,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+cat("✓ Modelo con P75 estimado\n\n")
+
+# 3. ESPECIFICACIÓN ALTERNATIVA: Efectos fijos más estrictos
+
+cat("3. Modelo con efectos fijos departamento × año...\n")
+
+BD_0 <- BD_0 %>%
+  mutate(depto_year = paste(departamento, year, sep = "_"))
+
+modelo_rob_fe_estricto <- feols(
+  ind_prod_nominal ~ Shock_Importacion:IVIG_3_dt + IVIG_3_dt +
+                     cobertura + log(poblacion) + log(SGP) |
+                     depto_year + ym_2,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+cat("✓ Modelo con FE estrictos estimado\n\n")
+
+
+# 4. PLACEBO TEST: Shock falso 12 meses antes
+
+cat("4. Placebo test (shock falso)...\n")
+
+# Crear shock placebo 12 meses antes del verdadero
+fecha_placebo <- fecha_pre_tratamiento %m-% months(12)
+
+BD_placebo <- BD_0 %>%
+  filter(date < fecha_pre_tratamiento) %>%  # Solo período pre-tratamiento real
+  mutate(Shock_Placebo = ifelse(date >= fecha_placebo, 1, 0))
+
+modelo_placebo <- feols(
+  ind_prod_nominal ~ Shock_Placebo:IVIG_3_dt + IVIG_3_dt +
+                     cobertura + log(poblacion) + log(SGP) |
+                     departamento + ym_2,
+  data = BD_placebo,
+  cluster = ~departamento
+)
+
+cat("✓ Placebo test estimado\n\n")
+
+```
+
 #Estimacion del modelo de DID
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 
@@ -784,6 +981,32 @@ etable(modelo_imp_m2,
 
 ```
 
+#Tabla estima de resultados incluidos los de robustez
+
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+
+# TABLA COMPARATIVA DE ROBUSTEZ
+
+cat("\nGenerando tabla comparativa de robustez...\n\n")
+
+etable(modelo_imp_m1, modelo_rob_sincontroles, modelo_rob_p75, 
+       modelo_rob_fe_estricto, modelo_placebo,
+       title = "Análisis de Robustez",
+       headers = c("Baseline", "Sin controles", "Umbral P75", 
+                   "FE estrictos", "Placebo"),
+       dict = c("Shock_Importacion:IVIG_3_dt" = "Importación × Vulnerable",
+                "Shock_Importacion:IVIG_3_dt_p75" = "Importación × Vulnerable (P75)",
+                "Shock_Placebo:IVIG_3_dt" = "Placebo × Vulnerable",
+                "cobertura" = "Cobertura",
+                "log(poblacion)" = "log(Población)",
+                "log(SGP)" = "log(SGP)"),
+       fitstat = c("n", "r2", "wr2"),
+       digits = 4)
+
+cat("\n✓ Análisis de heterogeneidad y robustez completado\n")
+cat("============================================================\n\n")
+
+```
 # Paso 4. Síntesis estado del arte
 La evidencia para Colombia y la región muestra que los choques y los arreglos institucionales en los sectores de hidrocarburos y energía generan efectos heterogéneos a nivel territorial y, en muchos casos, solo parcialmente favorables sobre el bienestar y la actividad económica. En términos generales, la literatura latinoamericana sobre el tema comparte enfoques metodológicos y conceptuales similares al del presente trabajo, aunque con variaciones en contexto y alcance. En el caso colombiano, la reciente necesidad de importar gas natural para abastecer la demanda nacional constituye un hecho sin precedentes. Este shock de importación abre un espacio de análisis poco explorado, dado que la literatura previa se ha centrado en aspectos fiscales (como las regalías) o macroeconómicos, pero no en los efectos productivos departamentales asociados a la dependencia energética.
  
