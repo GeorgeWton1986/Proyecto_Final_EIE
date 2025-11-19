@@ -905,6 +905,7 @@ modelo_placebo <- feols(
 
 cat("✓ Placebo test estimado\n\n")
 
+
 ```
 
 #Estimacion del modelo de DID
