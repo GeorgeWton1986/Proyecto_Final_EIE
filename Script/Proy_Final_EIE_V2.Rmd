@@ -295,7 +295,6 @@ BD_0 <- BD_0 %>%
 ```
 
 ### Compararacion entre ponderaciones
-
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Crear dataframe con los pesos
 datos_pesos <- data.frame(
@@ -347,7 +346,6 @@ ggplot(datos_componentes, aes(x = Componente, y = Valor, fill = Componente)) +
 
 
 ### Clasificación de grupos
-
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Clasificación de grupos tratados y control según el IVIG
 
@@ -359,7 +357,6 @@ BD_0 <- BD_0 %>%
 ```
 
 ### Graficar cada departamento y cada industria
-
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Gráfico por departamento
 ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = departamento)) +
@@ -412,7 +409,7 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
         axis.text.y = element_text (hjust = 1, size = 6),
         strip.text = element_text(size = 5))
 ```
-### Grafico de grupos en el tiempo - Completo
+### Grafico entre grupo tratado y control en el tiempo
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 BD_0 <- BD_0 %>%
   mutate(date = as.Date(date))
@@ -477,7 +474,7 @@ plot_tendencias <- function(data, grupo_var, titulo, fecha_shock,
 
 # Importación GNI (dic 2024)
 p3_imp <- plot_tendencias(BD_0, "grupo_IVIG_3_label",
-                          "Productividad Industrial Nominal - Método 3 Importación GNI",
+                          "Productividad Industrial Nominal - Importación GNI",
                           fecha_pre_tratamiento)  
 
 print(p3_imp)  
@@ -502,12 +499,12 @@ BD_0 <- BD_0 %>%
 cat("Rango de períodos Importación:", 
     range(BD_0$periodo_imp, na.rm = TRUE), "\n\n")  
 ```
-
+## Selección de rangos para estudio
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Seleccionar los rangos de periodos
 
-# Definir ventana de análisis (ej: -24 a +24 meses)
-ventana_imp <- c(-12, 5)       # 6 meses antes, 6 meses después
+# Definir ventana de análisis (ej: -12 a +5 meses)
+ventana_imp <- c(-12, 5)       # 12 meses antes, 5 meses después
 
 BD_event_imp <- BD_0 %>%                                         
   filter(periodo_imp >= ventana_imp[1] &                          
@@ -518,9 +515,9 @@ cat("Observaciones para Event Study Importación:", nrow(BD_event_imp), "\n\n")
 
 ```
 
+## Modelo de interacción periodo y grupo
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
-#Modelo con interacción periodo y grupo
-
+# Estimación de modelos Event Study
 cat("Estimando modelos Event Study...\n\n")
 
 # EVENT STUDY - SHOCK IMPORTACIÓN
@@ -541,9 +538,6 @@ etable(modelo_event_imp,
 )
 cat("✓ Modelos Event Study estimados\n\n")
 
-```
-
-```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Extraer coeficientes 
 
 # Función para extraer coeficientes del event study
@@ -595,6 +589,8 @@ cat("  Importación: N períodos =", nrow(coefs_imp), "\n\n")
 
 ```
 
+
+## Gráfico de estudio de evento
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Gerenerar el gráfico de Evento
 
@@ -679,6 +675,7 @@ print(p_event_imp)
 
 ```
 
+## Test de tendencias paralelas
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Test conjunto: todos los coeficientes pre-shock = 0
 
@@ -772,50 +769,61 @@ etable(modelo_het_continuo,
 
 cat("\n3. Estimando efectos por departamento\n")
 
-# Calcular efecto promedio post-shock para cada departamento y grupo
-efectos_depto_simple <- BD_0 %>%
-  mutate(
-    periodo = ifelse(Shock_Importacion == 1, "Post", "Pre")
-  ) %>%
-  group_by(departamento, IVIG_3_dt, periodo) %>%
-  summarise(
-    prod_mean = mean(ind_prod_nominal, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  pivot_wider(
-    names_from = c(IVIG_3_dt, periodo),
-    values_from = prod_mean,
-    names_prefix = "prod_"
-  ) %>%
-  mutate(
-    # Efecto DiD para cada departamento
-    efecto_did = (prod_1_Post - prod_1_Pre) - (prod_0_Post - prod_0_Pre)
-  ) %>%
-  select(departamento, efecto_did) %>%
-  arrange(desc(efecto_did))
+# Modelo con interacciones departamento × shock
+modelo_het_depto <- feols(
+  ind_prod_nominal ~ Shock_Importacion:IVIG_3_dt:departamento +
+                     cobertura + log(poblacion) + log(SGP) |
+                     departamento + ym_2,
+  data = BD_0,
+  cluster = ~departamento
+)
 
-cat("✓ Efectos por departamento calculados\n\n")
+cat("✓ Modelo por departamento estimado\n\n")
 
-# Mostrar tabla
-kable(efectos_depto_simple,
-      format = "simple",
-      caption = "Efectos DiD por Departamento (Diferencias simples)",
-      digits = 3,
-      col.names = c("Departamento", "Efecto DiD"))
+etable(modelo_het_depto,
+       title = "Heterogeneidad por departamento",
+       dict = c("Shock_Importacion:IVIG_3_dt" = "Importación × vulnerable",
+                "cobertura" = "Cobertura de gas",
+                "log(poblacion)" = "log(Población)",
+                "log(SGP)" = "log(SGP)"),
+       fitstat = c("n", "r2", "wr2"),
+       digits = 4)
+
+# Extraer coeficientes de departamentos
+coefs_depto <- coef(modelo_het_depto)
+nombres_depto <- names(coefs_depto)[grepl("departamento", names(coefs_depto))]
+valores_depto <- coefs_depto[nombres_depto]
+
+# Limpiar nombres
+nombres_limpios <- gsub("Shock_Importacion:IVIG_3_dt:departamento", "", nombres_depto)
+
+# Crear dataframe
+df_plot <- data.frame(
+  departamento = nombres_limpios,
+  coef = valores_depto,
+  se = se(modelo_het_depto)[nombres_depto]
+) %>%
+  mutate(
+    ci_low = coef - 1.96 * se,
+    ci_high = coef + 1.96 * se,
+    significativo = ifelse(ci_low > 0 | ci_high < 0, "Sí", "No")
+  )
 
 # Gráfico
-ggplot(efectos_depto_simple, aes(x = reorder(departamento, efecto_did), 
-                                   y = efecto_did)) +
-  geom_col(aes(fill = efecto_did > 0), alpha = 0.7) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+ggplot(df_plot, aes(x = reorder(departamento, coef), y = coef)) +
+  geom_point(aes(color = significativo), size = 3) +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high, color = significativo),
+                width = 0.2, linewidth = 1) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
   coord_flip() +
-  labs(title = "Efectos DiD por Departamento",
-       subtitle = "(Post - Pre) para Vulnerables vs Control",
+  labs(title = "Efectos Heterogéneos por Departamento",
+       subtitle = "Shock Importación × Vulnerabilidad (con IC 95%)",
        x = "Departamento",
-       y = "Efecto DiD") +
+       y = "Efecto estimado",
+       color = "Significativo (5%)") +
   theme_minimal() +
-  scale_fill_manual(values = c("TRUE" = "darkgreen", "FALSE" = "darkred"),
-                    guide = "none")
+  scale_color_manual(values = c("No" = "gray", "Sí" = "red"))
+
 ```
 #Analisis de rebustez
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
