@@ -825,7 +825,7 @@ ggplot(df_plot, aes(x = reorder(departamento, coef), y = coef)) +
   scale_color_manual(values = c("No" = "gray", "Sí" = "red"))
 
 ```
-#Analisis de rebustez
+#Analisis de robustez
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 
 cat("ANÁLISIS DE ROBUSTEZ\n")
