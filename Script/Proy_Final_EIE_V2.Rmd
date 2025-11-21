@@ -529,12 +529,16 @@ modelo_event_imp <- feols(ind_prod_nominal ~ i(periodo_imp, IVIG_3_dt, ref = -1)
   cluster = ~departamento                                         
 )                    
 
-etable(modelo_event_imp,                                  
-       digits = 4,                                           
-       se = "cluster",                                       
-       cluster = "departamento",                              
-       title = "Modelos Event Study - Importación GNI",     
-       depvar = FALSE           
+etable(modelo_event_imp,
+       tex = FALSE,
+       title = "Modelos Event Study - Importación GNI",
+       headers = c("Importación GNI"),
+       drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
+       notes = "Notas: Errores estándar agrupados a nivel departamental entre paréntesis.",
+       fontsize = "small",
+       se.below = FALSE,
+       digits = 4,
+       digits.stats = 1
 )
 cat("✓ Modelos Event Study estimados\n\n")
 
@@ -731,14 +735,16 @@ modelo_het_industria <- feols(
 cat("✓ Modelo por industria estimado\n\n")
 
 # Mostrar resultados
-etable(modelo_het_industria,
+etable(modelo_het_industria, 
+       tex = FALSE,
        title = "Heterogeneidad por Industria",
-       dict = c("Shock_Importacion:IVIG_3_dt" = "Importación × Vulnerable",
-                "cobertura" = "Cobertura de gas",
-                "log(poblacion)" = "log(Población)",
-                "log(SGP)" = "log(SGP)"),
-       fitstat = c("n", "r2", "wr2"),
-       digits = 4)
+       headers = c("Modelo Heterogéneo por Industria"),
+       drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
+       notes = "Notas: Errores estándar agrupados a nivel departamental entre paréntesis.",
+       fontsize = "small",
+       se.below = FALSE,
+       digits = 4,
+       digits.stats = 1)
 
 
 # 2. HETEROGENEIDAD POR NIVEL DE VULNERABILIDAD (Continuo)
@@ -756,13 +762,15 @@ modelo_het_continuo <- feols(
 cat("✓ Modelo con IVIG continuo estimado\n\n")
 
 etable(modelo_het_continuo,
+       tex = FALSE,
        title = "Efecto según Nivel de Vulnerabilidad (IVIG continuo)",
-       dict = c("Shock_Importacion:IVIG_3_cont" = "Importación × IVIG (continuo)",
-                "cobertura" = "Cobertura de gas",
-                "log(poblacion)" = "log(Población)",
-                "log(SGP)" = "log(SGP)"),
-       fitstat = c("n", "r2", "wr2"),
-       digits = 4)
+       headers = c("IVIG Continuo"),
+       drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
+       notes = "Notas: Errores estándar agrupados a nivel departamental entre paréntesis.",
+       fontsize = "small",
+       se.below = FALSE,
+       digits = 4,
+       digits.stats = 1)
 
 
 # 3. HETEROGENEIDAD POR DEPARTAMENTO ESPECÍFICO 
@@ -781,13 +789,15 @@ modelo_het_depto <- feols(
 cat("✓ Modelo por departamento estimado\n\n")
 
 etable(modelo_het_depto,
+       tex = FALSE,
        title = "Heterogeneidad por departamento",
-       dict = c("Shock_Importacion:IVIG_3_dt" = "Importación × vulnerable",
-                "cobertura" = "Cobertura de gas",
-                "log(poblacion)" = "log(Población)",
-                "log(SGP)" = "log(SGP)"),
-       fitstat = c("n", "r2", "wr2"),
-       digits = 4)
+       headers = c("Modelo Heterogéneo por Departamento"),
+       drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
+       notes = "Notas: Errores estándar agrupados a nivel departamental entre paréntesis.",
+       fontsize = "small",
+       se.below = FALSE,
+       digits = 4,
+       digits.stats = 1)
 
 # Extraer coeficientes de departamentos
 coefs_depto <- coef(modelo_het_depto)
@@ -938,55 +948,24 @@ cat("✓ Modelos Importación estimados\n\n")
 
 cat("\n============================================================\n")                 
 cat("RESULTADOS - SHOCK IMPORTACIÓN (GNI)\n")                                       
-cat("============================================================\n\n")              
-etable(modelo_imp_m1,                                 
+cat("============================================================\n\n")
+
+
+etable(modelo_imp_m1,
+       tex = FALSE,   
        title = "Efecto de la Importación de Gas (GNI) sobre Productividad Industrial", 
-       tex = FALSE,                                                                   
-       headers = c("Importación"),                                                  
-       dict = c("Shock_Importacion:IVIG_3_dt" = "Importación × Grupo Vulnerable",
-                "cobertura" = "Cobertura de gas",                                     
-                "log(población)" = "log(Población)",                                   
-                "log(SGP)" = "log(SGP)"),                                             
-       notes = c("Método 3:(Varianza inversa)",                                       
+       headers = c("Importación"),
+       drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
+       notes = c("Estación de ponderacion por Varianza inversa",
                  "Errores estándar agrupados por departamento en paréntesis.",        
                  "Efectos fijos por departamento y período (año-mes) incluidos.",     
                  "El coeficiente de interés captura el efecto diferencial de la importación", 
-                 "en departamentos vulnerables (Grupo=1) relativo a departamentos control (Grupo=0)."), 
-       fitstat = c("n","r2","wr2"),                                                   
-       digits = 4)
-
-modelo_imp_m2 <- feols(                                                    
-  ind_prod_nominal ~ Shock_Importacion + Shock_Importacion:IVIG_3_dt + IVIG_3_dt +                        
-                     cobertura +                                           
-                     log(poblacion) + log(SGP) + gestion_inst + autonomia_fisc + tramites|                           
-                     departamento + ym_2,                                    
-  data = BD_0,                                                             
-  cluster = ~departamento                                                  
+                 "en departamentos vulnerables (Grupo=1) relativo a departamentos control (Grupo=0)."),
+       fontsize = "small",
+       se.below = FALSE,
+       digits = 4,
+       digits.stats = 1
 )
-cat("✓ Modelos Importación estimados\n\n")                                  
-
-cat("\n============================================================\n")                 
-cat("RESULTADOS - SHOCK IMPORTACIÓN (GNI)\n")                                       
-cat("============================================================\n\n")              
-etable(modelo_imp_m2,                                 
-       title = "Efecto de la Importación de Gas (GNI) sobre Productividad Industrial", 
-       tex = FALSE,                                                                   
-       headers = c("Importación"),                                                  
-       dict = c("Shock_Importacion:IVIG_3_dt" = "Importación × Grupo Vulnerable",
-                "cobertura" = "Cobertura de gas",                                     
-                "log(población)" = "log(Población)",                                   
-                "log(SGP)" = "log(SGP)",
-                "gestion_inst" = "Gestión Institucional",
-                "autonomia_fisc" = "Autonomía Fiscal",
-                "tramites" = "Trámites"),                                             
-       notes = c("Método 3:(Varianza inversa)",                                       
-                 "Errores estándar agrupados por departamento en paréntesis.",        
-                 "Efectos fijos por departamento y período (año-mes) incluidos.",     
-                 "El coeficiente de interés captura el efecto diferencial de la importación", 
-                 "en departamentos vulnerables (Grupo=1) relativo a departamentos control (Grupo=0)."), 
-       fitstat = c("n","r2","wr2"),                                                   
-       digits = 4)   
-
 
 ```
 
@@ -998,19 +977,37 @@ etable(modelo_imp_m2,
 
 cat("\nGenerando tabla comparativa de robustez...\n\n")
 
+# etable(modelo_event_imp,
+#        tex = FALSE,
+#        title = "Modelos Event Study - Importación GNI",
+#        headers = c("Importación GNI"),
+#        drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
+#        notes = "Notas: Errores estándar agrupados a nivel departamental entre paréntesis.",
+#        fontsize = "small",
+#        se.below = FALSE,
+#        digits = 4,
+#        digits.stats = 1
+# )
+
+
+
 etable(modelo_imp_m1, modelo_rob_sincontroles, modelo_rob_p75, 
        modelo_rob_fe_estricto, modelo_placebo,
+       tex = FALSE,
        title = "Análisis de Robustez",
        headers = c("Baseline", "Sin controles", "Umbral P75", 
                    "FE estrictos", "Placebo"),
-       dict = c("Shock_Importacion:IVIG_3_dt" = "Importación × Vulnerable",
-                "Shock_Importacion:IVIG_3_dt_p75" = "Importación × Vulnerable (P75)",
-                "Shock_Placebo:IVIG_3_dt" = "Placebo × Vulnerable",
-                "cobertura" = "Cobertura",
-                "log(poblacion)" = "log(Población)",
-                "log(SGP)" = "log(SGP)"),
-       fitstat = c("n", "r2", "wr2"),
-       digits = 4)
+       drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
+       notes = c("Estación de ponderacion por Varianza inversa",
+                 "Errores estándar agrupados por departamento en paréntesis.",        
+                 "Efectos fijos por departamento y período (año-mes) incluidos.",     
+                 "El coeficiente de interés captura el efecto diferencial de la importación", 
+                 "en departamentos vulnerables (Grupo=1) relativo a departamentos control (Grupo=0)."),
+       fontsize = "small",
+       se.below = FALSE,
+       digits = 4,
+       digits.stats = 1
+       )
 
 cat("\n✓ Análisis de heterogeneidad y robustez completado\n")
 cat("============================================================\n\n")
