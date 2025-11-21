@@ -310,7 +310,8 @@ ggplot(datos_pesos, aes(x = Variable, y = Peso, fill = Variable)) +
     x = "",
     y = "Peso") +
   theme_minimal() +
-  theme(legend.position = "none",
+  theme(plot.title = element_text(size = 14, face = "bold"),
+        legend.position = "none",
         axis.text.x = element_text(angle = 0, hjust = 0.5)) +
   scale_y_continuous(labels = scales::percent)
 
@@ -344,7 +345,8 @@ ggplot(datos_componentes, aes(x = Componente, y = Valor, fill = Componente)) +
     x = "",
     y = "Valor ponderado") +
   theme_minimal() +
-  theme(legend.position = "none",
+  theme(plot.title = element_text(size = 14, face = "bold"),
+        legend.position = "none",
         axis.text.x = element_text(angle = 0, hjust = 0.5))
 
 ggsave("figura2_componentes.png", width = 10, height = 6)
@@ -373,10 +375,11 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = departamento)) +
        y = "Índice de Producción Industrial Nominal",
        color = "Departamento") +
   theme_minimal() +
-    theme(axis.text.x = element_text(angle = 0, hjust = 1,size = 6), 
-        axis.text.y = element_text (hjust = 1, size = 6),
-        legend.position = "right", 
-        legend.text = element_text(size = 4))
+    theme(plot.title = element_text(size = 14, face = "bold"),
+          axis.text.x = element_text(angle = 0, hjust = 1,size = 6), 
+          axis.text.y = element_text (hjust = 1, size = 6),
+          legend.position = "right", 
+          legend.text = element_text(size = 4))
 
 ggsave("figura3_IPIND.png", width = 10, height = 6)
 
@@ -388,10 +391,11 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = industria)) +
        y = "Índice de Producción Industrial Nominal",
        color = "Industria") +
   theme_minimal() +
-    theme(axis.text.x = element_text(angle = 0, hjust = 1,size = 6), 
-        axis.text.y = element_text (hjust = 1, size = 6),
-        legend.position = "right", 
-        legend.text = element_text(size = 4))
+    theme(plot.title = element_text(size = 14, face = "bold"),
+          axis.text.x = element_text(angle = 0, hjust = 1,size = 6), 
+          axis.text.y = element_text (hjust = 1, size = 6),
+          legend.position = "right", 
+          legend.text = element_text(size = 4))
 
 ggsave("figura4_IPINI.png", width = 10, height = 6)
 
@@ -403,7 +407,8 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
        x = "Fecha",
        y = "Índice") +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1,size = 6), 
+  theme(plot.title = element_text(size = 14, face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1,size = 6), 
         axis.text.y = element_text (hjust = 1, size = 6),
         strip.text = element_text(size = 4))
 
@@ -417,7 +422,8 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
        x = "Fecha",
        y = "Índice") +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1,size = 6), 
+  theme(plot.title = element_text(size = 14, face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1,size = 6), 
         axis.text.y = element_text (hjust = 1, size = 6),
         strip.text = element_text(size = 5))
 
@@ -490,7 +496,7 @@ plot_tendencias <- function(data, grupo_var, titulo, fecha_shock,
 
 # Importación GNI (dic 2024)
 p3_imp <- plot_tendencias(BD_0, "grupo_IVIG_3_label",
-                          " Figura 7: Productividad Industrial Nominal - Importación GNI",
+                          "Figura 7: Productividad Industrial Nominal - Importación GNI",
                           fecha_pre_tratamiento)  
 
 print(p3_imp)  
@@ -546,8 +552,8 @@ modelo_event_imp <- feols(ind_prod_nominal ~ i(periodo_imp, IVIG_3_dt, ref = -1)
 )                    
 
 etable(modelo_event_imp,
-       tex = FALSE,
-       title = "Modelos Event Study - Importación GNI",
+       tex = TRUE,
+       title = "Modelo Event Study - Importación GNI",
        headers = c("Importación GNI"),
        drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
        notes = "Notas: Errores estándar agrupados a nivel departamental entre paréntesis.",
@@ -605,11 +611,9 @@ coefs_imp <- extraer_coefs_event(modelo_event_imp, "periodo_imp")
 
 
 cat("Coeficientes extraídos:\n")
-cat("  Importación: N períodos =", nrow(coefs_imp), "\n\n")  
+cat("Importación: N períodos =", nrow(coefs_imp), "\n\n")  
 
 ```
-
-
 ## Gráfico de estudio de evento
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Gerenerar el gráfico de Evento
@@ -677,7 +681,8 @@ plot_event_study <- function(coefs_df, titulo, fecha_shock_label) {
     # Anotar el shock
     annotate("text", x = 1, y = max(coefs_df$ci_high, na.rm = TRUE) * 0.99,
              label = "Shock", color = "red", size = 4, hjust = 0)
-  
+    
+  ggsave("figura8_event_study.png", width = 10, height = 6)
   return(p)
 }
 
@@ -685,7 +690,7 @@ plot_event_study <- function(coefs_df, titulo, fecha_shock_label) {
 
 p_event_imp <- plot_event_study(                             
   coefs_imp,                                                 
-  "Event Study: Efecto Dinámico de la Importación de Gas (GNI)",  
+  "Figura 8: Event Study - Efecto Dinámico de la Importación de Gas (GNI)",  
   "Diciembre 2024"                                           
 )
 
@@ -752,7 +757,7 @@ cat("✓ Modelo por industria estimado\n\n")
 
 # Mostrar resultados
 etable(modelo_het_industria, 
-       tex = FALSE,
+       tex = TRUE,
        title = "Heterogeneidad por Industria",
        headers = c("Modelo Heterogéneo por Industria"),
        drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
@@ -778,7 +783,7 @@ modelo_het_continuo <- feols(
 cat("✓ Modelo con IVIG continuo estimado\n\n")
 
 etable(modelo_het_continuo,
-       tex = FALSE,
+       tex = TRUE,
        title = "Efecto según Nivel de Vulnerabilidad (IVIG continuo)",
        headers = c("IVIG Continuo"),
        drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
@@ -805,7 +810,7 @@ modelo_het_depto <- feols(
 cat("✓ Modelo por departamento estimado\n\n")
 
 etable(modelo_het_depto,
-       tex = FALSE,
+       tex = TRUE,
        title = "Heterogeneidad por departamento",
        headers = c("Modelo Heterogéneo por Departamento"),
        drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
@@ -842,13 +847,22 @@ ggplot(df_plot, aes(x = reorder(departamento, coef), y = coef)) +
                 width = 0.2, linewidth = 1) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
   coord_flip() +
-  labs(title = "Efectos Heterogéneos por Departamento",
+  labs(title = "Figura 9: Efectos Heterogéneos por Departamento",
        subtitle = "Shock Importación × Vulnerabilidad (con IC 95%)",
        x = "Departamento",
        y = "Efecto estimado",
        color = "Significativo (5%)") +
   theme_minimal() +
+      theme(
+      plot.title = element_text(size = 14, face = "bold"),
+      plot.subtitle = element_text(size = 11),
+      axis.title = element_text(size = 11),
+      legend.position = "bottom",
+      panel.grid.minor = element_blank()
+    )+
   scale_color_manual(values = c("No" = "gray", "Sí" = "red"))
+
+ggsave("figura9_efect_hetero_dpto.png", width = 10, height = 6)
 
 ```
 #Analisis de robustez
@@ -953,13 +967,14 @@ if(!"Shock_Importacion" %in% colnames(BD_0)) {
 }
 
 modelo_imp_m1 <- feols(                                                    
-  ind_prod_nominal ~ Shock_Importacion + Shock_Importacion:IVIG_3_dt + IVIG_3_dt +                        
+  ind_prod_nominal ~ Shock_Importacion + Shock_Importacion:IVIG_3_dt + IVIG_3_dt +
                      cobertura +                                           
                      log(poblacion) + log(SGP) |                           
                      departamento + ym_2,                                    
   data = BD_0,                                                             
   cluster = ~departamento                                                  
 )
+
 cat("✓ Modelos Importación estimados\n\n")                                  
 
 cat("\n============================================================\n")                 
@@ -968,15 +983,12 @@ cat("============================================================\n\n")
 
 
 etable(modelo_imp_m1,
-       tex = FALSE,   
+       tex = TRUE,   
        title = "Efecto de la Importación de Gas (GNI) sobre Productividad Industrial", 
        headers = c("Importación"),
        drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
-       notes = c("Estación de ponderacion por Varianza inversa",
-                 "Errores estándar agrupados por departamento en paréntesis.",        
-                 "Efectos fijos por departamento y período (año-mes) incluidos.",     
-                 "El coeficiente de interés captura el efecto diferencial de la importación", 
-                 "en departamentos vulnerables (Grupo=1) relativo a departamentos control (Grupo=0)."),
+       notes = c("Notas: Estación de ponderacion por Varianza inversa",
+                 "Errores estándar agrupados por departamento en paréntesis."),
        fontsize = "small",
        se.below = FALSE,
        digits = 4,
@@ -993,28 +1005,14 @@ etable(modelo_imp_m1,
 
 cat("\nGenerando tabla comparativa de robustez...\n\n")
 
-# etable(modelo_event_imp,
-#        tex = FALSE,
-#        title = "Modelos Event Study - Importación GNI",
-#        headers = c("Importación GNI"),
-#        drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
-#        notes = "Notas: Errores estándar agrupados a nivel departamental entre paréntesis.",
-#        fontsize = "small",
-#        se.below = FALSE,
-#        digits = 4,
-#        digits.stats = 1
-# )
-
-
-
 etable(modelo_imp_m1, modelo_rob_sincontroles, modelo_rob_p75, 
        modelo_rob_fe_estricto, modelo_placebo,
-       tex = FALSE,
+       tex = TRUE,
        title = "Análisis de Robustez",
        headers = c("Baseline", "Sin controles", "Umbral P75", 
                    "FE estrictos", "Placebo"),
        drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
-       notes = c("Estación de ponderacion por Varianza inversa",
+       notes = c("Notas: Estación de ponderacion por Varianza inversa",
                  "Errores estándar agrupados por departamento en paréntesis.",        
                  "Efectos fijos por departamento y período (año-mes) incluidos.",     
                  "El coeficiente de interés captura el efecto diferencial de la importación", 
