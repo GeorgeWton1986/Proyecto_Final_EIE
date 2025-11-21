@@ -25,6 +25,7 @@ tinytex::tlmgr_install('makecell')
 
 ```
 
+
 # Paso 1. ¿Cuál es su pregunta de investigación? ¿Qué ideas tiene su grupo para contestar?
 ## 1.	Pregunta de investigación
 
