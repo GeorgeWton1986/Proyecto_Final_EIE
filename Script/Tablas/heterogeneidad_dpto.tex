@@ -1,0 +1,58 @@
+\documentclass[12pt]{article}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{threeparttable}
+\usepackage{dcolumn}
+\usepackage{adjustbox}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}
+\pagestyle{empty}
+\begin{document}
+\begin{table}[htbp]
+\centering
+\begin{threeparttable}
+
+   \caption{Heterogeneidad por departamento}
+   \centering
+   \small
+   \begin{tabular}{lc}
+      \tabularnewline \midrule \midrule
+      Dependent Variable:                                                             & ind\_prod\_nominal\\    
+                                                                                      & Modelo Heterogéneo por Departamento \\   
+      Model:                                                                          & (1)\\  
+      \midrule
+      \emph{Variables}\\
+      Shock\_Importacion $\times$ IVIG\_3\_dt $\times$ departamentoANTIOQUIA          & 10.05$^{***}$ (2.677)\\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt $\times$ departamentoATLANTICO          & 11.34$^{***}$ (2.183)\\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt $\times$ departamentoBOGOTA,D.C.        & 12.33$^{***}$ (1.970)\\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt $\times$ departamentoBOLIVAR            & -2.363 (2.902)\\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt $\times$ departamentoCALDAS             & 23.47$^{***}$ (3.641)\\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt $\times$ departamentoCAUCA              & -15.11$^{***}$ (3.036)\\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt $\times$ departamentoCORDOBA            & -21.30$^{***}$ (3.253)\\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt $\times$ departamentoCUNDINAMARCA       & 7.750 (4.633)\\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt $\times$ departamentoRISARALDA          & 10.68$^{***}$ (3.270)\\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt $\times$ departamentoSANTANDER          & 24.41$^{***}$ (2.641)\\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt $\times$ departamentoTOLIMA             & -3.259 (3.539)\\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt $\times$ departamentoVALLEDELCAUCA      & -8.553$^{**}$ (3.110)\\   
+      \midrule
+      \emph{Fixed-effects}\\
+      departamento                                                                    & Yes\\  
+      ym\_2                                                                           & Yes\\  
+      \midrule
+      \emph{Fit statistics}\\
+      Observations                                                                    & 4,539\\  
+      R$^2$                                                                           & 0.7\\  
+      Within R$^2$                                                                    & 0.03\\  
+      \midrule \midrule
+      \multicolumn{2}{l}{\emph{Clustered (departamento) standard-errors in parentheses}}\\
+      \multicolumn{2}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+   \end{tabular}
+
+
+\begin{tablenotes}
+\footnotesize
+\item \textit{Notas:} Errores estándar agrupados a nivel departamental entre paréntesis.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{document}
