@@ -162,7 +162,8 @@ p_load(haven,        #Leer archivos .dta
        readxl,       #Leer archivos Excel
        rio,         #Importar/exportar datos múltiples formatos
        knitr,        #Tablas dinámicas
-       kablextra    #Tablas avanzadas
+       magick,       #Convertir tabla en PNG
+       webshot2      #Guardar tablas como gráficos  
       )
 
 ```
@@ -552,7 +553,7 @@ modelo_event_imp <- feols(ind_prod_nominal ~ i(periodo_imp, IVIG_3_dt, ref = -1)
   cluster = ~departamento                                         
 )                    
 
-etable(modelo_event_imp,
+tabla_1 <- etable(modelo_event_imp,
        tex = TRUE,
        title = "Modelo Event Study - Importación GNI",
        headers = c("Importación GNI"),
@@ -564,6 +565,30 @@ etable(modelo_event_imp,
        digits.stats = 1
 )
 cat("✓ Modelos Event Study estimados\n\n")
+
+# Convertir tabla a imagen
+# Obtener la tabla como dataframe
+tabla1_df <- etable(modelo_event_imp,
+                   tex = FALSE,
+                   title = "Modelo Event Study - Importación GNI",
+                   headers = c("Importación GNI"),
+                   drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
+                   digits = 4,
+                   digits.stats = 1,
+                   se.below = FALSE)
+
+# Convertir a kable
+kable(tabla1_df, 
+      format = "html",
+      caption = "Modelo Event Study - Importación GNI",
+      digits = 4) %>%
+  kable_styling(font_size = 10,
+                bootstrap_options = c("striped", "condensed"),
+                full_width = FALSE) %>%
+  footnote(general = "Notas: Errores estándar agrupados a nivel departamental entre paréntesis.") %>%
+  save_kable("Tablas/study_event_table.png")
+
+cat("✓ Tabla guardada en tablas/study_event_table.png\n")
 
 # Extraer coeficientes 
 
