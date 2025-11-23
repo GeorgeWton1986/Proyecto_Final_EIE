@@ -169,14 +169,54 @@ p_load(haven,        #Leer archivos .dta
       )
 
 ```
+### Crear las carpetas
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Verificar directorio actual
+getwd()
+
+# Cambiar el directorio un nivel arriba
+setwd("..")
+
+# Verrificar el cambio en el directorio
+getwd()
+
+# Crear las carpetas 
+carpetas <- c("Tablas", "Graphs")
+
+for (carpeta in carpetas) {
+  if (!dir.exists(carpeta)) {
+    dir.create(carpeta)
+    cat("✓ Carpeta creada:", carpeta, "\n")
+  } else {
+    cat("✓ Carpeta ya existe:", carpeta, "\n")
+  }
+}
+
+# Crear un archivo .gitkeep
+for (carpeta in carpetas) {
+  archivo_gitkeep <- file.path(carpeta, ".gitkeep")
+  if (!file.exists(archivo_gitkeep)) {
+    file.create(archivo_gitkeep)
+    cat("✓ Archivo .gitkeep creado en:", carpeta, "\n")
+  }
+}
+
+cat("\n✓ Carpetas creadas. Ahora ejecuta los siguientes comandos en la terminal:\n")
+cat("git add .\n")
+cat("git commit -m 'Crear estructura de carpetas del proyecto'\n")
+cat("git push origin main\n")
+
+# Verrificar el cambio en el directorio
+getwd()
+```
+### Direccion de rutas
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+dir_tablas <- "../Tablas"
+dir_graficos <- "../Graphs"
+```
 
 ### Transformación de datos en R
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
-#Limpiar la consola
-cat("\f")
-
-#Limpiar el Global Environment
-rm(list = ls())
 
 # Definir URL del archivo en GitHub
 github_url <- "https://raw.githubusercontent.com/GeorgeWton1986/Proyecto_Final_EIE/main/Data/20251116_DB.xlsx"
@@ -319,7 +359,7 @@ ggplot(datos_pesos, aes(x = Variable, y = Peso, fill = Variable)) +
         axis.text.x = element_text(angle = 0, hjust = 0.5)) +
   scale_y_continuous(labels = scales::percent)
 
-ggsave("figura1_ponderaciones.png", width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura1_ponderaciones.png"), width = 10, height = 6)
 
 # Para ver las distribuciones de los componentes ponderados en la muestra
 datos_componentes <- BD_0 %>%
@@ -353,7 +393,7 @@ ggplot(datos_componentes, aes(x = Componente, y = Valor, fill = Componente)) +
         legend.position = "none",
         axis.text.x = element_text(angle = 0, hjust = 0.5))
 
-ggsave("figura2_componentes.png", width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura2_componentes.png"), width = 10, height = 6)
 
 ```
 
@@ -385,7 +425,7 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = departamento)) +
           legend.position = "right", 
           legend.text = element_text(size = 4))
 
-ggsave("figura3_IPIND.png", width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura3_IPIND.png"), width = 10, height = 6)
 
 # Gráfico por industria
 ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = industria)) +
@@ -401,7 +441,7 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = industria)) +
           legend.position = "right", 
           legend.text = element_text(size = 4))
 
-ggsave("figura4_IPINI.png", width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura4_IPINI.png"), width = 10, height = 6)
 
 # Gráfico separados por departamento
 ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
@@ -416,7 +456,7 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
         axis.text.y = element_text (hjust = 1, size = 6),
         strip.text = element_text(size = 4))
 
-ggsave("figura5_IPIND2.png", width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura5_IPIND2.png"), width = 10, height = 6)
 
 # Gráfico separados separados por industria
 ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
@@ -431,7 +471,7 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
         axis.text.y = element_text (hjust = 1, size = 6),
         strip.text = element_text(size = 5))
 
-ggsave("figura6_IPINI2.png", width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura6_IPINI2.png"), width = 10, height = 6)
 
 ```
 ### Grafico entre grupo tratado y control en el tiempo
@@ -494,7 +534,7 @@ plot_tendencias <- function(data, grupo_var, titulo, fecha_shock,
     scale_fill_manual(values = c("Control" = "#0072B2", 
                                   "Tratado" = "#D55E00"))
 
-  ggsave("figura7_PIN_lineas.png", width = 10, height = 6)
+  ggsave(file.path(dir_graficos,"figura7_PIN_lineas.png"), width = 10, height = 6)
   return(p)
 }
 
@@ -546,6 +586,9 @@ cat("Observaciones para Event Study Importación:", nrow(BD_event_imp), "\n\n")
 # Estimación de modelos Event Study
 cat("Estimando modelos Event Study...\n\n")
 
+# Enumerar la tabla
+numero_tabla <- 1
+
 # EVENT STUDY - SHOCK IMPORTACIÓN
 modelo_event_imp <- feols(ind_prod_nominal ~ i(periodo_imp, IVIG_3_dt, ref = -1) +        
                      cobertura +                                   
@@ -554,9 +597,6 @@ modelo_event_imp <- feols(ind_prod_nominal ~ i(periodo_imp, IVIG_3_dt, ref = -1)
   data = BD_event_imp,                                            
   cluster = ~departamento                                         
 )                    
-
-# Crear directorio
-if (!dir.exists("Tablas")) dir.create("Tablas")
 
 # Resultado del modelo de Estudio de Evento
 etable(modelo_event_imp,
@@ -569,13 +609,13 @@ etable(modelo_event_imp,
        se.below = FALSE,
        digits = 4,
        digits.stats = 1,
-       file = "Tablas/tabla_temp.tex"
+       file = file.path(dir_tablas, "tabla_temp.tex")
 )
 cat("✓ Tabla LaTeX generada\n\n")
 
 #Convertir la tabla de resultados en Latex y PNG.
 # Leer el contenido de la tabla
-tabla_contenido <- readLines("Tablas/tabla_temp.tex")
+tabla_contenido <- readLines(file.path(dir_tablas,"tabla_temp.tex"))
 
 # Extraer SOLO el contenido entre \begin{document} y \end{document}
 inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
@@ -604,6 +644,7 @@ doc_completo <- c(
   "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
   "\\pagestyle{empty}",
   "\\begin{document}",
+  paste0("\\setcounter{table}{", numero_tabla - 1, "}"),
   "\\begin{table}[htbp]",
   "\\centering",
   "\\begin{threeparttable}",
@@ -618,44 +659,55 @@ doc_completo <- c(
 )
 
 # Guardar UN SOLO archivo .tex
-writeLines(doc_completo, "Tablas/study_event_table.tex")
+writeLines(doc_completo, file.path(dir_tablas,"study_event_table.tex"))
 cat("✓ Archivo .tex guardado\n")
 
 # Compilar
 dir_actual <- getwd()
-setwd("Tablas")
+setwd(dir_tablas)
+
 
 resultado <- try({
   tinytex::pdflatex("study_event_table.tex")
 }, silent = FALSE)
 
+setwd(dir_actual)
+
 if (inherits(resultado, "try-error")) {
   cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n\n")
-  if (file.exists("study_event_table.log")) {
-    log_lines <- readLines("study_event_table.log")
+  log_file <- file.path(dir_tablas, "study_event_table.log")
+  if (file.exists(log_file)) {
+    log_lines <- readLines(log_file)
     cat(tail(log_lines, 30), sep = "\n")
   }
-  setwd(dir_actual)
   stop("No se pudo compilar el documento LaTeX")
 }
 
-setwd(dir_actual)
+# Verificar la ruta correcta del PDF
+pdf_path <- file.path(dir_tablas, "study_event_table.pdf")
 
-# Convertir a PNG
-if (file.exists("Tablas/study_event_table.pdf")) {
-  img <- image_read_pdf("Tablas/study_event_table.pdf", density = 300)
-  image_write(img, "Tablas/study_event_table.png")
-  cat("✓ Tabla convertida a PNG: Tablas/study_event_table.png\n")
+if (file.exists(pdf_path)) {
+  # Convertir a PNG
+  img <- image_read_pdf(pdf_path, density = 300)
+  image_write(img, file.path(dir_tablas, "study_event_table.png"))
+  cat("✓ Tabla convertida a PNG:", file.path(dir_tablas, "study_event_table.png"), "\n")
   
   # Limpiar archivos temporales
-  archivos_temp <- c("Tablas/tabla_temp.tex",
-                     "Tablas/study_event_table.pdf",
-                     "Tablas/study_event_table.aux", 
-                     "Tablas/study_event_table.log")
+  archivos_temp <- c(
+    file.path(dir_tablas, "tabla_temp.tex"),
+    file.path(dir_tablas, "study_event_table.pdf"),
+    file.path(dir_tablas, "study_event_table.aux"), 
+    file.path(dir_tablas, "study_event_table.log")
+  )
+  
   file.remove(archivos_temp[file.exists(archivos_temp)])
   cat("✓ Archivos temporales eliminados\n")
 } else {
   cat("❌ No se generó el PDF\n")
+  cat("Ruta buscada:", pdf_path, "\n")
+  # Verificar qué archivos se crearon
+  cat("Archivos en", dir_tablas, ":\n")
+  print(list.files(dir_tablas))
 }
 
 # Extraer coeficientes 
@@ -776,7 +828,7 @@ plot_event_study <- function(coefs_df, titulo, fecha_shock_label) {
     annotate("text", x = 1, y = max(coefs_df$ci_high, na.rm = TRUE) * 0.99,
              label = "Shock", color = "red", size = 4, hjust = 0)
     
-  ggsave("figura8_event_study.png", width = 10, height = 6)
+  ggsave(file.path(dir_graficos,"figura8_event_study.png"), width = 10, height = 6)
   return(p)
 }
 
@@ -822,12 +874,11 @@ if(test_pre_imp$n_sig == 0) {
 #Análisis de Heterogeneidad por Industria
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 
-cat("ANÁLISIS DE HETEROGENEIDAD\n")
-
-
 # 1. HETEROGENEIDAD POR INDUSTRIA
-
 cat("1. Estimando efectos por industria...\n")
+
+# Enumerar la tabla
+numero_tabla <- 2
 
 # Crear variable de shock
 if(!"Shock_Importacion" %in% colnames(BD_0)) {
@@ -849,7 +900,7 @@ modelo_het_industria <- feols(
 
 cat("✓ Modelo por industria estimado\n\n")
 
-# Mostrar resultados
+# Resultado del modelo de Heterogeneidad por Industria
 etable(modelo_het_industria, 
        tex = TRUE,
        title = "Heterogeneidad por Industria",
@@ -860,16 +911,12 @@ etable(modelo_het_industria,
        se.below = FALSE,
        digits = 4,
        digits.stats = 1,      
-       file = "Tablas/tabla_temp.tex"
+       file = file.path(dir_tablas,"tabla_temp.tex")
 )
 
-# Crear directorio
-if (!dir.exists("Tablas")) dir.create("Tablas")
-
-cat("✓ Tabla LaTeX generada\n\n")
-
+#Convertir la tabla de resultados en Latex y PNG.
 # Leer el contenido de la tabla
-tabla_contenido <- readLines("Tablas/tabla_temp.tex")
+tabla_contenido <- readLines(file.path(dir_tablas,"tabla_temp.tex"))
 
 # Extraer SOLO el contenido entre \begin{document} y \end{document}
 inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
@@ -898,6 +945,7 @@ doc_completo <- c(
   "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
   "\\pagestyle{empty}",
   "\\begin{document}",
+  paste0("\\setcounter{table}{", numero_tabla - 2, "}"),
   "\\begin{table}[htbp]",
   "\\centering",
   "\\begin{threeparttable}",
@@ -912,44 +960,55 @@ doc_completo <- c(
 )
 
 # Guardar UN SOLO archivo .tex
-writeLines(doc_completo, "Tablas/heterogeneidad_industria.tex")
+writeLines(doc_completo, file.path(dir_tablas,"hetero_industria.tex"))
 cat("✓ Archivo .tex guardado\n")
 
 # Compilar
 dir_actual <- getwd()
-setwd("Tablas")
+setwd(dir_tablas)
+
 
 resultado <- try({
-  tinytex::pdflatex("heterogeneidad_industria.tex")
+  tinytex::pdflatex("hetero_industria.tex")
 }, silent = FALSE)
-
-if (inherits(resultado, "try-error")) {
-  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n\n")
-  if (file.exists("heterogeneidad_industria.log")) {
-    log_lines <- readLines("heterogeneidad_industria.log")
-    cat(tail(log_lines, 30), sep = "\n")
-  }
-  setwd(dir_actual)
-  stop("No se pudo compilar el documento LaTeX")
-}
 
 setwd(dir_actual)
 
-# Convertir a PNG
-if (file.exists("Tablas/heterogeneidad_industria.pdf")) {
-  img <- image_read_pdf("Tablas/heterogeneidad_industria.pdf", density = 300)
-  image_write(img, "Tablas/heterogeneidad_industria.png")
-  cat("✓ Tabla convertida a PNG: Tablas/heterogeneidad_industria.png\n")
+if (inherits(resultado, "try-error")) {
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n\n")
+  log_file <- file.path(dir_tablas, "hetero_industria.log")
+  if (file.exists(log_file)) {
+    log_lines <- readLines(log_file)
+    cat(tail(log_lines, 30), sep = "\n")
+  }
+  stop("No se pudo compilar el documento LaTeX")
+}
+
+# Verificar la ruta correcta del PDF
+pdf_path <- file.path(dir_tablas, "hetero_industria.pdf")
+
+if (file.exists(pdf_path)) {
+  # Convertir a PNG
+  img <- image_read_pdf(pdf_path, density = 300)
+  image_write(img, file.path(dir_tablas, "hetero_industria.png"))
+  cat("✓ Tabla convertida a PNG:", file.path(dir_tablas, "hetero_industria.png"), "\n")
   
   # Limpiar archivos temporales
-  archivos_temp <- c("Tablas/tabla_temp.tex",
-                     "Tablas/heterogeneidad_industria.pdf",
-                     "Tablas/heterogeneidad_industria.aux", 
-                     "Tablas/heterogeneidad_industria.log")
+  archivos_temp <- c(
+    file.path(dir_tablas, "tabla_temp.tex"),
+    file.path(dir_tablas, "hetero_industria.pdf"),
+    file.path(dir_tablas, "hetero_industria.aux"), 
+    file.path(dir_tablas, "hetero_industria.log")
+  )
+  
   file.remove(archivos_temp[file.exists(archivos_temp)])
   cat("✓ Archivos temporales eliminados\n")
 } else {
   cat("❌ No se generó el PDF\n")
+  cat("Ruta buscada:", pdf_path, "\n")
+  # Verificar qué archivos se crearon
+  cat("Archivos en", dir_tablas, ":\n")
+  print(list.files(dir_tablas))
 }
 
 ```
@@ -957,8 +1016,10 @@ if (file.exists("Tablas/heterogeneidad_industria.pdf")) {
 #Análisis de Heterogeneidad por Vulnerabilidad
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # 2. HETEROGENEIDAD POR NIVEL DE VULNERABILIDAD (Continuo)
+cat("2. Estimando efectos usando IVIG continuo...\n")
 
-cat("\n2. Estimando efectos usando IVIG continuo...\n")
+# Enumerar la tabla
+numero_tabla <- 3
 
 modelo_het_continuo <- feols(
   ind_prod_nominal ~ Shock_Importacion:IVIG_3_cont +
@@ -970,6 +1031,7 @@ modelo_het_continuo <- feols(
 
 cat("✓ Modelo con IVIG continuo estimado\n\n")
 
+# Resultado del modelo de Heterogeneidad IVIG continuo
 etable(modelo_het_continuo,
        tex = TRUE,
        title = "Efecto según Nivel de Vulnerabilidad (IVIG continuo)",
@@ -980,16 +1042,12 @@ etable(modelo_het_continuo,
        se.below = FALSE,
        digits = 4,
        digits.stats = 1,
-       file = "Tablas/tabla_temp.tex"
+       file = file.path(dir_tablas,"tabla_temp.tex")
        )
 
-# Crear directorio
-if (!dir.exists("Tablas")) dir.create("Tablas")
-
-cat("✓ Tabla LaTeX generada\n\n")
-
+#Convertir la tabla de resultados en Latex y PNG.
 # Leer el contenido de la tabla
-tabla_contenido <- readLines("Tablas/tabla_temp.tex")
+tabla_contenido <- readLines(file.path(dir_tablas,"tabla_temp.tex"))
 
 # Extraer SOLO el contenido entre \begin{document} y \end{document}
 inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
@@ -1018,6 +1076,7 @@ doc_completo <- c(
   "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
   "\\pagestyle{empty}",
   "\\begin{document}",
+  paste0("\\setcounter{table}{", numero_tabla - 3, "}"),
   "\\begin{table}[htbp]",
   "\\centering",
   "\\begin{threeparttable}",
@@ -1032,53 +1091,66 @@ doc_completo <- c(
 )
 
 # Guardar UN SOLO archivo .tex
-writeLines(doc_completo, "Tablas/heterogeneidad_vulnera.tex")
+writeLines(doc_completo, file.path(dir_tablas,"hetero_vulnerabilidad.tex"))
 cat("✓ Archivo .tex guardado\n")
 
 # Compilar
 dir_actual <- getwd()
-setwd("Tablas")
+setwd(dir_tablas)
+
 
 resultado <- try({
-  tinytex::pdflatex("heterogeneidad_vulnera.tex")
+  tinytex::pdflatex("hetero_vulnerabilidad.tex")
 }, silent = FALSE)
-
-if (inherits(resultado, "try-error")) {
-  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n\n")
-  if (file.exists("heterogeneidad_vulnera.log")) {
-    log_lines <- readLines("heterogeneidad_vulnera.log")
-    cat(tail(log_lines, 30), sep = "\n")
-  }
-  setwd(dir_actual)
-  stop("No se pudo compilar el documento LaTeX")
-}
 
 setwd(dir_actual)
 
-# Convertir a PNG
-if (file.exists("Tablas/heterogeneidad_vulnera.pdf")) {
-  img <- image_read_pdf("Tablas/heterogeneidad_vulnera.pdf", density = 300)
-  image_write(img, "Tablas/heterogeneidad_vulnera.png")
-  cat("✓ Tabla convertida a PNG: Tablas/heterogeneidad_vulnera.png\n")
+if (inherits(resultado, "try-error")) {
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n\n")
+  log_file <- file.path(dir_tablas, "hetero_vulnerabilidad.log")
+  if (file.exists(log_file)) {
+    log_lines <- readLines(log_file)
+    cat(tail(log_lines, 30), sep = "\n")
+  }
+  stop("No se pudo compilar el documento LaTeX")
+}
+
+# Verificar la ruta correcta del PDF
+pdf_path <- file.path(dir_tablas, "hetero_vulnerabilidad.pdf")
+
+if (file.exists(pdf_path)) {
+  # Convertir a PNG
+  img <- image_read_pdf(pdf_path, density = 300)
+  image_write(img, file.path(dir_tablas, "hetero_vulnerabilidad.png"))
+  cat("✓ Tabla convertida a PNG:", file.path(dir_tablas, "hetero_vulnerabilidad.png"), "\n")
   
   # Limpiar archivos temporales
-  archivos_temp <- c("Tablas/tabla_temp.tex",
-                     "Tablas/heterogeneidad_vulnera.pdf",
-                     "Tablas/heterogeneidad_vulnera.aux", 
-                     "Tablas/heterogeneidad_vulnera.log")
+  archivos_temp <- c(
+    file.path(dir_tablas, "tabla_temp.tex"),
+    file.path(dir_tablas, "hetero_vulnerabilidad.pdf"),
+    file.path(dir_tablas, "hetero_vulnerabilidad.aux"), 
+    file.path(dir_tablas, "hetero_vulnerabilidad.log")
+  )
+  
   file.remove(archivos_temp[file.exists(archivos_temp)])
   cat("✓ Archivos temporales eliminados\n")
 } else {
   cat("❌ No se generó el PDF\n")
+  cat("Ruta buscada:", pdf_path, "\n")
+  # Verificar qué archivos se crearon
+  cat("Archivos en", dir_tablas, ":\n")
+  print(list.files(dir_tablas))
 }
 
 ```
 
-#Análisis de Heterogeneidad por Dpto
+# Análisis de Heterogeneidad por Dpto
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # 3. HETEROGENEIDAD POR DEPARTAMENTO ESPECÍFICO 
+cat("3. Estimando efectos por departamento\n")
 
-cat("\n3. Estimando efectos por departamento\n")
+# Enumerar la tabla
+numero_tabla <- 4
 
 # Modelo con interacciones departamento × shock
 modelo_het_depto <- feols(
@@ -1091,6 +1163,7 @@ modelo_het_depto <- feols(
 
 cat("✓ Modelo por departamento estimado\n\n")
 
+# Resultado del modelo de Heterogeneidad por departamento
 etable(modelo_het_depto,
        tex = TRUE,
        title = "Heterogeneidad por departamento",
@@ -1101,16 +1174,12 @@ etable(modelo_het_depto,
        se.below = FALSE,
        digits = 4,
        digits.stats = 1,
-       file = "Tablas/tabla_temp.tex"
+       file = file.path(dir_tablas,"tabla_temp.tex")
 )
 
-# Crear directorio
-if (!dir.exists("Tablas")) dir.create("Tablas")
-
-cat("✓ Tabla LaTeX generada\n\n")
-
+#Convertir la tabla de resultados en Latex y PNG.
 # Leer el contenido de la tabla
-tabla_contenido <- readLines("Tablas/tabla_temp.tex")
+tabla_contenido <- readLines(file.path(dir_tablas,"tabla_temp.tex"))
 
 # Extraer SOLO el contenido entre \begin{document} y \end{document}
 inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
@@ -1139,6 +1208,7 @@ doc_completo <- c(
   "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
   "\\pagestyle{empty}",
   "\\begin{document}",
+  paste0("\\setcounter{table}{", numero_tabla - 4, "}"),
   "\\begin{table}[htbp]",
   "\\centering",
   "\\begin{threeparttable}",
@@ -1153,44 +1223,55 @@ doc_completo <- c(
 )
 
 # Guardar UN SOLO archivo .tex
-writeLines(doc_completo, "Tablas/heterogeneidad_dpto.tex")
+writeLines(doc_completo, file.path(dir_tablas,"hetero_dpto.tex"))
 cat("✓ Archivo .tex guardado\n")
 
 # Compilar
 dir_actual <- getwd()
-setwd("Tablas")
+setwd(dir_tablas)
+
 
 resultado <- try({
-  tinytex::pdflatex("heterogeneidad_dpto.tex")
+  tinytex::pdflatex("hetero_dpto.tex")
 }, silent = FALSE)
-
-if (inherits(resultado, "try-error")) {
-  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n\n")
-  if (file.exists("mod_did.log")) {
-    log_lines <- readLines("mod_did.log")
-    cat(tail(log_lines, 30), sep = "\n")
-  }
-  setwd(dir_actual)
-  stop("No se pudo compilar el documento LaTeX")
-}
 
 setwd(dir_actual)
 
-# Convertir a PNG
-if (file.exists("Tablas/heterogeneidad_dpto.pdf")) {
-  img <- image_read_pdf("Tablas/heterogeneidad_dpto.pdf", density = 300)
-  image_write(img, "Tablas/heterogeneidad_dpto.png")
-  cat("✓ Tabla convertida a PNG: Tablas/heterogeneidad_dpto.png\n")
+if (inherits(resultado, "try-error")) {
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n\n")
+  log_file <- file.path(dir_tablas, "hetero_dpto.log")
+  if (file.exists(log_file)) {
+    log_lines <- readLines(log_file)
+    cat(tail(log_lines, 30), sep = "\n")
+  }
+  stop("No se pudo compilar el documento LaTeX")
+}
+
+# Verificar la ruta correcta del PDF
+pdf_path <- file.path(dir_tablas, "hetero_dpto.pdf")
+
+if (file.exists(pdf_path)) {
+  # Convertir a PNG
+  img <- image_read_pdf(pdf_path, density = 300)
+  image_write(img, file.path(dir_tablas, "hetero_dpto.png"))
+  cat("✓ Tabla convertida a PNG:", file.path(dir_tablas, "hetero_dpto.png"), "\n")
   
   # Limpiar archivos temporales
-  archivos_temp <- c("Tablas/tabla_temp.tex",
-                     "Tablas/heterogeneidad_dpto.pdf",
-                     "Tablas/heterogeneidad_dpto.aux", 
-                     "Tablas/heterogeneidad_dpto.log")
+  archivos_temp <- c(
+    file.path(dir_tablas, "tabla_temp.tex"),
+    file.path(dir_tablas, "hetero_dpto.pdf"),
+    file.path(dir_tablas, "hetero_dpto.aux"), 
+    file.path(dir_tablas, "hetero_dpto.log")
+  )
+  
   file.remove(archivos_temp[file.exists(archivos_temp)])
   cat("✓ Archivos temporales eliminados\n")
 } else {
   cat("❌ No se generó el PDF\n")
+  cat("Ruta buscada:", pdf_path, "\n")
+  # Verificar qué archivos se crearon
+  cat("Archivos en", dir_tablas, ":\n")
+  print(list.files(dir_tablas))
 }
 
 # Extraer coeficientes de departamentos
@@ -1235,7 +1316,7 @@ ggplot(df_plot, aes(x = reorder(departamento, coef), y = coef)) +
     )+
   scale_color_manual(values = c("No" = "gray", "Sí" = "red"))
 
-ggsave("figura9_efect_hetero_dpto.png", width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura9_efect_hetero_dpto.png"), width = 10, height = 6)
 
 ```
 #Analisis de robustez
@@ -1325,8 +1406,12 @@ cat("✓ Placebo test estimado\n\n")
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 
 # ESTIMACION DiD - SHOCK IMPORTACIÓN (dic 2024)
+cat("Estimando modelos con Shock Importación...\n")
 
-cat("Estimando modelos con Shock Importación...\n")                        
+# Enumerar la tabla
+numero_tabla <- 5
+
+                  
 if(!"Shock_Importacion" %in% colnames(BD_0)) {                             
   BD_0 <- BD_0 %>%                                                         
     mutate(Shock_Importacion = ifelse(date >= fecha_pre_tratamiento, 1, 0)) 
@@ -1344,6 +1429,7 @@ modelo_imp_m1 <- feols(
 
 cat("✓ Modelos Importación estimados\n\n")
 
+# Resultado del modelo de DiD
 etable(modelo_imp_m1,
        tex = TRUE,   
        title = "Efecto de la Importación de Gas (GNI) sobre Productividad Industrial", 
@@ -1354,16 +1440,12 @@ etable(modelo_imp_m1,
        se.below = FALSE,
        digits = 4,
        digits.stats = 1,
-       file = "Tablas/tabla_temp.tex"
+       file = file.path(dir_tablas,"tabla_temp.tex")
 )
 
-# Crear directorio
-if (!dir.exists("Tablas")) dir.create("Tablas")
-
-cat("✓ Tabla LaTeX generada\n\n")
-
+#Convertir la tabla de resultados en Latex y PNG.
 # Leer el contenido de la tabla
-tabla_contenido <- readLines("Tablas/tabla_temp.tex")
+tabla_contenido <- readLines(file.path(dir_tablas,"tabla_temp.tex"))
 
 # Extraer SOLO el contenido entre \begin{document} y \end{document}
 inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
@@ -1392,13 +1474,14 @@ doc_completo <- c(
   "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
   "\\pagestyle{empty}",
   "\\begin{document}",
+  paste0("\\setcounter{table}{", numero_tabla - 5, "}"),
   "\\begin{table}[htbp]",
   "\\centering",
   "\\begin{threeparttable}",
   tabla_limpia,
   "\\begin{tablenotes}",
   "\\footnotesize",
-  "\\item \\textit{Notas:} Estación de ponderación por Varianza inversa - Errores estándar agrupados por departamento en paréntesis.",
+  "\\item \\textit{Notas:} Errores estándar agrupados a nivel departamental entre paréntesis.",
   "\\end{tablenotes}",
   "\\end{threeparttable}",
   "\\end{table}",
@@ -1406,56 +1489,69 @@ doc_completo <- c(
 )
 
 # Guardar UN SOLO archivo .tex
-writeLines(doc_completo, "Tablas/mod_did.tex")
+writeLines(doc_completo, file.path(dir_tablas,"modelo_did.tex"))
 cat("✓ Archivo .tex guardado\n")
 
 # Compilar
 dir_actual <- getwd()
-setwd("Tablas")
+setwd(dir_tablas)
+
 
 resultado <- try({
-  tinytex::pdflatex("mod_did.tex")
+  tinytex::pdflatex("modelo_did.tex")
 }, silent = FALSE)
-
-if (inherits(resultado, "try-error")) {
-  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n\n")
-  if (file.exists("mod_did.log")) {
-    log_lines <- readLines("mod_did.log")
-    cat(tail(log_lines, 30), sep = "\n")
-  }
-  setwd(dir_actual)
-  stop("No se pudo compilar el documento LaTeX")
-}
 
 setwd(dir_actual)
 
-# Convertir a PNG
-if (file.exists("Tablas/mod_did.pdf")) {
-  img <- image_read_pdf("Tablas/mod_did.pdf", density = 300)
-  image_write(img, "Tablas/mod_did.png")
-  cat("✓ Tabla convertida a PNG: Tablas/mod_did.png\n")
+if (inherits(resultado, "try-error")) {
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n\n")
+  log_file <- file.path(dir_tablas, "modelo_did.log")
+  if (file.exists(log_file)) {
+    log_lines <- readLines(log_file)
+    cat(tail(log_lines, 30), sep = "\n")
+  }
+  stop("No se pudo compilar el documento LaTeX")
+}
+
+# Verificar la ruta correcta del PDF
+pdf_path <- file.path(dir_tablas, "modelo_did.pdf")
+
+if (file.exists(pdf_path)) {
+  # Convertir a PNG
+  img <- image_read_pdf(pdf_path, density = 300)
+  image_write(img, file.path(dir_tablas, "modelo_did.png"))
+  cat("✓ Tabla convertida a PNG:", file.path(dir_tablas, "modelo_did.png"), "\n")
   
   # Limpiar archivos temporales
-  archivos_temp <- c("Tablas/tabla_temp.tex",
-                     "Tablas/mod_did.pdf",
-                     "Tablas/mod_did.aux", 
-                     "Tablas/mod_did.log")
+  archivos_temp <- c(
+    file.path(dir_tablas, "tabla_temp.tex"),
+    file.path(dir_tablas, "modelo_did.pdf"),
+    file.path(dir_tablas, "modelo_did.aux"), 
+    file.path(dir_tablas, "modelo_did.log")
+  )
+  
   file.remove(archivos_temp[file.exists(archivos_temp)])
   cat("✓ Archivos temporales eliminados\n")
 } else {
   cat("❌ No se generó el PDF\n")
+  cat("Ruta buscada:", pdf_path, "\n")
+  # Verificar qué archivos se crearon
+  cat("Archivos en", dir_tablas, ":\n")
+  print(list.files(dir_tablas))
 }
-
 ```
 
 #Tabla estima de resultados incluidos los de robustez
-
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 
 # TABLA COMPARATIVA DE ROBUSTEZ
 
-cat("\nGenerando tabla comparativa de robustez...\n\n")
+cat("Generando tabla comparativa de robustez...\n\n")
 
+# Enumerar la tabla
+numero_tabla <- 6
+
+# Resultado de los modelos DiD y robustez 
 etable(modelo_imp_m1, modelo_rob_sincontroles, modelo_rob_p75, 
        modelo_rob_fe_estricto, modelo_placebo,
        tex = TRUE,
@@ -1468,16 +1564,12 @@ etable(modelo_imp_m1, modelo_rob_sincontroles, modelo_rob_p75,
        se.below = FALSE,
        digits = 4,
        digits.stats = 1,
-       file = "Tablas/tabla_temp.tex"
+       file = file.path(dir_tablas,"tabla_temp.tex")
 )
 
-# Crear directorio
-if (!dir.exists("Tablas")) dir.create("Tablas")
-
-cat("✓ Tabla LaTeX generada\n\n")
-
+#Convertir la tabla de resultados en Latex y PNG.
 # Leer el contenido de la tabla
-tabla_contenido <- readLines("Tablas/tabla_temp.tex")
+tabla_contenido <- readLines(file.path(dir_tablas,"tabla_temp.tex"))
 
 # Extraer SOLO el contenido entre \begin{document} y \end{document}
 inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
@@ -1506,6 +1598,7 @@ doc_completo <- c(
   "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
   "\\pagestyle{empty}",
   "\\begin{document}",
+  paste0("\\setcounter{table}{", numero_tabla - 6, "}"),
   "\\begin{table}[htbp]",
   "\\centering",
   "\\begin{threeparttable}",
@@ -1524,44 +1617,55 @@ doc_completo <- c(
 )
 
 # Guardar UN SOLO archivo .tex
-writeLines(doc_completo, "Tablas/hetero_robus_did.tex")
+writeLines(doc_completo, file.path(dir_tablas,"modelo_did_robus.tex"))
 cat("✓ Archivo .tex guardado\n")
 
 # Compilar
 dir_actual <- getwd()
-setwd("Tablas")
+setwd(dir_tablas)
+
 
 resultado <- try({
-  tinytex::pdflatex("hetero_robus_did.tex")
+  tinytex::pdflatex("modelo_did_robus.tex")
 }, silent = FALSE)
-
-if (inherits(resultado, "try-error")) {
-  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n\n")
-  if (file.exists("hetero_robus_did.log")) {
-    log_lines <- readLines("hetero_robus_did.log")
-    cat(tail(log_lines, 30), sep = "\n")
-  }
-  setwd(dir_actual)
-  stop("No se pudo compilar el documento LaTeX")
-}
 
 setwd(dir_actual)
 
-# Convertir a PNG
-if (file.exists("Tablas/hetero_robus_did.pdf")) {
-  img <- image_read_pdf("Tablas/hetero_robus_did.pdf", density = 300)
-  image_write(img, "Tablas/hetero_robus_did.png")
-  cat("✓ Tabla convertida a PNG: Tablas/hetero_robus_did.png\n")
+if (inherits(resultado, "try-error")) {
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n\n")
+  log_file <- file.path(dir_tablas, "modelo_did_robus.log")
+  if (file.exists(log_file)) {
+    log_lines <- readLines(log_file)
+    cat(tail(log_lines, 30), sep = "\n")
+  }
+  stop("No se pudo compilar el documento LaTeX")
+}
+
+# Verificar la ruta correcta del PDF
+pdf_path <- file.path(dir_tablas, "modelo_did_robus.pdf")
+
+if (file.exists(pdf_path)) {
+  # Convertir a PNG
+  img <- image_read_pdf(pdf_path, density = 300)
+  image_write(img, file.path(dir_tablas, "modelo_did_robus.png"))
+  cat("✓ Tabla convertida a PNG:", file.path(dir_tablas, "modelo_did_robus.png"), "\n")
   
   # Limpiar archivos temporales
-  archivos_temp <- c("Tablas/tabla_temp.tex",
-                     "Tablas/hetero_robus_did.pdf",
-                     "Tablas/hetero_robus_did.aux", 
-                     "Tablas/hetero_robus_did.log")
+  archivos_temp <- c(
+    file.path(dir_tablas, "tabla_temp.tex"),
+    file.path(dir_tablas, "modelo_did_robus.pdf"),
+    file.path(dir_tablas, "modelo_did_robus.aux"), 
+    file.path(dir_tablas, "modelo_did_robus.log")
+  )
+  
   file.remove(archivos_temp[file.exists(archivos_temp)])
   cat("✓ Archivos temporales eliminados\n")
 } else {
   cat("❌ No se generó el PDF\n")
+  cat("Ruta buscada:", pdf_path, "\n")
+  # Verificar qué archivos se crearon
+  cat("Archivos en", dir_tablas, ":\n")
+  print(list.files(dir_tablas))
 }
 
 cat("\n✓ Análisis de heterogeneidad y robustez completado\n")
