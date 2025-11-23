@@ -1,0 +1,48 @@
+\documentclass[12pt]{article}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{threeparttable}
+\usepackage{dcolumn}
+\usepackage{adjustbox}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}
+\pagestyle{empty}
+\begin{document}
+\setcounter{table}{2}
+\begin{table}[htbp]
+\centering
+\begin{threeparttable}
+
+   \caption{Efecto según Nivel de Vulnerabilidad (IVIG continuo)}
+   \centering
+   \small
+   \begin{tabular}{lc}
+      \tabularnewline \midrule \midrule
+      Dependent Variable:                           & ind\_prod\_nominal\\    
+                                                    & IVIG Continuo \\   
+      Model:                                        & (1)\\  
+      \midrule
+      \emph{Variables}\\
+      Shock\_Importacion $\times$ IVIG\_3\_cont     & 24.82$^{*}$ (11.55)\\   
+      \midrule
+      \emph{Fixed-effects}\\
+      departamento                                  & Yes\\  
+      ym\_2                                         & Yes\\  
+      \midrule
+      \emph{Fit statistics}\\
+      Observations                                  & 4,539\\  
+      R$^2$                                         & 0.7\\  
+      Within R$^2$                                  & 0.01\\  
+      \midrule \midrule
+      \multicolumn{2}{l}{\emph{Clustered (departamento) standard-errors in parentheses}}\\
+      \multicolumn{2}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+   \end{tabular}
+
+
+\begin{tablenotes}
+\footnotesize
+\item \textit{Notas:} Errores estándar agrupados a nivel departamental entre paréntesis.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{document}
