@@ -1545,7 +1545,6 @@ if (file.exists(pdf_path)) {
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 
 # TABLA COMPARATIVA DE ROBUSTEZ
-
 cat("Generando tabla comparativa de robustez\n")
 
 # Enumerar la tabla
@@ -1668,7 +1667,7 @@ if (file.exists(pdf_path)) {
   print(list.files(dir_tablas))
 }
 
-cat("\n✓ Análisis de heterogeneidad y robustez completado\n")
+cat("✓ Análisis de heterogeneidad y robustez completado\n")
 
 ```
 # Paso 4. Síntesis estado del arte
