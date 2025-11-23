@@ -1,0 +1,31 @@
+\documentclass[12pt]{article}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{threeparttable}
+\usepackage{dcolumn}
+\usepackage{adjustbox}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}
+\pagestyle{empty}
+\begin{document}
+\setcounter{table}{0}
+\begin{table}[htbp]
+\centering
+\footnotesize
+
+\caption{Primeros 5 registros de la base de datos}
+\begin{tabular}[t]{lrrllrrrrrrrrrrrrrrrr}
+\toprule
+date & year & month & departamento & industria & ind\_prod\_nominal & consumo & prod & costotransporte & costomolgas & ind\_empleo & cobertura & PIB\_DPTO & poblacion & SGP & ym & ym\_2 & gestion\_inst & autonomia\_fisc & tramites & venta\_nominal\\
+\midrule
+2018-01-01 & 2018 & 1 & ANTIOQUIA & Total & 87.19 & 74.36 & 0 & 838.78 & 449.72 & 97.17 & 1244013 & 141680.1 & 6407149 & 4.037767e+12 & 1 & 1 & 7.16 & 7 & 4.69 & 85.65\\
+2018-02-01 & 2018 & 2 & ANTIOQUIA & Total & 90.47 & 79.95 & 0 & 410.34 & 599.84 & 99.25 & 1244013 & 141680.1 & 6407149 & 4.037767e+12 & 2 & 2 & 7.16 & 7 & 4.69 & 87.35\\
+2018-03-01 & 2018 & 3 & ANTIOQUIA & Total & 91.88 & 73.57 & 0 & 420.30 & 647.10 & 99.31 & 1244013 & 141680.1 & 6407149 & 4.037767e+12 & 3 & 3 & 7.16 & 7 & 4.69 & 92.51\\
+2018-04-01 & 2018 & 4 & ANTIOQUIA & Total & 96.44 & 75.41 & 0 & 432.93 & 637.48 & 99.86 & 1263426 & 141680.1 & 6407149 & 4.037767e+12 & 4 & 4 & 7.16 & 7 & 4.69 & 95.68\\
+2018-05-01 & 2018 & 5 & ANTIOQUIA & Total & 99.92 & 76.49 & 0 & 409.93 & 624.51 & 100.20 & 1263426 & 141680.1 & 6407149 & 4.037767e+12 & 5 & 5 & 7.16 & 7 & 4.69 & 96.64\\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{document}
