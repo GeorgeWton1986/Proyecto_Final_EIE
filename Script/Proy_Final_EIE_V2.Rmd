@@ -563,7 +563,7 @@ BD_0 <- BD_0 %>%
 
 # Verificar distribución por los shocks
 cat("Rango de períodos Importación:", 
-    range(BD_0$periodo_imp, na.rm = TRUE), "\n\n")  
+    range(BD_0$periodo_imp, na.rm = TRUE), "\n")  
 ```
 ## Selección de rangos para estudio
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
@@ -576,7 +576,7 @@ BD_event_imp <- BD_0 %>%
   filter(periodo_imp >= ventana_imp[1] &                          
          periodo_imp <= ventana_imp[2])                           
 
-cat("Observaciones para Event Study Importación:", nrow(BD_event_imp), "\n\n")  
+cat("Observaciones para Event Study Importación:", nrow(BD_event_imp), "\n")  
 
 
 ```
@@ -584,7 +584,7 @@ cat("Observaciones para Event Study Importación:", nrow(BD_event_imp), "\n\n")
 ## Modelo de interacción periodo y grupo
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Estimación de modelos Event Study
-cat("Estimando modelos Event Study...\n\n")
+cat("Modelo Estudio de Evento\n")
 
 # Enumerar la tabla
 numero_tabla <- 1
@@ -611,7 +611,7 @@ etable(modelo_event_imp,
        digits.stats = 1,
        file = file.path(dir_tablas, "tabla_temp.tex")
 )
-cat("✓ Tabla LaTeX generada\n\n")
+cat("✓ Tabla LaTeX generada\n")
 
 #Convertir la tabla de resultados en Latex y PNG.
 # Leer el contenido de la tabla
@@ -674,7 +674,7 @@ resultado <- try({
 setwd(dir_actual)
 
 if (inherits(resultado, "try-error")) {
-  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n\n")
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n")
   log_file <- file.path(dir_tablas, "study_event_table.log")
   if (file.exists(log_file)) {
     log_lines <- readLines(log_file)
@@ -757,14 +757,13 @@ coefs_imp <- extraer_coefs_event(modelo_event_imp, "periodo_imp")
 
 
 cat("Coeficientes extraídos:\n")
-cat("Importación: N períodos =", nrow(coefs_imp), "\n\n")  
+cat("Importación: N períodos =", nrow(coefs_imp), "\n")  
 
 ```
 ## Gráfico de estudio de evento
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Gerenerar el gráfico de Evento
-
-cat("Generando gráficos...\n\n")
+cat("Generando gráficos\n")
 
 # FUNCIÓN PARA GRAFICAR
 plot_event_study <- function(coefs_df, titulo, fecha_shock_label) {
@@ -863,9 +862,9 @@ cat("  N coeficientes pre-shock:", test_pre_imp$n_coefs, "\n")
 cat("  N significativos:", test_pre_imp$n_sig, "\n")                           
 cat("  Máximo coeficiente (abs):", round(test_pre_imp$max_abs_coef, 3), "\n")  
 if(test_pre_imp$n_sig == 0) {                                                  
-  cat("  ✅ Ningún coeficiente pre-shock significativo → Tendencias paralelas VÁLIDAS\n\n") 
+  cat("  ✅ Ningún coeficiente pre-shock significativo → Tendencias paralelas VÁLIDAS\n") 
 } else {                                                                        
-  cat("  ⚠️  Algunos coeficientes pre-shock significativos → Posible violación\n\n")       
+  cat("  ⚠️  Algunos coeficientes pre-shock significativos → Posible violación\n")       
 }
 
 ```
@@ -875,7 +874,7 @@ if(test_pre_imp$n_sig == 0) {
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 
 # 1. HETEROGENEIDAD POR INDUSTRIA
-cat("1. Estimando efectos por industria...\n")
+cat("1. Estimando efectos por industria\n")
 
 # Enumerar la tabla
 numero_tabla <- 2
@@ -898,7 +897,7 @@ modelo_het_industria <- feols(
   cluster = ~departamento
 )
 
-cat("✓ Modelo por industria estimado\n\n")
+cat("✓ Modelo por industria estimado\n")
 
 # Resultado del modelo de Heterogeneidad por Industria
 etable(modelo_het_industria, 
@@ -945,7 +944,7 @@ doc_completo <- c(
   "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
   "\\pagestyle{empty}",
   "\\begin{document}",
-  paste0("\\setcounter{table}{", numero_tabla - 2, "}"),
+  paste0("\\setcounter{table}{", numero_tabla - 1, "}"),
   "\\begin{table}[htbp]",
   "\\centering",
   "\\begin{threeparttable}",
@@ -975,7 +974,7 @@ resultado <- try({
 setwd(dir_actual)
 
 if (inherits(resultado, "try-error")) {
-  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n\n")
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n")
   log_file <- file.path(dir_tablas, "hetero_industria.log")
   if (file.exists(log_file)) {
     log_lines <- readLines(log_file)
@@ -1016,7 +1015,7 @@ if (file.exists(pdf_path)) {
 #Análisis de Heterogeneidad por Vulnerabilidad
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # 2. HETEROGENEIDAD POR NIVEL DE VULNERABILIDAD (Continuo)
-cat("2. Estimando efectos usando IVIG continuo...\n")
+cat("2. Estimando efectos usando IVIG continuo\n")
 
 # Enumerar la tabla
 numero_tabla <- 3
@@ -1029,7 +1028,7 @@ modelo_het_continuo <- feols(
   cluster = ~departamento
 )
 
-cat("✓ Modelo con IVIG continuo estimado\n\n")
+cat("✓ Modelo con IVIG continuo estimado\n")
 
 # Resultado del modelo de Heterogeneidad IVIG continuo
 etable(modelo_het_continuo,
@@ -1076,7 +1075,7 @@ doc_completo <- c(
   "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
   "\\pagestyle{empty}",
   "\\begin{document}",
-  paste0("\\setcounter{table}{", numero_tabla - 3, "}"),
+  paste0("\\setcounter{table}{", numero_tabla - 1, "}"),
   "\\begin{table}[htbp]",
   "\\centering",
   "\\begin{threeparttable}",
@@ -1106,7 +1105,7 @@ resultado <- try({
 setwd(dir_actual)
 
 if (inherits(resultado, "try-error")) {
-  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n\n")
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n")
   log_file <- file.path(dir_tablas, "hetero_vulnerabilidad.log")
   if (file.exists(log_file)) {
     log_lines <- readLines(log_file)
@@ -1161,7 +1160,7 @@ modelo_het_depto <- feols(
   cluster = ~departamento
 )
 
-cat("✓ Modelo por departamento estimado\n\n")
+cat("✓ Modelo por departamento estimado\n")
 
 # Resultado del modelo de Heterogeneidad por departamento
 etable(modelo_het_depto,
@@ -1208,7 +1207,7 @@ doc_completo <- c(
   "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
   "\\pagestyle{empty}",
   "\\begin{document}",
-  paste0("\\setcounter{table}{", numero_tabla - 4, "}"),
+  paste0("\\setcounter{table}{", numero_tabla - 1, "}"),
   "\\begin{table}[htbp]",
   "\\centering",
   "\\begin{threeparttable}",
@@ -1238,7 +1237,7 @@ resultado <- try({
 setwd(dir_actual)
 
 if (inherits(resultado, "try-error")) {
-  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n\n")
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n")
   log_file <- file.path(dir_tablas, "hetero_dpto.log")
   if (file.exists(log_file)) {
     log_lines <- readLines(log_file)
@@ -1319,6 +1318,7 @@ ggplot(df_plot, aes(x = reorder(departamento, coef), y = coef)) +
 ggsave(file.path(dir_graficos,"figura9_efect_hetero_dpto.png"), width = 10, height = 6)
 
 ```
+
 #Analisis de robustez
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 
@@ -1335,7 +1335,7 @@ modelo_rob_sincontroles <- feols(
   cluster = ~departamento
 )
 
-cat("✓ Modelo sin controles estimado\n\n")
+cat("✓ Modelo sin controles estimado\n")
 
 # 2. ESPECIFICACIÓN ALTERNATIVA: Umbral alternativo (percentil 75)
 
@@ -1358,7 +1358,7 @@ modelo_rob_p75 <- feols(
   cluster = ~departamento
 )
 
-cat("✓ Modelo con P75 estimado\n\n")
+cat("✓ Modelo con P75 estimado\n")
 
 # 3. ESPECIFICACIÓN ALTERNATIVA: Efectos fijos más estrictos
 
@@ -1375,7 +1375,7 @@ modelo_rob_fe_estricto <- feols(
   cluster = ~departamento
 )
 
-cat("✓ Modelo con FE estrictos estimado\n\n")
+cat("✓ Modelo con FE estrictos estimado\n")
 
 
 # 4. PLACEBO TEST: Shock falso 12 meses antes
@@ -1397,7 +1397,7 @@ modelo_placebo <- feols(
   cluster = ~departamento
 )
 
-cat("✓ Placebo test estimado\n\n")
+cat("✓ Placebo test estimado\n")
 
 
 ```
@@ -1406,7 +1406,7 @@ cat("✓ Placebo test estimado\n\n")
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 
 # ESTIMACION DiD - SHOCK IMPORTACIÓN (dic 2024)
-cat("Estimando modelos con Shock Importación...\n")
+cat("Modelo Diferencias en Diferencias\n")
 
 # Enumerar la tabla
 numero_tabla <- 5
@@ -1427,7 +1427,7 @@ modelo_imp_m1 <- feols(
   cluster = ~departamento                                                  
 )
 
-cat("✓ Modelos Importación estimados\n\n")
+cat("✓ Modelos Importación estimados\n")
 
 # Resultado del modelo de DiD
 etable(modelo_imp_m1,
@@ -1474,7 +1474,7 @@ doc_completo <- c(
   "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
   "\\pagestyle{empty}",
   "\\begin{document}",
-  paste0("\\setcounter{table}{", numero_tabla - 5, "}"),
+  paste0("\\setcounter{table}{", numero_tabla - 1, "}"),
   "\\begin{table}[htbp]",
   "\\centering",
   "\\begin{threeparttable}",
@@ -1504,7 +1504,7 @@ resultado <- try({
 setwd(dir_actual)
 
 if (inherits(resultado, "try-error")) {
-  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n\n")
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n")
   log_file <- file.path(dir_tablas, "modelo_did.log")
   if (file.exists(log_file)) {
     log_lines <- readLines(log_file)
@@ -1546,7 +1546,7 @@ if (file.exists(pdf_path)) {
 
 # TABLA COMPARATIVA DE ROBUSTEZ
 
-cat("Generando tabla comparativa de robustez...\n\n")
+cat("Generando tabla comparativa de robustez\n")
 
 # Enumerar la tabla
 numero_tabla <- 6
@@ -1632,7 +1632,7 @@ resultado <- try({
 setwd(dir_actual)
 
 if (inherits(resultado, "try-error")) {
-  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n\n")
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n")
   log_file <- file.path(dir_tablas, "modelo_did_robus.log")
   if (file.exists(log_file)) {
     log_lines <- readLines(log_file)
