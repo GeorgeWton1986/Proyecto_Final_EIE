@@ -641,12 +641,101 @@ BD_0 <- BD_0 %>%
 
 ```
 
-### Graficar cada departamento y cada industria
+### Graficar dependencia y estandarización de variables
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Gráfico de dependencia
+ggplot(BD_0, aes(x = date, y = dependencia)) +
+  geom_line(color = "steelblue", linewidth = 0.4) + 
+  geom_vline(xintercept = as.POSIXct("2024-12-01"), 
+             linetype = "dashed", 
+             color = "red", 
+             linewidth = 0.2) +
+  annotate("text", 
+           x = as.POSIXct("2024-12-01"), 
+           y = 0.70,
+           label = "Shock", 
+           color = "red", 
+           size = 2, 
+           angle = 90, 
+           vjust = -0.5) +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
+  facet_wrap(~departamento, scales = "free_y") +
+  labs(title = "Figura 3: Dependencia Energética por Departamento",
+       x = "Fecha",
+       y = "Dependencia Energética") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 6), 
+        axis.text.y = element_text(hjust = 1, size = 6),
+        strip.text = element_text(size = 6))
+
+ggsave(file.path(dir_graficos,"figura3_dependencia_dpto.png"), width = 10, height = 6)
+
+# Grafico de Costo Transporte Estandarizado
+ggplot(BD_0, aes(x = date, y = est_costotransporte)) +
+  geom_line(color = "orange", linewidth = 0.4) + 
+  geom_vline(xintercept = as.POSIXct("2024-12-01"), 
+             linetype = "dashed", 
+             color = "red", 
+             linewidth = 0.2) +
+  annotate("text", 
+           x = as.POSIXct("2024-12-01"), 
+           y = 0.70,
+           label = "Shock", 
+           color = "red", 
+           size = 2, 
+           angle = 90, 
+           vjust = -0.5) +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
+  facet_wrap(~departamento, scales = "free_y") +
+  labs(title = "Figura 4: Costo de Transporte Estandarizado por Departamento",
+       x = "Fecha",
+       y = "Costo de Transporte Estandarizado") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 6), 
+        axis.text.y = element_text(hjust = 1, size = 6),
+        strip.text = element_text(size = 6))
+
+ggsave(file.path(dir_graficos,"figura4_estcostranporte_dpto.png"), width = 10, height = 6)
+
+# Grafico de Costo Mol Gas Estandarizado
+ggplot(BD_0, aes(x = date, y = est_costomolgas)) +
+  geom_line(color = "darkgreen", linewidth = 0.4) + 
+  geom_vline(xintercept = as.POSIXct("2024-12-01"), 
+             linetype = "dashed", 
+             color = "red", 
+             linewidth = 0.2) +
+  annotate("text", 
+           x = as.POSIXct("2024-12-01"), 
+           y = 0.70,
+           label = "Shock", 
+           color = "red", 
+           size = 2, 
+           angle = 90, 
+           vjust = -0.5) +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
+  facet_wrap(~departamento, scales = "free_y") +
+  labs(title = "Figura 5: Costo de Molécula de Gas Estandarizado por Departamento",
+       x = "Fecha",
+       y = "Costo de Molécula de Gas Estandarizado") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 6), 
+        axis.text.y = element_text(hjust = 1, size = 6),
+        strip.text = element_text(size = 6))
+
+ggsave(file.path(dir_graficos,"figura5_estcostmolgas_dpto.png"), width = 10, height = 6)
+
+```
+
+
+### Graficar inidice de industria de cada departamento y de cada industria
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Gráfico por departamento
 ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = departamento)) +
   geom_line(linewidth = 0.4) +
-  labs(title = "Figura 3: Índice de Producción Industrial Nominal por Departamento",
+  labs(title = "Figura 6: Índice de Producción Industrial Nominal por Departamento",
        x = "Fecha",
        y = "Índice de Producción Industrial Nominal",
        color = "Departamento") +
@@ -657,12 +746,12 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = departamento)) +
           legend.position = "right", 
           legend.text = element_text(size = 4))
 
-ggsave(file.path(dir_graficos,"figura3_IPIND.png"), width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura6_IPIND.png"), width = 10, height = 6)
 
 # Gráfico por industria
 ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = industria)) +
   geom_line(linewidth = 0.4) +
-  labs(title = "Figura 4: Índice de Producción Industrial Nominal por Industria",
+  labs(title = "Figura 7: Índice de Producción Industrial Nominal por Industria",
        x = "Fecha",
        y = "Índice de Producción Industrial Nominal",
        color = "Industria") +
@@ -673,28 +762,54 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = industria)) +
           legend.position = "right", 
           legend.text = element_text(size = 4))
 
-ggsave(file.path(dir_graficos,"figura4_IPINI.png"), width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura7_IPINI.png"), width = 10, height = 6)
 
 # Gráfico separados por departamento
 ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
-  geom_line(color = "steelblue", linewidth = 0.4) +
+  geom_line(color = "steelblue", linewidth = 0.2) +
+    geom_vline(xintercept = as.POSIXct("2024-12-01"), 
+             linetype = "dashed", 
+             color = "red", 
+             linewidth = 0.5) +
+  annotate("text", 
+           x = as.POSIXct("2024-12-01"), 
+           y = 280,
+           label = "Shock", 
+           color = "red", 
+           size = 2, 
+           angle = 90, 
+           vjust = -0.5) +
+  scale_y_continuous(limits = c(0, 300), breaks = seq(0, 300, 100)) +
   facet_wrap(~departamento, scales = "free_y") +
-  labs(title = "Figura 5: Índice de Producción Industrial Nominal por Departamento",
+  labs(title = "Figura 8: Índice de Producción Industrial Nominal por Departamento",
        x = "Fecha",
        y = "Índice") +
   theme_minimal() +
   theme(plot.title = element_text(size = 14, face = "bold"),
         axis.text.x = element_text(angle = 45, hjust = 1,size = 6), 
         axis.text.y = element_text (hjust = 1, size = 6),
-        strip.text = element_text(size = 4))
+        strip.text = element_text(size = 6))
 
-ggsave(file.path(dir_graficos,"figura5_IPIND2.png"), width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura8_IPIND2.png"), width = 10, height = 6)
 
 # Gráfico separados separados por industria
 ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
-  geom_line(color = "darkgreen", linewidth = 0.4) +
+  geom_line(color = "darkgreen", linewidth = 0.2) +
+    geom_vline(xintercept = as.POSIXct("2024-12-01"), 
+             linetype = "dashed", 
+             color = "red", 
+             linewidth = 0.5) +
+  annotate("text", 
+           x = as.POSIXct("2024-12-01"), 
+           y = 280,
+           label = "Shock", 
+           color = "red", 
+           size = 2, 
+           angle = 90, 
+           vjust = -0.5) +
+  scale_y_continuous(limits = c(0, 300), breaks = seq(0, 300, 100)) +
   facet_wrap(~industria, scales = "free_y") +
-  labs(title = "Figura 6: Índice de Producción Industrial Nominal por Industria",
+  labs(title = "Figura 9: Índice de Producción Industrial Nominal por Industria",
        x = "Fecha",
        y = "Índice") +
   theme_minimal() +
@@ -703,7 +818,7 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
         axis.text.y = element_text (hjust = 1, size = 6),
         strip.text = element_text(size = 5))
 
-ggsave(file.path(dir_graficos,"figura6_IPINI2.png"), width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura9_IPINI2.png"), width = 10, height = 6)
 
 ```
 ### Grafico entre grupo tratado y control en el tiempo
@@ -766,13 +881,13 @@ plot_tendencias <- function(data, grupo_var, titulo, fecha_shock,
     scale_fill_manual(values = c("Control" = "#0072B2", 
                                   "Tratado" = "#D55E00"))
 
-  ggsave(file.path(dir_graficos,"figura7_PIN_lineas.png"), width = 10, height = 6)
+  ggsave(file.path(dir_graficos,"figura10_PIN_lineas.png"), width = 10, height = 6)
   return(p)
 }
 
 # Importación GNI (dic 2024)
 p3_imp <- plot_tendencias(BD_0, "grupo_IVIG_3_label",
-                          "Figura 7: Productividad Industrial Nominal - Importación GNI",
+                          "Figura 10: Productividad Industrial Nominal - Importación GNI",
                           fecha_pre_tratamiento)  
 
 print(p3_imp)  
@@ -1059,7 +1174,7 @@ plot_event_study <- function(coefs_df, titulo, fecha_shock_label) {
     annotate("text", x = 1, y = max(coefs_df$ci_high, na.rm = TRUE) * 0.99,
              label = "Shock", color = "red", size = 4, hjust = 0)
     
-  ggsave(file.path(dir_graficos,"figura8_event_study.png"), width = 10, height = 6)
+  ggsave(file.path(dir_graficos,"figura11_event_study.png"), width = 10, height = 6)
   return(p)
 }
 
@@ -1067,7 +1182,7 @@ plot_event_study <- function(coefs_df, titulo, fecha_shock_label) {
 
 p_event_imp <- plot_event_study(                             
   coefs_imp,                                                 
-  "Figura 8: Event Study - Efecto Dinámico de la Importación de Gas (GNI)",  
+  "Figura 11: Event Study - Efecto Dinámico de la Importación de Gas (GNI)",  
   "Diciembre 2024"                                           
 )
 
@@ -1532,7 +1647,7 @@ ggplot(df_plot, aes(x = reorder(departamento, coef), y = coef)) +
                 width = 0.2, linewidth = 1) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
   coord_flip() +
-  labs(title = "Figura 9: Efectos Heterogéneos por Departamento",
+  labs(title = "Figura 12: Efectos Heterogéneos por Departamento",
        subtitle = "Shock Importación × Vulnerabilidad (con IC 95%)",
        x = "Departamento",
        y = "Efecto estimado",
@@ -1547,7 +1662,7 @@ ggplot(df_plot, aes(x = reorder(departamento, coef), y = coef)) +
     )+
   scale_color_manual(values = c("No" = "gray", "Sí" = "red"))
 
-ggsave(file.path(dir_graficos,"figura9_efect_hetero_dpto.png"), width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura12_efect_hetero_dpto.png"), width = 10, height = 6)
 
 ```
 
