@@ -1232,6 +1232,25 @@ if(!"Shock_Importacion" %in% colnames(BD_0)) {
     mutate(Shock_Importacion = ifelse(date >= fecha_pre_tratamiento, 1, 0))
 }
 
+# Cambiar el nivel de referencia del factor
+BD_0 <- BD_0 %>%
+  mutate(
+    industria = factor(industria, 
+                      levels = c("Total", 
+                                "Alimentos y bebidas",
+                                "Madera y muebles",
+                                "Minerales no metálicos",
+                                "Papel e imprentas",
+                                "Productos metálicos",
+                                "Sustancias y productos químicos, farmacéuticos, de caucho y plástico",
+                                "Textiles, confecciones y cuero"))
+  )
+
+# Verificar que "Total" es ahora la referencia
+cat("Nuevo orden de niveles (la referencia es el primero):\n")
+print(levels(BD_0$industria))
+cat("\n")
+
 # Modelo con triple interacción: Shock × Grupo × Industria
 modelo_het_industria <- feols(
   ind_prod_nominal ~ Shock_Importacion:IVIG_3_dt:industria + 
@@ -1298,7 +1317,7 @@ doc_completo <- c(
   tabla_limpia,
   "\\begin{tablenotes}",
   "\\footnotesize",
-  "\\item \\textit{Notas:} Errores estándar agrupados a nivel departamental entre paréntesis.",
+  "\\item \\textit{Notas:} Errores estándar agrupados a nivel departamental entre paréntesis, Todos los coeficientes se interpretan relativo a la industria de referencia que sera el total agregado",
   "\\end{tablenotes}",
   "\\end{threeparttable}",
   "\\end{table}",
