@@ -1,0 +1,34 @@
+\documentclass[12pt]{article}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{threeparttable}
+\usepackage{dcolumn}
+\usepackage{adjustbox}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}
+\pagestyle{empty}
+\begin{document}
+\setcounter{table}{8}
+\begin{table}[htbp]
+\centering
+\begin{threeparttable}
+
+\caption{Correlaciones entre IVIG y Variables de Prosperidad}
+\begin{tabular}[t]{lr}
+\toprule
+Correlación & Valor\\
+\midrule
+IVIG vs Costo mol & 0.018\\
+IVIG vs PIB & 0.185\\
+IVIG vs Productividad & -0.392\\
+IVIG vs Población & 0.204\\
+IVIG vs SGP & -0.096\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\footnotesize
+\item \textit{Notas:}El PIB departamental en Billones COP
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{document}
