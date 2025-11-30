@@ -892,7 +892,7 @@ print(p3_imp)
 
 ```
 
-# Relación entre Vulnerabilidad y Prosperidad
+#Relación entre Vulnerabilidad y Prosperidad
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 
 cat("ANÁLISIS: Relación entre Vulnerabilidad y Prosperidad\n")
@@ -922,9 +922,449 @@ analisis_deptos <- BD_0 %>%
     grupo_label = ifelse(grupo_vulnerable == 1, "Vulnerable", "Control")
   )
 
+# Convertir PIB a millones para mejor visualización
+analisis_deptos <- analisis_deptos %>%
+  mutate(pib_mean_billones = pib_mean / 1e3)
+
+# 1. Tabla descriptiva
+
+cat("Tabla 8: Características por Grupo de Vulnerabilidad\n")
+cat("======================================================\n\n")
+
+comparacion_grupos <- analisis_deptos %>%
+  group_by(grupo_label) %>%
+  summarise(
+    N_deptos = n(),
+    IVIG_promedio = mean(IVIG_mean, na.rm = TRUE),
+    Productividad = mean(prod_ind_mean, na.rm = TRUE),
+    PIB_promedio = mean(pib_mean_billones, na.rm = TRUE),
+    Poblacion = mean(poblacion_mean, na.rm = TRUE),
+    SGP = mean(sgp_mean, na.rm = TRUE)
+  )
+
+
+# Enumerar la tabla
+numero_tabla <- 8
+
+tabla_latex_2 <- kable(comparacion_grupos,
+      format = "latex",
+      booktabs = TRUE,
+      digits = 2,
+      col.names = c("Grupo", "N deptos", "IVIG", "Productividad", 
+                    "PIB", "Población", "SGP"),
+      caption = "Características por Grupo de Vulnerabilidad (2023)")
+
+# Guardar la tabla en un archivo
+writeLines(as.character(tabla_latex_2), file.path(dir_tablas, "tabla_temp.tex"))
+
+#Convertir la tabla de resultados en Latex y PNG.
+# Leer el contenido de la tabla
+tabla_contenido <- readLines(file.path(dir_tablas,"tabla_temp.tex"))
+
+# Extraer SOLO el contenido entre \begin{document} y \end{document}
+inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
+fin <- which(grepl("\\\\end\\{document\\}", tabla_contenido))
+
+if (length(inicio) > 0 && length(fin) > 0) {
+  # Extraer solo el contenido de la tabla (sin document tags)
+  tabla_limpia <- tabla_contenido[(inicio + 1):(fin - 1)]
+} else {
+  # Si no hay \begin{document}, usar todo el contenido
+  tabla_limpia <- tabla_contenido
+}
+
+# Remover \begin{table} y \end{table} duplicados si existen
+tabla_limpia <- tabla_limpia[!grepl("^\\\\begin\\{table\\}|^\\\\end\\{table\\}|^\\\\centering$", tabla_limpia)]
+
+# Crear documento completo con notas alineadas
+doc_completo <- c(
+  "\\documentclass[12pt]{article}",
+  "\\usepackage{booktabs}",
+  "\\usepackage{caption}",
+  "\\usepackage{threeparttable}",
+  "\\usepackage{dcolumn}",
+  "\\usepackage{adjustbox}",
+  "\\usepackage[utf8]{inputenc}",
+  "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
+  "\\pagestyle{empty}",
+  "\\begin{document}",
+  paste0("\\setcounter{table}{", numero_tabla - 1, "}"),
+  "\\begin{table}[htbp]",
+  "\\centering",
+  "\\begin{threeparttable}",
+  tabla_limpia,
+  "\\begin{tablenotes}",
+  "\\footnotesize",
+  "\\item \\textit{Notas:} El PIB departamental en Billones COP",
+  "\\end{tablenotes}",
+  "\\end{threeparttable}",
+  "\\end{table}",
+  "\\end{document}"
+)
+
+# Guardar UN SOLO archivo .tex
+writeLines(doc_completo, file.path(dir_tablas,"grupo_vulnerab.tex"))
+cat("✓ Archivo .tex guardado\n")
+
+# Compilar
+dir_actual <- getwd()
+setwd(dir_tablas)
+
+
+resultado <- try({
+  tinytex::pdflatex("grupo_vulnerab.tex")
+}, silent = FALSE)
+
+setwd(dir_actual)
+
+if (inherits(resultado, "try-error")) {
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n")
+  log_file <- file.path(dir_tablas, "grupo_vulnerab.log")
+  if (file.exists(log_file)) {
+    log_lines <- readLines(log_file)
+    cat(tail(log_lines, 30), sep = "\n")
+  }
+  stop("No se pudo compilar el documento LaTeX")
+}
+
+# Verificar la ruta correcta del PDF
+pdf_path <- file.path(dir_tablas, "grupo_vulnerab.pdf")
+
+if (file.exists(pdf_path)) {
+  # Convertir a PNG
+  img <- image_read_pdf(pdf_path, density = 300)
+  image_write(img, file.path(dir_tablas, "grupo_vulnerab.png"))
+  cat("✓ Tabla convertida a PNG:", file.path(dir_tablas, "grupo_vulnerab.png"), "\n")
+  
+  # Limpiar archivos temporales
+  archivos_temp <- c(
+    file.path(dir_tablas, "tabla_temp.tex"),
+    file.path(dir_tablas, "grupo_vulnerab.pdf"),
+    file.path(dir_tablas, "grupo_vulnerab.aux"), 
+    file.path(dir_tablas, "grupo_vulnerab.log")
+  )
+  
+  file.remove(archivos_temp[file.exists(archivos_temp)])
+  cat("✓ Archivos temporales eliminados\n")
+} else {
+  cat("❌ No se generó el PDF\n")
+  cat("Ruta buscada:", pdf_path, "\n")
+  # Verificar qué archivos se crearon
+  cat("Archivos en", dir_tablas, ":\n")
+  print(list.files(dir_tablas))
+}
+
+cat("✓ Tabla 8 guardada: Características por Grupo de Vulnerabilidad\n")
+
+# 2. Correlaciones
+
+cat("Tabla 9: Correlaciones entre IVIG y Variables de Prosperidad\n")
+cat("=============================================================\n\n")
+
+correlaciones <- analisis_deptos %>%
+  summarise(
+    `IVIG vs PIB` = cor(IVIG_mean, pib_mean_billones, use = "complete.obs"),
+    `IVIG vs Productividad` = cor(IVIG_mean, prod_ind_mean, use = "complete.obs"),
+    `IVIG vs Población` = cor(IVIG_mean, poblacion_mean, use = "complete.obs"),
+    `IVIG vs SGP` = cor(IVIG_mean, sgp_mean, use = "complete.obs")
+  ) %>%
+  pivot_longer(cols = everything(),
+               names_to = "Correlación",
+               values_to = "Valor")
+
+# Enumerar la tabla
+numero_tabla <- 9
+
+tabla_latex_3 <- kable(correlaciones,
+      format = "latex",
+      booktabs = TRUE,
+      digits = 3,
+      caption = "Correlaciones entre IVIG y Variables de Prosperidad")
+
+# Guardar la tabla en un archivo
+writeLines(as.character(tabla_latex_3), file.path(dir_tablas, "tabla_temp.tex"))
+
+#Convertir la tabla de resultados en Latex y PNG.
+# Leer el contenido de la tabla
+tabla_contenido <- readLines(file.path(dir_tablas,"tabla_temp.tex"))
+
+# Extraer SOLO el contenido entre \begin{document} y \end{document}
+inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
+fin <- which(grepl("\\\\end\\{document\\}", tabla_contenido))
+
+if (length(inicio) > 0 && length(fin) > 0) {
+  # Extraer solo el contenido de la tabla (sin document tags)
+  tabla_limpia <- tabla_contenido[(inicio + 1):(fin - 1)]
+} else {
+  # Si no hay \begin{document}, usar todo el contenido
+  tabla_limpia <- tabla_contenido
+}
+
+# Remover \begin{table} y \end{table} duplicados si existen
+tabla_limpia <- tabla_limpia[!grepl("^\\\\begin\\{table\\}|^\\\\end\\{table\\}|^\\\\centering$", tabla_limpia)]
+
+# Crear documento completo con notas alineadas
+doc_completo <- c(
+  "\\documentclass[12pt]{article}",
+  "\\usepackage{booktabs}",
+  "\\usepackage{caption}",
+  "\\usepackage{threeparttable}",
+  "\\usepackage{dcolumn}",
+  "\\usepackage{adjustbox}",
+  "\\usepackage[utf8]{inputenc}",
+  "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
+  "\\pagestyle{empty}",
+  "\\begin{document}",
+  paste0("\\setcounter{table}{", numero_tabla - 1, "}"),
+  "\\begin{table}[htbp]",
+  "\\centering",
+  "\\begin{threeparttable}",
+  tabla_limpia,
+  "\\begin{tablenotes}",
+  "\\footnotesize",
+  "\\item \\textit{Notas:}El PIB departamental en Billones COP",
+  "\\end{tablenotes}",
+  "\\end{threeparttable}",
+  "\\end{table}",
+  "\\end{document}"
+)
+
+# Guardar UN SOLO archivo .tex
+writeLines(doc_completo, file.path(dir_tablas,"correlaciones.tex"))
+cat("✓ Archivo .tex guardado\n")
+
+# Compilar
+dir_actual <- getwd()
+setwd(dir_tablas)
+
+
+resultado <- try({
+  tinytex::pdflatex("correlaciones.tex")
+}, silent = FALSE)
+
+setwd(dir_actual)
+
+if (inherits(resultado, "try-error")) {
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n")
+  log_file <- file.path(dir_tablas, "correlaciones.log")
+  if (file.exists(log_file)) {
+    log_lines <- readLines(log_file)
+    cat(tail(log_lines, 30), sep = "\n")
+  }
+  stop("No se pudo compilar el documento LaTeX")
+}
+
+# Verificar la ruta correcta del PDF
+pdf_path <- file.path(dir_tablas, "correlaciones.pdf")
+
+if (file.exists(pdf_path)) {
+  # Convertir a PNG
+  img <- image_read_pdf(pdf_path, density = 300)
+  image_write(img, file.path(dir_tablas, "correlaciones.png"))
+  cat("✓ Tabla convertida a PNG:", file.path(dir_tablas, "correlaciones.png"), "\n")
+  
+  # Limpiar archivos temporales
+  archivos_temp <- c(
+    file.path(dir_tablas, "tabla_temp.tex"),
+    file.path(dir_tablas, "correlaciones.pdf"),
+    file.path(dir_tablas, "correlaciones.aux"), 
+    file.path(dir_tablas, "correlaciones.log")
+  )
+  
+  file.remove(archivos_temp[file.exists(archivos_temp)])
+  cat("✓ Archivos temporales eliminados\n")
+} else {
+  cat("❌ No se generó el PDF\n")
+  cat("Ruta buscada:", pdf_path, "\n")
+  # Verificar qué archivos se crearon
+  cat("Archivos en", dir_tablas, ":\n")
+  print(list.files(dir_tablas))
+}
+
+cat("✓ Tabla 9 guardada: Correlaciones\n")
+
+#Grafico IVIG y PIB
+
+p1 <- ggplot(analisis_deptos, aes(x = IVIG_mean, y = pib_mean_billones, 
+                                   color = grupo_label)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = TRUE, alpha = 0.2) +
+  geom_text(aes(label = departamento), size = 2.5, 
+            vjust = -1, hjust = 0.5, check_overlap = TRUE) +
+  scale_y_continuous(limits = c(0,500), breaks = seq (0,500,50))+
+  labs(title = "Figura 11: Vulnerabilidad Energética vs PIB Departamental",
+       subtitle = "Año 2023 (pre-shock)",
+       x = "IVIG (Índice de Vulnerabilidad)",
+       y = "PIB Departamental (Billones de COP)",
+       color = "Grupo") +
+  theme_minimal() +
+      theme(
+      plot.title = element_text(size = 14, face = "bold"),
+      plot.subtitle = element_text(size = 11),
+      axis.title = element_text(size = 11),
+      legend.position = "bottom",
+      panel.grid.minor = element_blank()
+    )
+  scale_color_manual(values = c("Control" = "#0072B2", 
+                                 "Vulnerable" = "#D55E00"))
+
+print(p1)
+
+ggsave(file.path(dir_graficos,"figura11_vul_pibdpto.png"), width = 10, height = 6)
+
+
+#Grafico IVIG y Indicie de producción industrial
+
+p2 <- ggplot(analisis_deptos, aes(x = IVIG_mean, y = prod_ind_mean, 
+                                   color = grupo_label)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = TRUE, alpha = 0.2) +
+  geom_text(aes(label = departamento), size = 2.5, 
+            vjust = -1, hjust = 0.5, check_overlap = TRUE) +
+  scale_y_continuous(limits = c(100,250), breaks = seq (100,250,50))+
+  labs(title = "Figura 12: Vulnerabilidad Energética vs Ind. Producción",
+       subtitle = "Año 2023 (pre-shock)",
+       x = "IVIG (Índice de Vulnerabilidad)",
+       y = "Producción Industrial Nominal",
+       color = "Grupo") +
+    theme_minimal() +
+      theme(
+      plot.title = element_text(size = 14, face = "bold"),
+      plot.subtitle = element_text(size = 11),
+      axis.title = element_text(size = 11),
+      legend.position = "bottom",
+      panel.grid.minor = element_blank()
+    )
+  scale_color_manual(values = c("Control" = "#0072B2", 
+                                 "Vulnerable" = "#D55E00"))
+
+print(p2)
+
+ggsave(file.path(dir_graficos,"figura12_vul_indprod.png"), width = 10, height = 6)
+
+# 3. Ranking departamentos
+
+cat("Tabla 10: Ranking de Departamentos (por IVIG)\n")
+cat("=============================================\n\n")
+
+ranking <- analisis_deptos %>%
+  select(departamento, IVIG_mean, grupo_label, prod_ind_mean, pib_mean_billones) %>%
+  arrange(desc(IVIG_mean))
+
+# Enumerar la tabla
+numero_tabla <- 10
+
+tabla_latex_4 <- kable(ranking,
+      format = "latex",
+      booktabs = TRUE,
+      digits = 3,
+      col.names = c("Departamento", "IVIG", "Grupo", "Productividad", "PIB"))
+
+# Guardar la tabla en un archivo
+writeLines(as.character(tabla_latex_4), file.path(dir_tablas, "tabla_temp.tex"))
+
+#Convertir la tabla de resultados en Latex y PNG.
+# Leer el contenido de la tabla
+tabla_contenido <- readLines(file.path(dir_tablas,"tabla_temp.tex"))
+
+# Extraer SOLO el contenido entre \begin{document} y \end{document}
+inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
+fin <- which(grepl("\\\\end\\{document\\}", tabla_contenido))
+
+if (length(inicio) > 0 && length(fin) > 0) {
+  # Extraer solo el contenido de la tabla (sin document tags)
+  tabla_limpia <- tabla_contenido[(inicio + 1):(fin - 1)]
+} else {
+  # Si no hay \begin{document}, usar todo el contenido
+  tabla_limpia <- tabla_contenido
+}
+
+# Remover \begin{table} y \end{table} duplicados si existen
+tabla_limpia <- tabla_limpia[!grepl("^\\\\begin\\{table\\}|^\\\\end\\{table\\}|^\\\\centering$", tabla_limpia)]
+
+# Crear documento completo con notas alineadas
+doc_completo <- c(
+  "\\documentclass[12pt]{article}",
+  "\\usepackage{booktabs}",
+  "\\usepackage{caption}",
+  "\\usepackage{threeparttable}",
+  "\\usepackage{dcolumn}",
+  "\\usepackage{adjustbox}",
+  "\\usepackage[utf8]{inputenc}",
+  "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
+  "\\pagestyle{empty}",
+  "\\begin{document}",
+  paste0("\\setcounter{table}{", numero_tabla - 1, "}"),
+  "\\begin{table}[htbp]",
+  "\\centering",
+  "\\begin{threeparttable}",
+  tabla_limpia,
+  "\\begin{tablenotes}",
+  "\\footnotesize",
+  "\\item \\textit{Notas:}El PIB departamental en Billones COP",
+  "\\end{tablenotes}",
+  "\\end{threeparttable}",
+  "\\end{table}",
+  "\\end{document}"
+)
+
+# Guardar UN SOLO archivo .tex
+writeLines(doc_completo, file.path(dir_tablas,"ranking.tex"))
+cat("✓ Archivo .tex guardado\n")
+
+# Compilar
+dir_actual <- getwd()
+setwd(dir_tablas)
+
+
+resultado <- try({
+  tinytex::pdflatex("ranking.tex")
+}, silent = FALSE)
+
+setwd(dir_actual)
+
+if (inherits(resultado, "try-error")) {
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n")
+  log_file <- file.path(dir_tablas, "ranking.log")
+  if (file.exists(log_file)) {
+    log_lines <- readLines(log_file)
+    cat(tail(log_lines, 30), sep = "\n")
+  }
+  stop("No se pudo compilar el documento LaTeX")
+}
+
+# Verificar la ruta correcta del PDF
+pdf_path <- file.path(dir_tablas, "ranking.pdf")
+
+if (file.exists(pdf_path)) {
+  # Convertir a PNG
+  img <- image_read_pdf(pdf_path, density = 300)
+  image_write(img, file.path(dir_tablas, "ranking.png"))
+  cat("✓ Tabla convertida a PNG:", file.path(dir_tablas, "ranking.png"), "\n")
+  
+  # Limpiar archivos temporales
+  archivos_temp <- c(
+    file.path(dir_tablas, "tabla_temp.tex"),
+    file.path(dir_tablas, "ranking.pdf"),
+    file.path(dir_tablas, "ranking.aux"), 
+    file.path(dir_tablas, "ranking.log")
+  )
+  
+  file.remove(archivos_temp[file.exists(archivos_temp)])
+  cat("✓ Archivos temporales eliminados\n")
+} else {
+  cat("❌ No se generó el PDF\n")
+  cat("Ruta buscada:", pdf_path, "\n")
+  # Verificar qué archivos se crearon
+  cat("Archivos en", dir_tablas, ":\n")
+  print(list.files(dir_tablas))
+}
+
+cat("✓ Tabla 10 guardada: ranking\n")
+
+cat("\n✓ Análisis de vulnerabilidad vs prosperidad completado\n")
 
 ```
-
 # Estudio de evento 
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Gráfica de estudio de evento
@@ -964,7 +1404,7 @@ cat("Observaciones para Event Study Importación:", nrow(BD_event_imp), "\n")
 cat("Modelo Estudio de Evento\n")
 
 # Enumerar la tabla
-numero_tabla <- 5
+numero_tabla <- 11
 
 # EVENT STUDY - SHOCK IMPORTACIÓN
 modelo_event_imp <- feols(ind_prod_nominal ~ i(periodo_imp, IVIG_3_dt, ref = -1) +
@@ -1539,7 +1979,7 @@ if (file.exists(pdf_path)) {
 
 ```
 
-# Análisis de Heterogeneidad por Dpto
+#Análisis de Heterogeneidad por Dpto
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # 3. HETEROGENEIDAD POR DEPARTAMENTO ESPECÍFICO 
 cat("3. Estimando efectos por departamento\n")
@@ -2066,30 +2506,6 @@ if (file.exists(pdf_path)) {
 cat("✓ Análisis de heterogeneidad y robustez completado\n")
 
 ```
-# Paso 4. Síntesis estado del arte
-La evidencia para Colombia y la región muestra que los choques y los arreglos institucionales en los sectores de hidrocarburos y energía generan efectos heterogéneos a nivel territorial y, en muchos casos, solo parcialmente favorables sobre el bienestar y la actividad económica. En términos generales, la literatura latinoamericana sobre el tema comparte enfoques metodológicos y conceptuales similares al del presente trabajo, aunque con variaciones en contexto y alcance. En el caso colombiano, la reciente necesidad de importar gas natural para abastecer la demanda nacional constituye un hecho sin precedentes. Este shock de importación abre un espacio de análisis poco explorado, dado que la literatura previa se ha centrado en aspectos fiscales (como las regalías) o macroeconómicos, pero no en los efectos productivos departamentales asociados a la dependencia energética.
- 
-Para el caso de Colombia específicamente se encuentra un trabajo relevante porque muestra cómo los shocks asociados al sector de hidrocarburos, ya sea en ingresos o en oferta, no necesariamente se transforman automáticamente en beneficios reales para las regiones productoras. Moyano (2016) analiza la reforma del sistema general de regalías de 2012 bajo un enfoque de diferencias en diferencias y encuentra impactos débiles o nulos sobre la pobreza. El autor destaca que las transferencias por regalías no se tradujeron de manera homogénea en bienestar, pues su efectividad depende de la capacidad institucional y la eficiencia en la gestión de los recursos a nivel territorial. 
- 
-Por su parte, Alcaraz (2017) documenta para México que los episodios de escasez de gas natural tuvieron efectos negativos y diferenciados sobre la producción industrial y el crecimiento económico regional. Usando un modelo de panel con efectos fijos, el autor muestra que las regiones más dependientes del gas enfrentaron caídas más pronunciadas en su actividad económica durante los periodos de restricción. Este hallazgo es central para la investigación propuesta, pues evidencia que los shocks energéticos, ya sean por escasez o dependencia de importaciones, pueden traducirse en heterogeneidades productivas entre regiones, especialmente en sectores intensivos en energía.
- 
-En un nivel más estructural, Yépez-García (2021) explora la relación entre intensidad energética y productividad industrial en América Latina. Su análisis, basado en un modelo de panel two-way fixed effects, muestra que los sectores con mayor eficiencia energética tienden a presentar una productividad más alta. Aunque el estudio no identifica un shock exógeno, aporta evidencia sólida sobre el vínculo entre energía y desempeño productivo, reforzando la idea de que los patrones de consumo energético están estrechamente ligados a la competitividad industrial.
- 
-Finalmente, Wang y Garduño-Rivera (2022) analizan los efectos del creciente comercio transfronterizo de gas entre Estados Unidos y México. A través de un modelo de panel con efectos fijos e instrumentos geográficos (distancia a gasoductos), los autores identifican que los estados más expuestos a las importaciones experimentaron aumentos en el empleo manufacturero y en la actividad económica, aunque con variaciones regionales marcadas. Su diseño se asemeja a un modelo de diferencias en diferencias, donde la exposición preexistente al shock define la intensidad del tratamiento.
- 
-En conjunto, esta literatura profundiza en tres elementos fundamentales para la presente investigación. Primero, los shocks energéticos y las transformaciones en el suministro, ya sea por reformas, escasez o dependencia de importaciones, generan consecuencias reales sobre la productividad y el bienestar departamental. Segundo, la exposición diferencial o “vulnerabilidad” de las regiones es un canal clave que explica la magnitud de dichos efectos, lo cual justifica la construcción de un índice de vulnerabilidad energética como tratamiento continuo. Y tercero, la metodología panel con efectos fijos, o two-way fixed effects, está presente para capturar estas relaciones causales en presencia de variación temporal y espacial, garantizando un enfoque robusto frente a factores no observados.
-
-#Aporte a la literatura y factor diferencial
-
-Como ya se dijo anteriormente, Colombia es un país que ha contado con un superávit energético durante los años recientes y la necesidad de importación de productos como el gas no se ha dado en el pasado. Este shock de importación, intensificado a partir de 2024, constituye un punto de quiebre estructural que aún no ha sido abordado por la literatura nacional, ni desde el punto de vista de su impacto en la productividad ni desde su dimensión territorial.
- 
-Hasta ahora, la evidencia existente para Colombia se ha concentrado en temas como la distribución de regalías y su relación con la pobreza (Moyano, 2016) o en análisis agregados del sector energético y macroeconómico, sin vincularlos con efectos reales sobre la actividad industrial o la competitividad regional. En cambio, los estudios latinoamericanos más cercanos, como Alcaraz (2017) y Wang & Garduño-Rivera (2022), sí exploran shocks energéticos, pero en contextos donde la dependencia del gas ya era estructural (México), o desde una óptica del empleo y la producción agregada, no de la productividad manufacturera subnacional.
- 
-De esta manera, el estudio amplía la frontera de la literatura sobre energía y desarrollo regional en América Latina, aportando evidencia novedosa sobre cómo los cambios en la composición del suministro energético, particularmente la pérdida de autosuficiencia y la exposición a importaciones, pueden tener consecuencias diferenciadas sobre la actividad productiva interna, incluso en sectores no directamente vinculados a la extracción.
-
-# Paso 5. Interpretación de resultados
-
-# Paso 6. Aplicación de la Teoría de Cambio
 
 ## Bibliografía
 
