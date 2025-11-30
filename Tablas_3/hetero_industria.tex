@@ -1,0 +1,54 @@
+\documentclass[12pt]{article}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{threeparttable}
+\usepackage{dcolumn}
+\usepackage{adjustbox}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}
+\pagestyle{empty}
+\begin{document}
+\setcounter{table}{8}
+\begin{table}[htbp]
+\centering
+\begin{threeparttable}
+
+   \caption{Heterogeneidad por Industria}
+   \centering
+   \small
+   \begin{tabular}{lc}
+      \tabularnewline \midrule \midrule
+      Dependent Variable:                                                                                                         & ind\_prod\_nominal\\    
+                                                                                                                                  & Modelo Heterogéneo por Industria \\   
+      Model:                                                                                                                      & (1)\\  
+      \midrule
+      \emph{Variables}\\
+      Shock\_Importacion $\times$ IVIG\_3\_dt $\times$ industriaAlimentosybebidas                                                 & -0.7759 (9.520)\\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt $\times$ industriaMaderaymuebles                                                    & 23.98$^{**}$ (8.133)\\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt $\times$ industriaMineralesnometálicos                                              & -22.35 (22.53)\\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt $\times$ industriaPapeleimprentas                                                   & -13.19 (9.438)\\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt $\times$ industriaProductosmetálicos                                                & -3.025 (9.047)\\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt $\times$ industriaSustanciasyproductosquímicos,farmacéuticos,decauchoyplástico      & -7.904 (7.764)\\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt $\times$ industriaTextiles,confeccionesycuero                                       & 16.20 (13.64)\\   
+      \midrule
+      \emph{Fixed-effects}\\
+      departamento                                                                                                                & Yes\\  
+      ym\_2                                                                                                                       & Yes\\  
+      \midrule
+      \emph{Fit statistics}\\
+      Observations                                                                                                                & 4,539\\  
+      R$^2$                                                                                                                       & 0.7\\  
+      Within R$^2$                                                                                                                & 0.1\\  
+      \midrule \midrule
+      \multicolumn{2}{l}{\emph{Clustered (departamento) standard-errors in parentheses}}\\
+      \multicolumn{2}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+   \end{tabular}
+
+
+\begin{tablenotes}
+\footnotesize
+\item \textit{Notas:} Errores estándar agrupados a nivel departamental entre paréntesis, Todos los coeficientes se interpretan relativo a la industria de referencia que sera el total agregado
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{document}
