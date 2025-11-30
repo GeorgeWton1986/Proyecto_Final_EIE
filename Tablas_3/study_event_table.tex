@@ -1,0 +1,64 @@
+\documentclass[12pt]{article}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{threeparttable}
+\usepackage{dcolumn}
+\usepackage{adjustbox}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}
+\pagestyle{empty}
+\begin{document}
+\setcounter{table}{7}
+\begin{table}[htbp]
+\centering
+\begin{threeparttable}
+
+   \caption{Modelo Event Study - Importación GNI}
+   \centering
+   \small
+   \begin{tabular}{lc}
+      \tabularnewline \midrule \midrule
+      Dependent Variable:                           & ind\_prod\_nominal\\    
+                                                    & Importación GNI \\   
+      Model:                                        & (1)\\  
+      \midrule
+      \emph{Variables}\\
+      IVIG\_3\_dt $\times$ periodo\_imp $=$ -12     & -10.33 (8.038)\\   
+      IVIG\_3\_dt $\times$ periodo\_imp $=$ -11     & 1.509 (7.755)\\   
+      IVIG\_3\_dt $\times$ periodo\_imp $=$ -10     & 9.178 (7.606)\\   
+      IVIG\_3\_dt $\times$ periodo\_imp $=$ -9      & -7.631 (9.306)\\   
+      IVIG\_3\_dt $\times$ periodo\_imp $=$ -8      & 4.268 (5.420)\\   
+      IVIG\_3\_dt $\times$ periodo\_imp $=$ -7      & 2.086 (5.381)\\   
+      IVIG\_3\_dt $\times$ periodo\_imp $=$ -6      & -5.060 (5.177)\\   
+      IVIG\_3\_dt $\times$ periodo\_imp $=$ -5      & 2.364 (5.710)\\   
+      IVIG\_3\_dt $\times$ periodo\_imp $=$ -4      & -0.4663 (6.109)\\   
+      IVIG\_3\_dt $\times$ periodo\_imp $=$ -3      & -5.668 (6.349)\\   
+      IVIG\_3\_dt $\times$ periodo\_imp $=$ -2      & 13.52$^{**}$ (4.618)\\   
+      IVIG\_3\_dt $\times$ periodo\_imp $=$ 0       & 2.331 (6.458)\\   
+      IVIG\_3\_dt $\times$ periodo\_imp $=$ 1       & -6.321 (6.922)\\   
+      IVIG\_3\_dt $\times$ periodo\_imp $=$ 2       & -7.338 (5.692)\\   
+      IVIG\_3\_dt $\times$ periodo\_imp $=$ 3       & 3.110 (3.369)\\   
+      IVIG\_3\_dt $\times$ periodo\_imp $=$ 4       & -1.117 (12.10)\\   
+      IVIG\_3\_dt $\times$ periodo\_imp $=$ 5       & -2.088 (6.312)\\   
+      \midrule
+      \emph{Fixed-effects}\\
+      departamento                                  & Yes\\  
+      ym\_2                                         & Yes\\  
+      \midrule
+      \emph{Fit statistics}\\
+      Observations                                  & 918\\  
+      R$^2$                                         & 0.3\\  
+      Within R$^2$                                  & 0.02\\  
+      \midrule \midrule
+      \multicolumn{2}{l}{\emph{Clustered (departamento) standard-errors in parentheses}}\\
+      \multicolumn{2}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+   \end{tabular}
+
+
+\begin{tablenotes}
+\footnotesize
+\item \textit{Notas:} Errores estándar agrupados a nivel departamental entre paréntesis.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{document}
