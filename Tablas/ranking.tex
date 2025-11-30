@@ -1,0 +1,43 @@
+\documentclass[12pt]{article}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{threeparttable}
+\usepackage{dcolumn}
+\usepackage{adjustbox}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}
+\pagestyle{empty}
+\begin{document}
+\setcounter{table}{9}
+\begin{table}[htbp]
+\centering
+\begin{threeparttable}
+
+\begin{tabular}{lrlrr}
+\toprule
+Departamento & IVIG & Grupo & Productividad & PIB\\
+\midrule
+ATLANTICO & 0.348 & Vulnerable & 173.625 & 70.862\\
+RISARALDA & 0.314 & Vulnerable & 145.678 & 26.404\\
+BOLIVAR & 0.310 & Vulnerable & 162.806 & 56.924\\
+CUNDINAMARCA & 0.300 & Vulnerable & 153.282 & 99.945\\
+CALDAS & 0.292 & Vulnerable & 190.927 & 26.213\\
+\addlinespace
+TOLIMA & 0.280 & Vulnerable & 141.333 & 33.735\\
+VALLE DEL CAUCA & 0.277 & Vulnerable & 152.836 & 153.564\\
+CAUCA & 0.277 & Vulnerable & 150.768 & 28.537\\
+BOGOTA, D.C. & 0.241 & Vulnerable & 146.220 & 395.438\\
+BOYACA & 0.228 & Vulnerable & 179.730 & 42.277\\
+\addlinespace
+ANTIOQUIA & 0.212 & Control & 154.082 & 231.122\\
+SANTANDER & 0.207 & Control & 177.290 & 101.446\\
+CORDOBA & 0.195 & Control & 144.475 & 28.303\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\footnotesize
+\item \textit{Notas:}El PIB departamental en Billones COP
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{document}
