@@ -1,0 +1,44 @@
+\documentclass[12pt]{article}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{threeparttable}
+\usepackage{dcolumn}
+\usepackage{adjustbox}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}
+\pagestyle{empty}
+\begin{document}
+\setcounter{table}{6}
+\begin{table}[htbp]
+\centering
+\begin{threeparttable}
+
+\caption{Ranking de departamentos}
+\begin{tabular}[t]{lrrlrr}
+\toprule
+Departamento & Costo Mol & IVIG & Grupo & Productividad & PIB\\
+\midrule
+CUNDINAMARCA & 1219.241 & 0.745 & Vulnerable & 153.282 & 99.945\\
+TOLIMA & 1162.650 & 0.735 & Vulnerable & 141.333 & 33.735\\
+CAUCA & 1158.889 & 0.702 & Vulnerable & 150.768 & 28.537\\
+VALLE DEL CAUCA & 1163.569 & 0.679 & Vulnerable & 152.836 & 153.564\\
+BOGOTA, D.C. & 1080.999 & 0.522 & Vulnerable & 146.220 & 395.438\\
+\addlinespace
+CALDAS & 1234.233 & 0.511 & Control & 190.927 & 26.213\\
+ANTIOQUIA & 997.440 & 0.501 & Control & 154.082 & 231.122\\
+RISARALDA & 1312.114 & 0.450 & Vulnerable & 145.678 & 26.404\\
+BOLIVAR & 1322.401 & 0.316 & Control & 162.806 & 56.924\\
+SANTANDER & 1028.903 & 0.231 & Control & 177.290 & 101.446\\
+\addlinespace
+BOYACA & 1098.967 & 0.182 & Control & 179.730 & 42.277\\
+ATLANTICO & 1458.762 & 0.176 & Vulnerable & 173.625 & 70.862\\
+CORDOBA & 1021.598 & 0.050 & Control & 144.475 & 28.303\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\footnotesize
+\item \textit{Notas:}El PIB departamental en Billones COP
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{document}
