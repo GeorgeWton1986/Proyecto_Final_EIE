@@ -693,7 +693,7 @@ ggsave(file.path(dir_graficos,"figura4_estcostranporte_dpto.png"), width = 10, h
 # Gráfico por departamento
 ggplot(BD_0, aes(x = date, y = costomolgas, color = departamento)) +
   geom_line(linewidth = 0.4) +
-  labs(title = "Figura 6: Costo Molecula de Gas por Departamento",
+  labs(title = "Figura 5: Costo Molecula de Gas por Departamento",
        x = "Fecha",
        y = "Costo Molecula de Gas (COP)",
        color = "Departamento") +
@@ -705,12 +705,12 @@ ggplot(BD_0, aes(x = date, y = costomolgas, color = departamento)) +
           legend.position = "right", 
           legend.text = element_text(size = 4))
 
-ggsave(file.path(dir_graficos,"figura6_COSTMOLDPTO.png"), width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura5_COSTMOLDPTO.png"), width = 10, height = 6)
 
 # Gráfico por industria
 ggplot(BD_0, aes(x = date, y = costomolgas, color = industria)) +
   geom_line(linewidth = 0.4) +
-  labs(title = "Figura 7: Costo Molecula de Gas por Industria",
+  labs(title = "Figura 6: Costo Molecula de Gas por Industria",
        x = "Fecha",
        y = "Costo Molecula de Gas (COP)",
        color = "Industria") +
@@ -722,7 +722,7 @@ ggplot(BD_0, aes(x = date, y = costomolgas, color = industria)) +
           legend.position = "right", 
           legend.text = element_text(size = 4))
 
-ggsave(file.path(dir_graficos,"figura7_COSTMOLIND.png"), width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura6_COSTMOLIND.png"), width = 10, height = 6)
 
 # Gráfico separados por departamento
 ggplot(BD_0, aes(x = date, y = costomolgas)) +
@@ -741,7 +741,7 @@ ggplot(BD_0, aes(x = date, y = costomolgas)) +
            vjust = -0.5) +
   scale_y_continuous(limits = c(400, 3400), breaks = seq(400, 3400, 500)) +
   facet_wrap(~departamento, scales = "free_y") +
-  labs(title = "Figura 8: Costo Molecula de Gas por Departamento",
+  labs(title = "Figura 7: Costo Molecula de Gas por Departamento",
        x = "Fecha",
        y = "Costo Molecula de Gas (COP)") +
   theme_minimal() +
@@ -750,7 +750,7 @@ ggplot(BD_0, aes(x = date, y = costomolgas)) +
         axis.text.y = element_text (hjust = 1, size = 6),
         strip.text = element_text(size = 6))
 
-ggsave(file.path(dir_graficos,"figura8_COSTMOLDPTO2.png"), width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura7_COSTMOLDPTO2.png"), width = 10, height = 6)
 
 # Gráfico separados separados por industria
 ggplot(BD_0, aes(x = date, y = costomolgas)) +
@@ -769,7 +769,7 @@ ggplot(BD_0, aes(x = date, y = costomolgas)) +
            vjust = -0.5) +
   scale_y_continuous(limits = c(400, 3400), breaks = seq(400, 3400, 500)) +
   facet_wrap(~industria, scales = "free_y") +
-  labs(title = "Figura 9: Costo Molecula de Gas por Industria",
+  labs(title = "Figura 8: Costo Molecula de Gas por Industria",
        x = "Fecha",
        y = "Costo Molecula de Gas (COP)") +
   theme_minimal() +
@@ -778,7 +778,7 @@ ggplot(BD_0, aes(x = date, y = costomolgas)) +
         axis.text.y = element_text (hjust = 1, size = 6),
         strip.text = element_text(size = 5))
 
-ggsave(file.path(dir_graficos,"figura9_COSTMOLIND2.png"), width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura8_COSTMOLIND2.png"), width = 10, height = 6)
 
 ```
 ### Grafico entre grupo tratado y control en el tiempo
@@ -841,13 +841,13 @@ plot_tendencias <- function(data, grupo_var, titulo, fecha_shock,
     scale_fill_manual(values = c("Control" = "#0072B2", 
                                   "Tratado" = "#D55E00"))
 
-  ggsave(file.path(dir_graficos,"figura10_costmol_lineas.png"), width = 10, height = 6)
+  ggsave(file.path(dir_graficos,"figura9_costmol_lineas.png"), width = 10, height = 6)
   return(p)
 }
 
 # Importación GNI (dic 2024)
 p3_imp <- plot_tendencias(BD_0, "grupo_IVIG_3_label",
-                          "Figura 10: Costo Molecula de Gas (COP) - Importación GNI",
+                          "Figura 9: Costo Molecula de Gas (COP) - Importación GNI",
                           fecha_pre_tratamiento)  
 
 print(p3_imp)  
@@ -893,7 +893,7 @@ analisis_deptos <- analisis_deptos %>%
 
 # 1. Tabla descriptiva
 
-cat("Tabla 8: Características por Grupo de Vulnerabilidad\n")
+cat("Tabla 5: Características por Grupo de Vulnerabilidad\n")
 cat("======================================================\n\n")
 
 comparacion_grupos <- analisis_deptos %>%
@@ -910,7 +910,7 @@ comparacion_grupos <- analisis_deptos %>%
 
 
 # Enumerar la tabla
-numero_tabla <- 8
+numero_tabla <- 5
 
 tabla_latex_2 <- kable(comparacion_grupos,
       format = "latex",
@@ -1020,11 +1020,11 @@ if (file.exists(pdf_path)) {
   print(list.files(dir_tablas))
 }
 
-cat("✓ Tabla 8 guardada: Características por Grupo de Vulnerabilidad\n")
+cat("✓ Tabla 5 guardada: Características por Grupo de Vulnerabilidad\n")
 
 # 2. Correlaciones
 
-cat("Tabla 9: Correlaciones entre IVIG y Variables de Prosperidad\n")
+cat("Tabla 6: Correlaciones entre IVIG y Variables de Prosperidad\n")
 cat("=============================================================\n\n")
 
 correlaciones <- analisis_deptos %>%
@@ -1040,7 +1040,7 @@ correlaciones <- analisis_deptos %>%
                values_to = "Valor")
 
 # Enumerar la tabla
-numero_tabla <- 9
+numero_tabla <- 6
 
 tabla_latex_3 <- kable(correlaciones,
       format = "latex",
@@ -1148,7 +1148,7 @@ if (file.exists(pdf_path)) {
   print(list.files(dir_tablas))
 }
 
-cat("✓ Tabla 9 guardada: Correlaciones\n")
+cat("✓ Tabla 6 guardada: Correlaciones\n")
 
 #Grafico IVIG y PIB
 
@@ -1159,7 +1159,7 @@ p1 <- ggplot(analisis_deptos, aes(x = IVIG_mean, y = pib_mean_billones,
   geom_text(aes(label = departamento), size = 2.5, 
             vjust = -1, hjust = 0.5, check_overlap = TRUE) +
   scale_y_continuous(limits = c(0,500), breaks = seq (0,500,50))+
-  labs(title = "Figura 11: Vulnerabilidad Energética vs PIB Departamental",
+  labs(title = "Figura 10: Vulnerabilidad Energética vs PIB Departamental",
        subtitle = "Año 2023 (pre-shock)",
        x = "IVIG (Índice de Vulnerabilidad)",
        y = "PIB Departamental (Billones de COP)",
@@ -1177,7 +1177,7 @@ p1 <- ggplot(analisis_deptos, aes(x = IVIG_mean, y = pib_mean_billones,
 
 print(p1)
 
-ggsave(file.path(dir_graficos,"figura11_vul_pibdpto.png"), width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura10_vul_pibdpto.png"), width = 10, height = 6)
 
 
 #Grafico IVIG y Indicie de producción industrial
@@ -1189,7 +1189,7 @@ p2 <- ggplot(analisis_deptos, aes(x = IVIG_mean, y = costmolgas_mean,
   geom_text(aes(label = departamento), size = 2.5, 
             vjust = -1, hjust = 0.5, check_overlap = TRUE) +
   scale_y_continuous(limits = c(400,3400), breaks = seq (400,3400,200))+
-  labs(title = "Figura 12: Vulnerabilidad Energética vs Costo Mol Gas",
+  labs(title = "Figura 11: Vulnerabilidad Energética vs Costo Mol Gas",
        subtitle = "Año 2023 (pre-shock)",
        x = "IVIG (Índice de Vulnerabilidad)",
        y = "Costo Molecula de Gas (COP) (promedio)",
@@ -1207,7 +1207,7 @@ p2 <- ggplot(analisis_deptos, aes(x = IVIG_mean, y = costmolgas_mean,
 
 print(p2)
 
-ggsave(file.path(dir_graficos,"figura12_vul_indprod.png"), width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura11_vul_indprod.png"), width = 10, height = 6)
 
 # 3. Ranking departamentos
 
@@ -1219,12 +1219,13 @@ ranking <- analisis_deptos %>%
   arrange(desc(IVIG_mean))
 
 # Enumerar la tabla
-numero_tabla <- 10
+numero_tabla <- 7
 
 tabla_latex_4 <- kable(ranking,
       format = "latex",
       booktabs = TRUE,
       digits = 3,
+      caption = "Ranking de departamentos",
       col.names = c("Departamento", "Costo Mol", "IVIG", "Grupo", "Productividad", "PIB"))
 
 # Guardar la tabla en un archivo
@@ -1371,7 +1372,7 @@ cat("Observaciones para Event Study Importación:", nrow(BD_event_imp), "\n")
 cat("Modelo Estudio de Evento\n")
 
 # Enumerar la tabla
-numero_tabla <- 11
+numero_tabla <- 8
 
 # EVENT STUDY - SHOCK IMPORTACIÓN
 modelo_event_imp <- feols(costomolgas ~ i(periodo_imp, IVIG_3_dt, ref = -1) +
@@ -1386,8 +1387,7 @@ etable(modelo_event_imp,
        tex = TRUE,
        title = "Modelo Event Study - Importación GNI",
        headers = c("Importación GNI"),
-       drop = "ind_prod_nominal|log(PIB_DPTO)cobertura|
-       poblacion|SGP|^ym_2$|^departamento$",
+       drop = "cobertura|ind_prod_nominal|PIB_DPTO|poblacion|SGP|^departamento$|^ym_2$",
        notes = NULL,
        fontsize = "small",
        se.below = FALSE,
@@ -1661,7 +1661,7 @@ if(test_pre_imp$n_sig == 0) {
 cat("1. Estimando efectos por industria\n")
 
 # Enumerar la tabla
-numero_tabla <- 6
+numero_tabla <- 8
 
 # Crear variable de shock
 if(!"Shock_Importacion" %in% colnames(BD_0)) {
@@ -1822,7 +1822,7 @@ if (file.exists(pdf_path)) {
 cat("2. Estimando efectos usando IVIG continuo\n")
 
 # Enumerar la tabla
-numero_tabla <- 7
+numero_tabla <- 9
 
 modelo_het_continuo <- feols(
   costomolgas ~ Shock_Importacion:IVIG_3_cont +
@@ -1954,7 +1954,7 @@ if (file.exists(pdf_path)) {
 cat("3. Estimando efectos por departamento\n")
 
 # Enumerar la tabla
-numero_tabla <- 8
+numero_tabla <- 10
 
 # Modelo con interacciones departamento × shock
 modelo_het_depto <- feols(
@@ -2218,7 +2218,7 @@ cat("✓ Placebo test estimado\n")
 cat("Modelo Diferencias en Diferencias\n")
 
 # Enumerar la tabla
-numero_tabla <- 9
+numero_tabla <- 11
 
                   
 if(!"Shock_Importacion" %in% colnames(BD_0)) {                             
@@ -2357,7 +2357,7 @@ if (file.exists(pdf_path)) {
 cat("Generando tabla comparativa de robustez\n")
 
 # Enumerar la tabla
-numero_tabla <- 10
+numero_tabla <- 12
 
 # Resultado de los modelos DiD y robustez 
 etable(modelo_imp_m1, modelo_rob_sincontroles, modelo_rob_p75, 
