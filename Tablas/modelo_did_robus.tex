@@ -19,25 +19,25 @@
    \begin{tabular}{lccccc}
       \tabularnewline \midrule \midrule
       Dependent Variable: & \multicolumn{5}{c}{ind\_prod\_nominal}\\
-                                                        & Baseline             & Sin controles       & Umbral P75          & FE estrictos    & Placebo \\   
-      Model:                                            & (1)                  & (2)                 & (3)                 & (4)             & (5)\\  
+                                                        & Baseline             & Sin controles        & Umbral P75          & FE estrictos       & Placebo \\   
+      Model:                                            & (1)                  & (2)                  & (3)                 & (4)                & (5)\\  
       \midrule
       \emph{Variables}\\
-      IVIG\_3\_dt                                       & -0.9234 (3.244)      & -0.3831 (3.776)     &                     & -0.4468 (1.505) & -0.7839 (3.726)\\   
-      Shock\_Importacion $\times$ IVIG\_3\_dt           & 9.452$^{**}$ (3.665) & 9.679$^{*}$ (4.593) &                     & 2.979 (4.003)   &   \\   
-      IVIG\_3\_dt\_p75                                  &                      &                     & 1.043 (4.755)       &                 &   \\   
-      Shock\_Importacion $\times$ IVIG\_3\_dt\_p75      &                      &                     & 9.453$^{*}$ (5.016) &                 &   \\   
-      Shock\_Placebo $\times$ IVIG\_3\_dt               &                      &                     &                     &                 & 1.481 (3.755)\\   
+      IVIG\_3\_dt                                       & -1.066 (1.725)       & -0.9326 (2.210)      &                     & -0.1711 (0.6199)   & -1.190 (1.910)\\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt           & 8.739$^{**}$ (3.398) & 9.214$^{**}$ (3.875) &                     & 2.421 (2.866)      &   \\   
+      IVIG\_3\_dt\_p75                                  &                      &                      & 1.080 (4.368)       &                    &   \\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt\_p75      &                      &                      & 9.391$^{*}$ (4.898) &                    &   \\   
+      Shock\_Placebo $\times$ IVIG\_3\_dt               &                      &                      &                     &                    & 1.773 (2.864)\\   
       \midrule
       \emph{Fixed-effects}\\
-      departamento                                      & Yes                  & Yes                 & Yes                 &                 & Yes\\  
-      ym\_2                                             & Yes                  & Yes                 & Yes                 & Yes             & Yes\\  
-      depto\_year                                       &                      &                     &                     & Yes             & \\  
+      departamento                                      & Yes                  & Yes                  & Yes                 &                    & Yes\\  
+      ym\_2                                             & Yes                  & Yes                  & Yes                 & Yes                & Yes\\  
+      depto\_year                                       &                      &                      &                     & Yes                & \\  
       \midrule
       \emph{Fit statistics}\\
-      Observations                                      & 4,539                & 4,539               & 4,539               & 4,539           & 4,233\\  
-      R$^2$                                             & 0.7                  & 0.7                 & 0.7                 & 0.7             & 0.7\\  
-      Within R$^2$                                      & 0.02                 & 0.003               & 0.02                & 0.0002          & 0.01\\  
+      Observations                                      & 4,539                & 4,539                & 4,539               & 4,539              & 4,233\\  
+      R$^2$                                             & 0.7                  & 0.7                  & 0.7                 & 0.7                & 0.7\\  
+      Within R$^2$                                      & 0.02                 & 0.002                & 0.02                & $9\times 10^{-5}$  & 0.02\\  
       \midrule \midrule
       \multicolumn{6}{l}{\emph{Clustered (departamento) standard-errors in parentheses}}\\
       \multicolumn{6}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
