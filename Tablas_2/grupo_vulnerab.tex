@@ -1,0 +1,31 @@
+\documentclass[12pt]{article}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{threeparttable}
+\usepackage{dcolumn}
+\usepackage{adjustbox}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}
+\pagestyle{empty}
+\begin{document}
+\setcounter{table}{4}
+\begin{table}[htbp]
+\centering
+\begin{threeparttable}
+
+\caption{Características por Grupo de Vulnerabilidad (2023)}
+\begin{tabular}[t]{lrrrrrrr}
+\toprule
+Grupo & N deptos & Costo Mol Gas & IVIG & Productividad & PIB & Población & SGP\\
+\midrule
+Control & 6 & 1117.26 & 0.30 & 168.22 & 81.05 & 2610213 & 6.084022e+12\\
+Vulnerable & 7 & 1222.32 & 0.57 & 151.96 & 115.50 & 3240264 & 5.834636e+12\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\footnotesize
+\item \textit{Notas:} El PIB departamental en Billones COP
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{document}
