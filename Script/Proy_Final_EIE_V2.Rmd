@@ -559,6 +559,7 @@ BD_0 <- BD_0 %>%
 # Calcular medianas en período pre-tratamiento (año 2023)
 medianas_pre <- BD_0 %>%
   filter(year == 2023) %>%
+  group_by(departamento) %>%
   summarise(
     mediana_IVIG_3 = median(IVIG_3_cont, na.rm = TRUE)
   )
@@ -566,6 +567,13 @@ medianas_pre <- BD_0 %>%
 BD_0 <- BD_0 %>%
   mutate(
     IVIG_3_dt = ifelse(IVIG_3_cont >= medianas_pre$mediana_IVIG_3, 1, 0)
+  )
+
+# Clasificación de grupos tratados y control según el IVIG
+
+BD_0 <- BD_0 %>%
+  mutate(
+    grupo_IVIG_3_label = ifelse(IVIG_3_dt == 1, "Tratado", "Control")
   )
 
 ```
@@ -629,17 +637,6 @@ ggsave(file.path(dir_graficos,"figura2_componentes.png"), width = 10, height = 6
 
 ```
 
-
-### Clasificación de grupos
-```{r ECHO=FALSE, warning=FALSE, message=FALSE}
-# Clasificación de grupos tratados y control según el IVIG
-
-BD_0 <- BD_0 %>%
-  mutate(
-    grupo_IVIG_3_label = ifelse(IVIG_3_dt == 1, "Tratado", "Control")
-  )
-
-```
 
 ### Graficar dependencia y estandarización de variables
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
@@ -891,6 +888,39 @@ p3_imp <- plot_tendencias(BD_0, "grupo_IVIG_3_label",
                           fecha_pre_tratamiento)  
 
 print(p3_imp)  
+
+
+```
+
+# Relación entre Vulnerabilidad y Prosperidad
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+
+cat("ANÁLISIS: Relación entre Vulnerabilidad y Prosperidad\n")
+
+# Calcular promedios por departamento en período pre-shock (2023)
+analisis_deptos <- BD_0 %>%
+  filter(year == 2023) %>%
+  group_by(departamento) %>%
+  summarise(
+    # Vulnerabilidad
+    IVIG_mean = mean(IVIG_3_cont, na.rm = TRUE),
+    grupo_vulnerable = first(IVIG_3_dt),
+    
+    # Indicadores de prosperidad
+    prod_ind_mean = mean(ind_prod_nominal, na.rm = TRUE),
+    pib_mean = mean(PIB_DPTO, na.rm = TRUE),
+    poblacion_mean = mean(poblacion, na.rm = TRUE),
+    sgp_mean = mean(SGP, na.rm = TRUE),
+    
+    # Componentes del IVIG
+    dependencia_mean = mean(dependencia, na.rm = TRUE),
+    costotransporte_mean = mean(costotransporte, na.rm = TRUE),
+    costomolgas_mean = mean(costomolgas, na.rm = TRUE)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    grupo_label = ifelse(grupo_vulnerable == 1, "Vulnerable", "Control")
+  )
 
 
 ```
