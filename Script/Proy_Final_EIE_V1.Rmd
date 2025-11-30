@@ -928,7 +928,7 @@ analisis_deptos <- analisis_deptos %>%
 
 # 1. Tabla descriptiva
 
-cat("Tabla 8: Características por Grupo de Vulnerabilidad\n")
+cat("Tabla 5: Características por Grupo de Vulnerabilidad\n")
 cat("======================================================\n\n")
 
 comparacion_grupos <- analisis_deptos %>%
@@ -944,7 +944,7 @@ comparacion_grupos <- analisis_deptos %>%
 
 
 # Enumerar la tabla
-numero_tabla <- 8
+numero_tabla <- 5
 
 tabla_latex_2 <- kable(comparacion_grupos,
       format = "latex",
@@ -1054,11 +1054,11 @@ if (file.exists(pdf_path)) {
   print(list.files(dir_tablas))
 }
 
-cat("✓ Tabla 8 guardada: Características por Grupo de Vulnerabilidad\n")
+cat("✓ Tabla 5 guardada: Características por Grupo de Vulnerabilidad\n")
 
 # 2. Correlaciones
 
-cat("Tabla 9: Correlaciones entre IVIG y Variables de Prosperidad\n")
+cat("Tabla 6: Correlaciones entre IVIG y Variables de Prosperidad\n")
 cat("=============================================================\n\n")
 
 correlaciones <- analisis_deptos %>%
@@ -1073,7 +1073,7 @@ correlaciones <- analisis_deptos %>%
                values_to = "Valor")
 
 # Enumerar la tabla
-numero_tabla <- 9
+numero_tabla <- 6
 
 tabla_latex_3 <- kable(correlaciones,
       format = "latex",
@@ -1181,7 +1181,7 @@ if (file.exists(pdf_path)) {
   print(list.files(dir_tablas))
 }
 
-cat("✓ Tabla 9 guardada: Correlaciones\n")
+cat("✓ Tabla 6 guardada: Correlaciones\n")
 
 #Grafico IVIG y PIB
 
@@ -1244,7 +1244,7 @@ ggsave(file.path(dir_graficos,"figura12_vul_indprod.png"), width = 10, height = 
 
 # 3. Ranking departamentos
 
-cat("Tabla 10: Ranking de Departamentos (por IVIG)\n")
+cat("Tabla 7: Ranking de Departamentos (por IVIG)\n")
 cat("=============================================\n\n")
 
 ranking <- analisis_deptos %>%
@@ -1252,7 +1252,7 @@ ranking <- analisis_deptos %>%
   arrange(desc(IVIG_mean))
 
 # Enumerar la tabla
-numero_tabla <- 10
+numero_tabla <- 7
 
 tabla_latex_4 <- kable(ranking,
       format = "latex",
@@ -1360,7 +1360,7 @@ if (file.exists(pdf_path)) {
   print(list.files(dir_tablas))
 }
 
-cat("✓ Tabla 10 guardada: ranking\n")
+cat("✓ Tabla 7 guardada: ranking\n")
 
 cat("\n✓ Análisis de vulnerabilidad vs prosperidad completado\n")
 
@@ -1404,7 +1404,7 @@ cat("Observaciones para Event Study Importación:", nrow(BD_event_imp), "\n")
 cat("Modelo Estudio de Evento\n")
 
 # Enumerar la tabla
-numero_tabla <- 11
+numero_tabla <- 8
 
 # EVENT STUDY - SHOCK IMPORTACIÓN
 modelo_event_imp <- feols(ind_prod_nominal ~ i(periodo_imp, IVIG_3_dt, ref = -1) +
@@ -1694,7 +1694,7 @@ if(test_pre_imp$n_sig == 0) {
 cat("1. Estimando efectos por industria\n")
 
 # Enumerar la tabla
-numero_tabla <- 6
+numero_tabla <- 9
 
 # Crear variable de shock
 if(!"Shock_Importacion" %in% colnames(BD_0)) {
@@ -1854,7 +1854,7 @@ if (file.exists(pdf_path)) {
 cat("2. Estimando efectos usando IVIG continuo\n")
 
 # Enumerar la tabla
-numero_tabla <- 7
+numero_tabla <- 10
 
 modelo_het_continuo <- feols(
   ind_prod_nominal ~ Shock_Importacion:IVIG_3_cont +
@@ -1985,7 +1985,7 @@ if (file.exists(pdf_path)) {
 cat("3. Estimando efectos por departamento\n")
 
 # Enumerar la tabla
-numero_tabla <- 8
+numero_tabla <- 11
 
 # Modelo con interacciones departamento × shock
 modelo_het_depto <- feols(
@@ -2245,7 +2245,7 @@ cat("✓ Placebo test estimado\n")
 cat("Modelo Diferencias en Diferencias\n")
 
 # Enumerar la tabla
-numero_tabla <- 9
+numero_tabla <- 12
 
                   
 if(!"Shock_Importacion" %in% colnames(BD_0)) {                             
@@ -2384,7 +2384,7 @@ if (file.exists(pdf_path)) {
 cat("Generando tabla comparativa de robustez\n")
 
 # Enumerar la tabla
-numero_tabla <- 10
+numero_tabla <- 13
 
 # Resultado de los modelos DiD y robustez 
 etable(modelo_imp_m1, modelo_rob_sincontroles, modelo_rob_p75, 
