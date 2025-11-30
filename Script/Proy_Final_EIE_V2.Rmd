@@ -1211,7 +1211,7 @@ ggsave(file.path(dir_graficos,"figura11_vul_indprod.png"), width = 10, height = 
 
 # 3. Ranking departamentos
 
-cat("Tabla 10: Ranking de Departamentos (por IVIG)\n")
+cat("Tabla 7: Ranking de Departamentos (por IVIG)\n")
 cat("=============================================\n\n")
 
 ranking <- analisis_deptos %>%
@@ -1328,7 +1328,7 @@ if (file.exists(pdf_path)) {
   print(list.files(dir_tablas))
 }
 
-cat("✓ Tabla 10 guardada: ranking\n")
+cat("✓ Tabla 7 guardada: ranking\n")
 
 cat("\n✓ Análisis de vulnerabilidad vs prosperidad completado\n")
 
