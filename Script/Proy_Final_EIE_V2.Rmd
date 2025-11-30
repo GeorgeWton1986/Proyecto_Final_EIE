@@ -1,0 +1,2515 @@
+---
+title: "EVALUACIÓN DE IMPACTO - PROYECTO FINAL"
+author: "JACOME, NICOLAS; SANCHEZ, JUAN GUILLERMO; VIÁFARA, JORGE ELIECER"
+date: "2025-10-25"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    keep_tex: false
+    extra_dependencies: ["makecell","booktabs"]
+---
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  fig.align = "center",
+  fig.pos = "H",
+  results = 'asis'
+)
+
+# Configurar opciones
+options(modelsummary_factory_default = "gt")
+options(kableExtra.latex.load_packages = FALSE)
+tinytex::tlmgr_install('makecell')
+
+```
+
+
+# Paso 1. ¿Cuál es su pregunta de investigación? ¿Qué ideas tiene su grupo para contestar?
+## 1.	Pregunta de investigación
+
+¿Cuál es el impacto a la productividad industrial nominal en los departamentos colombianos bajo la condición de vulnerabilidad a la importación de Gas Natural y al cambio en las políticas de extracción de energías fósiles? O ¿la reactivación económica generada por el levantamiento de restricciones del COVID-19?
+
+## 2.	Motivación
+Colombia enfrenta un déficit de Gas Natural (GN) causado por la reducción del potencial de producción de los principales campos gasíferos, un aumento marginal sostenido de la demanda regulada, e industrial y una volatilidad de la demanda termoeléctrica  a razón del Fenómeno del Niño que puede representar incrementos significativos y estrés adicional al sistema., estas condiciones obligaron a que por primera vez en la historia se importara gas natural para atender la demanda de la industria y hogares colombianos. Según cifras del Gestor del Mercado de Gas Natural – GMGN, en lo corrido del año 2025 se ha importado cerca del 17% del total de la demanda nacional.
+
+Desde 2016, el Gas Natural Importado – GNI se ha venido incorporando al mercado por medio de la planta regasificadora instalada en Cartagena – SPEC, infraestructura que fue pensada como respaldo para las plantas termoeléctricas de la costa (grupo térmico), más no como una planta de abastecimiento para la demanda general.
+
+En términos de balance entre la oferta y la demanda, gracias a la disposición de la infraestructura de transporte y limitaciones en las capacidades de intercambio entre sistemas, es necesario separar el mercado entre la zona Caribe y el interior. Con referencia a la zona Caribe, se identifican proyectos de producción de Gas Natural más jóvenes y con potencial de producción creciente, de otro lado, con una demanda relativamente estable con una participación importante del grupo térmico de la costa y con un balance superavitario del energético. Respecto a la zona interior, se presenta un potencial de producción que refleja la caída de los grandes campos tradicionales (Cuciana, Cupiagua y Pauto) y una demanda en crecimiento, resultando en un balance deficitario de Gas Natural. 
+
+Ahora, de acuerdo con el Ministerio de Minas y Energía - MME a cierre de 2024, la cobertura para el sector residencial es el 78% (36 millones de colombianos) de los usuarios residenciales anillados, de los cuales, el 20% se encuentran en la zona caribe y el 85% de estos usuarios residenciales pertenecen a los estratos 1, 2 y 3. Además, se estima que los usuarios nuevos incrementen aproximadamente 3.2%. En consecuencia, continúa ampliándose la brecha entre la oferta de producción nacional y la demanda.
+
+Teniendo en cuenta lo anterior, el Gestor del Mercado de Gas Natural – GMGN estimó un déficit creciente de 8.2% de la demanda en 2025 y de 20.6% en año 2026. De esta manera, se ha tomado la determinación de comercializar en el mercado primario el GNI para los sectores industriales, comercial, vehicular y residencial (esenciales), iniciando desde noviembre de 2024. Este hecho, es de suma relevancia dado que el servicio público en el sector residencial tiene una participación en la demanda cercano al 20% 
+
+Por lo tanto, resulta fundamental evaluar los efectos en la productividad industrial nominal sobre la dependencia o autosuficiencia de Gas Natural al sector industrial y el cambio en las políticas públicas frente a la extracción de energías fósiles, estas decisiones pueden tener efectos diferenciales dependiendo del departamento.
+
+
+## 3.	Expectativas de la investigación
+Los estudios en el sector del Gas Natural se orientan en estimar la producción anual nacional, aproximar las reservas probadas (P1), reservas probables (P2), recursos contingentes C1 y C2 tanto en tierra firme como costa afuera. Además, presentan hechos relevantes de ámbito nacional que les permite justificar las cifras de producción anual, por cada una de las fuentes de extracción. De otro lado, se presentan escenarios de demanda agregada, la cual en su conjunto buscan identificar el desbalance en términos volumétricos.
+
+Aunado a lo anterior, los documentos que caracterizan a este sector son planes a Largo Plazo, que describen las diferentes actividades de la prestación del servicio público, como producción, importación, suministro, transporte, comercialización, con un enfoque de transición energética, que se encaminan a identificar necesidades y proponer soluciones. No obstante, dejan atrás el análisis causal de los cambios que se están presentando en el mercado.
+
+En contraste, la presente investigación tomará la información del sector del Gas Natural y la coyuntura actual de dependencia de las importaciones de este recurso energético para atender la demanda industrial. 
+Así mismo, se vincularán variables relevantes como empleos en sector industrial, cobertura de usuarios, PIB, población, SGP.
+
+Como resultado, la investigación permitirá tener un estudio acorde a la actualidad energética de Colombia con el cual se podría establecer efectos causales bajo metodologías de evaluación de impacto económico que permitirán generar recomendaciones de política pública que para ser implementadas por los entes incumbentes.   
+
+## 4.	Los datos
+La información fue tomada de diferentes fuentes oficiales tales como el Gestor del Mercado de Gas Natural- – GMGN en Colombia donde se centralizan las operaciones y transacciones del sector, también de los repositorios de información internacional como, la Agencia Nacional de Hidrocarburos – ANH, y de la Encuesta Mensual Manufacturera con Enfoque Territorial (EMMET) del DANE, del SICODIS se obtuvieron los Recursos distribuidos del Sistema General de Participaciones (SGP), del O3 de la SSPD, se obtuvieron los costos históricos del costos promedio unitario de la molécula y de su transporte, del MME se extrajeron los datos de cobertura industrial del gas y el PIB departamentos y las proyecciones de población del DANE. La frecuencia de la información es mensual desde enero de 2018 hasta abril de 2025 a nivel de departamentos en Colombia.
+
+## 5.	Especificación econométrica
+
+\begin{align}
+Y_{dt}=\alpha_d+\lambda_t+\delta (Shock_t × Grupo)+X'_{dt}\theta+ε_{dt}\quad \nonumber \\
+\end{align}
+
+Donde:
+
+- $Y_{dt}$ Productividad industrial nominal a nivel $prodindnom_{df}$ o empleo sector industrial total $empleoindtotal_{dt}$  departamental (d) y mensual (t).
+- $\alpha_d$ Efecto fijo del departamento (d).
+- $Shock_t$ Dicótoma que toma el valor de 1 cuando el país cambia su gobierno o reactivación económica por causa del COVID-19.
+- $Grupo$ Define si un departamento (d) hace parte del grupo de tratamiento o de control basado en el índice de Vulnerabilidad a la Importación de Gas $IVIG_{dt}$
+
+-$X'_{dt}$ Matriz de controles que incluye:
+  $X_1$ Cobertura de gas en usuarios industriales 
+  $X_2$ Población por departamento por año.
+  $X_3$ Recursos girados del SGP por departamento por año.
+  
+- $ε_{dt}$ es el término del error. 
+
+Aunado a lo anterior, fue necesario la especificación del Índice de Vulnerabilidad de la Importación de Gas $IVIG_{dt}$, con el cual se calcula por departamento en función de la dependencia, costo del transporte del gal y costo de la molécula del gas previo al cambio de gobierno año 2022.
+
+\begin{align}
+IVIG_{dt}=\omega_1×(Dependecia)+\omega_2×(EstCostoTransporte_{dt}+\omega_3×(EstCostoMolGas_{dt})\quad \nonumber \\
+\end{align}
+
+Donde:
+\omega_i: Ponderaciones de cada variable que se establece a partir de la metodología de varianza inversa donde cada
+
+\begin{align}
+\omega_i=(1/\sigma^2_i)/\sum_{i=1}^{n} (1/\sigma^2_i)\quad \nonumber \\
+\end{align}
+
+- $Dependencia (a)$: Es el grado de dependencia que tiene el departamento de acuerdo con su producción de las plantas que se encuentran en sus fronteras y al consumo total de su industria. La interpretación del valor se establece de la siguiente manera, cercano a 1 es un departamento dependiente y 0 departamento autosuficiencia energética.
+
+\begin{align}
+Dependencia (a) = 1- (Produccion/Consumo)\quad \nonumber \\
+\end{align}
+
+$CostoTransporte(Dist)$: Es la estandarización permite comparar los costos de transporte por cada departamento. Los valores cercanos a 1, corresponden a departamentos que se abastecen de fuentes más lejanas y los valores cercanos 0 tienen disponibilidad de gas en el departamento.
+
+\begin{align}
+EstCostoTransporte_{dt}= T - min (T)/(max (t)-min(t))\quad \nonumber \\
+\end{align}
+
+$CostoGas(c)$: Es la estandarización entre 0 y 1. Permite obtener el costo del gas en relación con el rango histórico de la muestra.
+
+\begin{align}
+EstCostoMolGas_{dt}= C - min (C)/(max (C)-min(C))\quad \nonumber \\
+\end{align}
+
+Por lo tanto, el $IVIG_{dt}$ permite definir por medio de la mediana de la distribución la división entre los departamentos con alta vulnerabilidad (grupo de tratamiento) si el índice supera o es igual a la mediana, entonces la variable grupo será igual a 1. En caso contrario serán los departamentos con baja vulnerabilidad (grupo control) y la variable grupo será igual a 0. Con lo anterior, se podrá abordar de manera grafica el supuesto de identificación de DiD correspondiente a tendencias paralelas.
+
+Por último, los errores estándar se agrupan (cluster) a nivel departamental para controlar por posible correlación serial dentro de cada departamento y heterocedasticidad.
+
+## 6.	Resultados esperados
+
+Los resultados obtenidos permitirán responder directamente a la pregunta de investigación porque el modelo de diferencias en diferencias estima cuánto cambia la productividad industrial nominal bajo las condiciones de políticas públicas y las decisiones de importar Gas Natural entre los departamentos con o sin vulnerabilidad. Por lo tanto, esto nos permitirá cuantificar el efecto de las decisiones y acciones.
+
+En términos de política pública, los resultados tendrían al menos dos implicaciones concretas. Primero, evidenciarían el cambio en la productividad industrial por haber perdido autosuficiencia energética y el segundo, aportará insumos para la discusión sobre la necesidad de promover la exploración y producción de gas natural local.
+
+En general, los resultados de nuestra estimación no solo cuantificarán el efecto causal de las importaciones sobre el precio de suministro, sino que también servirán como alerta sobre la fragilidad del actual esquema energético colombiano y como evidencia para orientar la política pública hacia un balance más sostenible en el trilema energético.
+
+##Paso 2. ¿Qué estrategia propone y cuál es su supuesto de identificación?
+
+Para desarrollar esta evaluación de impacto se llevará a cabo un modelo de diferencias en diferencias con efecto fijo temporal y por departamento, en el que se busca estimar el efecto del cambio en las políticas de extracción de energía fósil y el grado de vulnerabilidad del departamento en la productividad industrial nominal.
+ 
+La estrategia de identificación descansa en el supuesto de tendencias paralelas, según el cual, en ausencia del cambio en las políticas de extracción de energía fósil (a partir del año 2022), los departamentos que superan 0,5 el índice de Vulnerabilidad a la Importación de Gas (IVIG_dt) (grupo tratado) y aquellos departamentos que son menores o iguales a 0,5 el Índice de Vulnerabilidad a la Importación de Gas (IVIG_dt) (grupo control) mantienen la productividad industrial nominal similar en todos los periodos de análisis. 
+
+Para reforzar la validez de este supuesto se realizarán gráficas de tendencias paralelas pre-tratamiento. Además, se realizarán test de Placebo en periodos anteriores al 2022 para verificar que no se estén sobreestimando los resultados. 
+
+De otro lado, se incluirán controles tales como, empleo en el sector industrial, cobertura de gas a usuarios industriales, PIB, población y SGP. De esta forma, el coeficiente Delta (δ) asociado a la interacción (Shock_t× Grupo) puede interpretarse como el efecto causal del cambio en la política de extracción de energía fósil interactuada con el Índice de Vulnerabilidad a la Importación de Gas.
+
+##Paso 3. Estadísticas descriptivas
+
+### Generalidades de R
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+#Limpiar la consola
+cat("\f")
+
+#Limpiar el Global Environment
+rm(list = ls())
+
+#Incluir las librerias
+if(!require(pacman)) install.packages("pacman") ; require(pacman)
+p_load(haven,        #Leer archivos .dta
+       dplyr,        #Manipular datos
+       stargazer,    #Visualizar tablas de regresión
+       fixest,       #Calcular los efectos fijos
+       plm,          #Datos de panel
+       knitr,        #Visualizar tablas adicionales
+       ivreg,        #Regresiones por variables instrumentales
+       broom,        #Extraer resultados de regresiones
+       AER,          #Regresiones por variables instrumentales
+       sandwich,     #Errores estándar robustos
+       lmtest,       #Pruebas estadísticas
+       kableExtra,   #Tablas avanzadas
+       tidyverse,    #Conjunto de paquetes para ciencia de datos
+       modelsummary, #Resumir modelos
+       ggplot2,      #Gráficos
+       rddensity,    #Test de McCrary
+       readxl,       #Leer archivos Excel
+       rio,         #Importar/exportar datos múltiples formatos
+       knitr,        #Tablas dinámicas
+       magick,       #Convertir tabla en PNG
+       webshot2,      #Guardar tablas como gráficos
+       tynitex,       #Compila documentos en Latex
+       pdftools,      #Leer archivos en PDF
+       tidyr         #Manipulación de datos
+      )
+```
+### Crear las carpetas
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Verificar directorio actual
+getwd()
+
+# Cambiar el directorio un nivel arriba
+setwd("..")
+
+# Verrificar el cambio en el directorio
+getwd()
+
+# Crear las carpetas 
+carpetas <- c("Tablas", "Graphs")
+
+for (carpeta in carpetas) {
+  if (!dir.exists(carpeta)) {
+    dir.create(carpeta)
+    cat("✓ Carpeta creada:", carpeta, "\n")
+  } else {
+    cat("✓ Carpeta ya existe:", carpeta, "\n")
+  }
+}
+
+# Crear un archivo .gitkeep
+for (carpeta in carpetas) {
+  archivo_gitkeep <- file.path(carpeta, ".gitkeep")
+  if (!file.exists(archivo_gitkeep)) {
+    file.create(archivo_gitkeep)
+    cat("✓ Archivo .gitkeep creado en:", carpeta, "\n")
+  }
+}
+
+cat("\n✓ Carpetas creadas. Ahora ejecuta los siguientes comandos en la terminal:\n")
+cat("git add .\n")
+cat("git commit -m 'Crear estructura de carpetas del proyecto'\n")
+cat("git push origin main\n")
+
+# Verrificar el cambio en el directorio
+getwd()
+```
+### Direccion de rutas
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+dir_tablas <- "../Tablas"
+dir_graficos <- "../Graphs"
+```
+
+### Transformación de datos en R
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+
+# Definir URL del archivo en GitHub
+github_url <- "https://raw.githubusercontent.com/GeorgeWton1986/Proyecto_Final_EIE/main/Data/20251116_DB.xlsx"
+
+temp_file <- tempfile(fileext = ".xlsx")
+download.file(github_url, temp_file, mode = "wb")
+
+# Cargar datos usando readxl
+BD_0 <- read_excel(temp_file)
+```
+
+### Exploración de datos
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+numero_tabla <- 1  # Número de la tabla
+
+# Crear tabla LaTeX con escape
+tabla_latex_1 <- kable(head(BD_0, 5),
+                       format = "latex",
+                       booktabs = TRUE,
+                       caption = "Primeros 5 registros de la base de datos",
+                       digits = 2,
+                       escape = TRUE)
+
+# Guardar la tabla en un archivo
+writeLines(as.character(tabla_latex_1), file.path(dir_tablas, "tabla_temp.tex"))
+
+#Convertir la tabla de resultados en Latex y PNG.
+# Leer el contenido de la tabla
+tabla_contenido <- readLines(file.path(dir_tablas, "tabla_temp.tex"))
+
+# Extraer SOLO el contenido entre \begin{document} y \end{document}
+inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
+fin <- which(grepl("\\\\end\\{document\\}", tabla_contenido))
+
+if (length(inicio) > 0 && length(fin) > 0) {
+  # Extraer solo el contenido de la tabla (sin document tags)
+  tabla_limpia <- tabla_contenido[(inicio + 1):(fin - 1)]
+} else {
+  # Si no hay \begin{document}, usar todo el contenido
+  tabla_limpia <- tabla_contenido
+}
+
+# Remover \begin{table} y \end{table} duplicados si existen
+tabla_limpia <- tabla_limpia[!grepl("^\\\\begin\\{table\\}|^\\\\end\\{table\\}|^\\\\centering$", tabla_limpia)]
+
+# Crear documento completo
+doc_completo <- c(
+  "\\documentclass[12pt]{article}",
+  "\\usepackage{booktabs}",
+  "\\usepackage{caption}",
+  "\\usepackage{threeparttable}",
+  "\\usepackage{dcolumn}",
+  "\\usepackage{adjustbox}",
+  "\\usepackage{longtable}",
+  "\\usepackage{array}",
+  "\\usepackage[utf8]{inputenc}",
+  "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
+  "\\pagestyle{empty}",
+  "\\begin{document}",
+  paste0("\\setcounter{table}{", numero_tabla - 1, "}"),
+  "\\begin{table}[htbp]",
+  "\\centering",
+  "\\footnotesize",
+  tabla_limpia,
+  "\\end{table}",
+  "\\end{document}"
+)
+
+# Guardar UN SOLO archivo .tex
+writeLines(doc_completo, file.path(dir_tablas, "registros.tex"))
+cat("✓ Archivo .tex guardado\n")
+
+# Compilar
+dir_actual <- getwd()
+setwd(dir_tablas)
+
+resultado <- try({
+  tinytex::pdflatex("registros.tex")
+}, silent = FALSE)
+
+setwd(dir_actual)
+
+if (inherits(resultado, "try-error")) {
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n")
+  log_file <- file.path(dir_tablas, "registros.log")
+  if (file.exists(log_file)) {
+    log_lines <- readLines(log_file)
+    cat(tail(log_lines, 30), sep = "\n")
+  }
+  stop("No se pudo compilar el documento LaTeX")
+}
+
+# Verificar la ruta correcta del PDF
+pdf_path <- file.path(dir_tablas, "registros.pdf")
+
+if (file.exists(pdf_path)) {
+  # Convertir a PNG
+  img <- image_read_pdf(pdf_path, density = 300)
+  image_write(img, file.path(dir_tablas, "registros.png"))
+  cat(paste0("✓ Tabla ", numero_tabla, " convertida a PNG: ", 
+             file.path(dir_tablas, "registros.png"), "\n"))
+  
+  # Limpiar archivos temporales
+  archivos_temp <- c(
+    file.path(dir_tablas, "tabla_temp.tex"),
+    file.path(dir_tablas, "registros.pdf"),
+    file.path(dir_tablas, "registros.aux"), 
+    file.path(dir_tablas, "registros.log")
+  )
+  
+  file.remove(archivos_temp[file.exists(archivos_temp)])
+  cat("✓ Archivos temporales eliminados\n")
+} else {
+  cat("❌ No se generó el PDF\n")
+  cat("Ruta buscada:", pdf_path, "\n")
+  # Verificar qué archivos se crearon
+  cat("Archivos en", dir_tablas, ":\n")
+  print(list.files(dir_tablas))
+}
+
+cat("✓ Tabla 1 guardada: primeros 5 registros\n")
+```
+### Exploración de datos presencia de industrias por Departamento
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+
+# Crear matriz de presencia
+matriz_presencia <- BD_0 %>%
+  select(industria, departamento) %>%
+  distinct() %>%
+  mutate(presencia = "Sí") %>%
+  pivot_wider(
+    names_from = departamento,
+    values_from = presencia,
+    values_fill = "No"
+  ) %>%
+  arrange(industria)
+
+# Ver cuántos departamentos tienes
+num_departamentos <- ncol(matriz_presencia) - 1  
+cat("Número de departamentos:", num_departamentos, "\n")
+
+# Dividir en grupos de 5 departamentos
+deptos_por_tabla <- 5
+
+# Obtener nombres de departamentos (todas las columnas excepto 'industria')
+nombres_deptos <- colnames(matriz_presencia)[colnames(matriz_presencia) != "industria"]
+
+# Dividir departamentos en grupos
+grupos_deptos <- split(nombres_deptos, 
+                       ceiling(seq_along(nombres_deptos) / deptos_por_tabla))
+
+# Crear una tabla por cada grupo
+numero_tabla_base <- 2  # Número inicial
+
+for (i in seq_along(grupos_deptos)) {
+  
+  numero_tabla <- numero_tabla_base + (i - 1)
+  
+  # Seleccionar industria + grupo de departamentos
+  deptos_grupo <- grupos_deptos[[i]]
+  matriz_grupo <- matriz_presencia %>%
+    select(industria, all_of(deptos_grupo))
+  
+  cat(paste0("\nCreando tabla ", i, " de ", length(grupos_deptos), 
+             " (Departamentos: ", paste(deptos_grupo, collapse = ", "), ")\n"))
+  
+  # Crear tabla LaTeX
+  tabla_latex <- kable(matriz_grupo,
+                       format = "latex",
+                       booktabs = TRUE,
+                       caption = paste0("Presencia de industrias por departamento (Parte ", i, " de ", length(grupos_deptos), ")"),
+                       escape = TRUE)
+  
+  # Guardar la tabla en un archivo
+  writeLines(as.character(tabla_latex), file.path(dir_tablas, "tabla_temp.tex"))
+  
+  # Leer el contenido
+  tabla_contenido <- readLines(file.path(dir_tablas, "tabla_temp.tex"))
+  
+  # Extraer contenido
+  inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
+  fin <- which(grepl("\\\\end\\{document\\}", tabla_contenido))
+  
+  if (length(inicio) > 0 && length(fin) > 0) {
+    tabla_limpia <- tabla_contenido[(inicio + 1):(fin - 1)]
+  } else {
+    tabla_limpia <- tabla_contenido
+  }
+  
+  # Remover duplicados
+  tabla_limpia <- tabla_limpia[!grepl("^\\\\begin\\{table\\}|^\\\\end\\{table\\}|^\\\\centering$", tabla_limpia)]
+  
+  # Crear documento completo 
+  doc_completo <- c(
+    "\\documentclass[12pt]{article}",
+    "\\usepackage{booktabs}",
+    "\\usepackage{caption}",
+    "\\usepackage{longtable}",
+    "\\usepackage{array}",
+    "\\usepackage[utf8]{inputenc}",
+    "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
+    "\\pagestyle{empty}",
+    "\\begin{document}",
+    paste0("\\setcounter{table}{", numero_tabla - 1, "}"),
+    "\\begin{table}[htbp]",
+    "\\centering",
+    "\\large",  # Letra normal/grande (opciones: \\small, \\normalsize, \\large)
+    tabla_limpia,
+    "\\end{table}",
+    "\\end{document}"
+  )
+  
+  # Nombre de archivo único
+  nombre_archivo <- paste0("matriz_presencia_parte_", i)
+  
+  # Guardar archivo .tex
+  writeLines(doc_completo, file.path(dir_tablas, paste0(nombre_archivo, ".tex")))
+  
+  # Compilar
+  dir_actual <- getwd()
+  setwd(dir_tablas)
+  
+  resultado <- try({
+    tinytex::pdflatex(paste0(nombre_archivo, ".tex"))
+  }, silent = TRUE)
+  
+  setwd(dir_actual)
+  
+  if (!inherits(resultado, "try-error")) {
+    # Convertir a PNG
+    pdf_path <- file.path(dir_tablas, paste0(nombre_archivo, ".pdf"))
+    
+    if (file.exists(pdf_path)) {
+      img <- image_read_pdf(pdf_path, density = 300)
+      image_write(img, file.path(dir_tablas, paste0(nombre_archivo, ".png")))
+      cat(paste0("✓ Tabla ", numero_tabla, " guardada: ", nombre_archivo, ".png\n"))
+      
+      # Limpiar archivos temporales
+      archivos_eliminar <- c(
+        file.path(dir_tablas, paste0(nombre_archivo, ".pdf")),
+        file.path(dir_tablas, paste0(nombre_archivo, ".aux")),
+        file.path(dir_tablas, paste0(nombre_archivo, ".log"))
+      )
+      file.remove(archivos_eliminar[file.exists(archivos_eliminar)])
+    }
+  } else {
+    cat(paste0("❌ Error al compilar tabla ", i, "\n"))
+    # Mostrar el log si hay error
+    log_file <- file.path(dir_tablas, paste0(nombre_archivo, ".log"))
+    if (file.exists(log_file)) {
+      log_lines <- readLines(log_file)
+      cat(tail(log_lines, 20), sep = "\n")
+    }
+  }
+}
+
+# Limpiar archivo temporal
+temp_file <- file.path(dir_tablas, "tabla_temp.tex")
+if (file.exists(temp_file)) {
+  file.remove(temp_file)
+}
+
+cat("\n✓ Todas las tablas de matriz de presencia creadas\n")
+cat(paste0("Total de tablas generadas: ", length(grupos_deptos), "\n"))
+# Eliminar archivo temporal
+unlink(temp_file)
+```
+
+### Cálculo de Índices de Vulnerabilidad
+```{r ECHO=FALSE, warning=FALSE, message=FALSE, results='asis'}
+
+# Eliminar Textiles, confecciones y cuero solo de risaralda
+BD_0 <- BD_0 %>%
+  filter( industria != "Curtido de cuero y calzado"& industria != "Textiles y confecciones")
+
+
+# Definir el periodo de referencia pre-tratamiento
+fecha_pre_tratamiento <- as.Date("2024-12-01")   # Inicio importación GNI
+
+
+# Filtrar la base según nuestro shock
+BD_pre_tratamiento <- BD_0 %>%
+  filter(date < fecha_pre_tratamiento)
+
+# Calcular min/max pre-tratamiento según shock
+min_costotransporte <- min(BD_pre_tratamiento$costotransporte, na.rm = TRUE)
+max_costotransporte <- max(BD_pre_tratamiento$costotransporte, na.rm = TRUE)
+min_costomolgas <- min(BD_pre_tratamiento$costomolgas, na.rm = TRUE)
+max_costomolgas <- max(BD_pre_tratamiento$costomolgas, na.rm = TRUE)
+
+# Cálculo dependencia y estandarización de variables
+BD_0 <- BD_0 %>%
+  mutate(
+    dependencia = pmax(0,1 - (prod/consumo)),
+    est_costotransporte = (costotransporte - min_costotransporte) / 
+                          (max_costotransporte - min_costotransporte),
+    est_costomolgas = (costomolgas - min_costomolgas) / 
+                      (max_costomolgas - min_costomolgas)
+  )
+
+# Cálculo de índice IVIG
+## Ponderación inversa
+# Promedio por departamento en el año 2023
+
+datos_ref_depto <- BD_0 %>%
+  filter(year == 2023) %>%
+  group_by(departamento) %>%
+  summarise(
+    dependencia_mean = mean(dependencia, na.rm = TRUE),
+    est_costotransporte_mean = mean(est_costotransporte, na.rm = TRUE),
+    est_costomolgas_mean = mean(est_costomolgas, na.rm = TRUE)
+  ) %>%
+  ungroup()
+
+#Calcular varianzas entre departamentos
+
+var_dependencia <- var(datos_ref_depto$dependencia_mean, na.rm = TRUE)
+var_est_costotransporte <- var(datos_ref_depto$est_costotransporte_mean, na.rm = TRUE)
+var_est_costomolgas <- var(datos_ref_depto$est_costomolgas_mean, na.rm = TRUE)
+
+# Calcular ponderaciones de varianza inversa
+inv_var_dependencia <- 1 / var_dependencia
+inv_var_est_costotransporte <- 1 / var_est_costotransporte
+inv_var_est_costomolgas <- 1 / var_est_costomolgas
+
+sum_inv_vars <- inv_var_dependencia + inv_var_est_costotransporte + inv_var_est_costomolgas
+
+w1_3 <- inv_var_dependencia / sum_inv_vars
+w2_3 <- inv_var_est_costotransporte / sum_inv_vars
+w3_3 <- inv_var_est_costomolgas / sum_inv_vars
+
+# Cálculo de IVIG (continuo)
+BD_0 <- BD_0 %>%
+  mutate(
+    IVIG_3_cont = (w1_3 * dependencia) + (w2_3 * est_costotransporte) + (w3_3 * est_costomolgas)
+  )
+
+# Cálculo de IVIG (dicotoma)
+
+# Calcular medianas en período pre-tratamiento (año 2023)
+medianas_pre <- BD_0 %>%
+  filter(year == 2023) %>%
+  group_by(departamento) %>%
+  summarise(
+    mediana_IVIG_3 = median(IVIG_3_cont, na.rm = TRUE)
+  )
+
+BD_0 <- BD_0 %>%
+  mutate(
+    IVIG_3_dt = ifelse(IVIG_3_cont >= medianas_pre$mediana_IVIG_3, 1, 0)
+  )
+
+# Clasificación de grupos tratados y control según el IVIG
+
+BD_0 <- BD_0 %>%
+  mutate(
+    grupo_IVIG_3_label = ifelse(IVIG_3_dt == 1, "Tratado", "Control")
+  )
+
+```
+
+### Compararacion entre ponderaciones
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Crear dataframe con los pesos
+datos_pesos <- data.frame(
+  Variable = c("Dependencia", "Costo Transporte", "Costo Gas"),
+  Peso = c(w1_3, w2_3, w3_3)
+)
+
+# Gráfico de barras simple para los pesos
+ggplot(datos_pesos, aes(x = Variable, y = Peso, fill = Variable)) +
+  geom_col(alpha = 0.7) +
+  labs(
+    title = "Figura 1: Ponderaciones del IVIG (Varianza Inversa)",
+    x = "",
+    y = "Peso") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold"),
+        legend.position = "none",
+        axis.text.x = element_text(angle = 0, hjust = 0.5)) +
+  scale_y_continuous(labels = scales::percent)
+
+ggsave(file.path(dir_graficos,"figura1_ponderaciones.png"), width = 10, height = 6)
+
+# Para ver las distribuciones de los componentes ponderados en la muestra
+datos_componentes <- BD_0 %>%
+  filter(year == 2023) %>%
+  select(departamento, dependencia, est_costotransporte, est_costomolgas) %>%
+  mutate(
+    comp_dependencia = dependencia * w1_3,
+    comp_costotransporte = est_costotransporte * w2_3,
+    comp_costomolgas = est_costomolgas * w3_3
+  ) %>%
+  select(departamento, starts_with("comp_")) %>%
+  pivot_longer(cols = starts_with("comp_"),
+               names_to = "Componente",
+               values_to = "Valor") %>%
+  mutate(Componente = case_when(
+    Componente == "comp_dependencia" ~ "Dependencia",
+    Componente == "comp_costotransporte" ~ "Costo Transporte",
+    Componente == "comp_costomolgas" ~ "Costo Gas"
+  ))
+
+# Boxplot de componentes ponderados
+ggplot(datos_componentes, aes(x = Componente, y = Valor, fill = Componente)) +
+  geom_boxplot(alpha = 0.7) +
+  labs(
+    title = "Figura 2: Componentes Ponderados del IVIG (Varianza Inversa)",
+    subtitle = "Año 2023 (pre-tratamiento)",
+    x = "",
+    y = "Valor ponderado") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold"),
+        legend.position = "none",
+        axis.text.x = element_text(angle = 0, hjust = 0.5))
+
+ggsave(file.path(dir_graficos,"figura2_componentes.png"), width = 10, height = 6)
+
+```
+
+
+### Graficar dependencia y estandarización de variables
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Gráfico de dependencia
+ggplot(BD_0, aes(x = date, y = dependencia)) +
+  geom_line(color = "steelblue", linewidth = 0.4) + 
+  geom_vline(xintercept = as.POSIXct("2024-12-01"), 
+             linetype = "dashed", 
+             color = "red", 
+             linewidth = 0.2) +
+  annotate("text", 
+           x = as.POSIXct("2024-12-01"), 
+           y = 0.70,
+           label = "Shock", 
+           color = "red", 
+           size = 2, 
+           angle = 90, 
+           vjust = -0.5) +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
+  facet_wrap(~departamento, scales = "free_y") +
+  labs(title = "Figura 3: Dependencia Energética por Departamento",
+       x = "Fecha",
+       y = "Dependencia Energética") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 6), 
+        axis.text.y = element_text(hjust = 1, size = 6),
+        strip.text = element_text(size = 6))
+
+ggsave(file.path(dir_graficos,"figura3_dependencia_dpto.png"), width = 10, height = 6)
+
+# Grafico de Costo Transporte Estandarizado
+ggplot(BD_0, aes(x = date, y = est_costotransporte)) +
+  geom_line(color = "orange", linewidth = 0.4) + 
+  geom_vline(xintercept = as.POSIXct("2024-12-01"), 
+             linetype = "dashed", 
+             color = "red", 
+             linewidth = 0.2) +
+  annotate("text", 
+           x = as.POSIXct("2024-12-01"), 
+           y = 0.70,
+           label = "Shock", 
+           color = "red", 
+           size = 2, 
+           angle = 90, 
+           vjust = -0.5) +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
+  facet_wrap(~departamento, scales = "free_y") +
+  labs(title = "Figura 4: Costo de Transporte Estandarizado por Departamento",
+       x = "Fecha",
+       y = "Costo de Transporte Estandarizado") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 6), 
+        axis.text.y = element_text(hjust = 1, size = 6),
+        strip.text = element_text(size = 6))
+
+ggsave(file.path(dir_graficos,"figura4_estcostranporte_dpto.png"), width = 10, height = 6)
+
+# Grafico de Costo Mol Gas Estandarizado
+ggplot(BD_0, aes(x = date, y = est_costomolgas)) +
+  geom_line(color = "darkgreen", linewidth = 0.4) + 
+  geom_vline(xintercept = as.POSIXct("2024-12-01"), 
+             linetype = "dashed", 
+             color = "red", 
+             linewidth = 0.2) +
+  annotate("text", 
+           x = as.POSIXct("2024-12-01"), 
+           y = 0.70,
+           label = "Shock", 
+           color = "red", 
+           size = 2, 
+           angle = 90, 
+           vjust = -0.5) +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
+  facet_wrap(~departamento, scales = "free_y") +
+  labs(title = "Figura 5: Costo de Molécula de Gas Estandarizado por Departamento",
+       x = "Fecha",
+       y = "Costo de Molécula de Gas Estandarizado") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 6), 
+        axis.text.y = element_text(hjust = 1, size = 6),
+        strip.text = element_text(size = 6))
+
+ggsave(file.path(dir_graficos,"figura5_estcostmolgas_dpto.png"), width = 10, height = 6)
+
+```
+
+
+### Graficar inidice de industria de cada departamento y de cada industria
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Gráfico por departamento
+ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = departamento)) +
+  geom_line(linewidth = 0.4) +
+  labs(title = "Figura 6: Índice de Producción Industrial Nominal por Departamento",
+       x = "Fecha",
+       y = "Índice de Producción Industrial Nominal",
+       color = "Departamento") +
+  theme_minimal() +
+    theme(plot.title = element_text(size = 14, face = "bold"),
+          axis.text.x = element_text(angle = 0, hjust = 1,size = 6), 
+          axis.text.y = element_text (hjust = 1, size = 6),
+          legend.position = "right", 
+          legend.text = element_text(size = 4))
+
+ggsave(file.path(dir_graficos,"figura6_IPIND.png"), width = 10, height = 6)
+
+# Gráfico por industria
+ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = industria)) +
+  geom_line(linewidth = 0.4) +
+  labs(title = "Figura 7: Índice de Producción Industrial Nominal por Industria",
+       x = "Fecha",
+       y = "Índice de Producción Industrial Nominal",
+       color = "Industria") +
+  theme_minimal() +
+    theme(plot.title = element_text(size = 14, face = "bold"),
+          axis.text.x = element_text(angle = 0, hjust = 1,size = 6), 
+          axis.text.y = element_text (hjust = 1, size = 6),
+          legend.position = "right", 
+          legend.text = element_text(size = 4))
+
+ggsave(file.path(dir_graficos,"figura7_IPINI.png"), width = 10, height = 6)
+
+# Gráfico separados por departamento
+ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
+  geom_line(color = "steelblue", linewidth = 0.2) +
+    geom_vline(xintercept = as.POSIXct("2024-12-01"), 
+             linetype = "dashed", 
+             color = "red", 
+             linewidth = 0.5) +
+  annotate("text", 
+           x = as.POSIXct("2024-12-01"), 
+           y = 280,
+           label = "Shock", 
+           color = "red", 
+           size = 2, 
+           angle = 90, 
+           vjust = -0.5) +
+  scale_y_continuous(limits = c(0, 300), breaks = seq(0, 300, 100)) +
+  facet_wrap(~departamento, scales = "free_y") +
+  labs(title = "Figura 8: Índice de Producción Industrial Nominal por Departamento",
+       x = "Fecha",
+       y = "Índice") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1,size = 6), 
+        axis.text.y = element_text (hjust = 1, size = 6),
+        strip.text = element_text(size = 6))
+
+ggsave(file.path(dir_graficos,"figura8_IPIND2.png"), width = 10, height = 6)
+
+# Gráfico separados separados por industria
+ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
+  geom_line(color = "darkgreen", linewidth = 0.2) +
+    geom_vline(xintercept = as.POSIXct("2024-12-01"), 
+             linetype = "dashed", 
+             color = "red", 
+             linewidth = 0.5) +
+  annotate("text", 
+           x = as.POSIXct("2024-12-01"), 
+           y = 280,
+           label = "Shock", 
+           color = "red", 
+           size = 2, 
+           angle = 90, 
+           vjust = -0.5) +
+  scale_y_continuous(limits = c(0, 300), breaks = seq(0, 300, 100)) +
+  facet_wrap(~industria, scales = "free_y") +
+  labs(title = "Figura 9: Índice de Producción Industrial Nominal por Industria",
+       x = "Fecha",
+       y = "Índice") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1,size = 6), 
+        axis.text.y = element_text (hjust = 1, size = 6),
+        strip.text = element_text(size = 5))
+
+ggsave(file.path(dir_graficos,"figura9_IPINI2.png"), width = 10, height = 6)
+
+```
+### Grafico entre grupo tratado y control en el tiempo
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+BD_0 <- BD_0 %>%
+  mutate(date = as.Date(date))
+
+# Verificar que ahora es Date
+cat("Clase de 'date' después de conversión:", class(BD_0$date), "\n")
+
+# Función para crear gráfico de tendencias paralelas
+plot_tendencias <- function(data, grupo_var, titulo, fecha_shock, 
+                           periodo_pre_inicio = NULL) {
+  
+  # Si no se especifica inicio del período pre, usar toda la data antes del shock
+  if(is.null(periodo_pre_inicio)) {
+    periodo_pre_inicio <- min(data$date, na.rm = TRUE)
+  }
+  
+  # Preparar datos agregados por fecha y grupo
+  datos_plot <- data %>%
+    group_by(date, !!sym(grupo_var)) %>%
+    summarise(
+      prod_mean = mean(ind_prod_nominal, na.rm = TRUE),
+      prod_se = sd(ind_prod_nominal, na.rm = TRUE) / sqrt(n()),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      periodo = ifelse(date < fecha_shock, "Pre-shock", "Post-shock")
+    )
+  
+  # Crear gráfico
+  p <- ggplot(datos_plot, aes(x = date, y = prod_mean, 
+                               color = !!sym(grupo_var),
+                               linetype = periodo)) +
+    geom_line(linewidth = 1) +
+    geom_ribbon(aes(ymin = prod_mean - 1.96*prod_se, 
+                    ymax = prod_mean + 1.96*prod_se,
+                    fill = !!sym(grupo_var)),
+                alpha = 0.2, color = NA) +
+    geom_vline(xintercept = fecha_shock,
+               linetype = "dashed", color = "red", linewidth = 1) +
+    annotate("text", x = fecha_shock, y = max(datos_plot$prod_mean, na.rm=TRUE),
+             label = "Shock", color = "red", hjust = -0.1, size = 4) +
+    labs(title = titulo,
+         subtitle = paste("Línea vertical roja:", format(fecha_shock, "%b %Y")),
+         x = "Fecha",
+         y = "Productividad Industrial Nominal (promedio)",
+         color = "Grupo",
+         fill = "Grupo",
+         linetype = "Período") +
+    theme_minimal() +
+    theme(
+      plot.title = element_text(size = 14, face = "bold"),
+      legend.position = "bottom",
+      panel.grid.minor = element_blank()
+    ) +
+    scale_color_manual(values = c("Control" = "#0072B2", 
+                                   "Tratado" = "#D55E00")) +
+    scale_fill_manual(values = c("Control" = "#0072B2", 
+                                  "Tratado" = "#D55E00"))
+
+  ggsave(file.path(dir_graficos,"figura10_PIN_lineas.png"), width = 10, height = 6)
+  return(p)
+}
+
+# Importación GNI (dic 2024)
+p3_imp <- plot_tendencias(BD_0, "grupo_IVIG_3_label",
+                          "Figura 10: Productividad Industrial Nominal - Importación GNI",
+                          fecha_pre_tratamiento)  
+
+print(p3_imp)  
+
+
+```
+
+#Relación entre Vulnerabilidad y Prosperidad
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+
+cat("ANÁLISIS: Relación entre Vulnerabilidad y Prosperidad\n")
+
+# Calcular promedios por departamento en período pre-shock (2023)
+analisis_deptos <- BD_0 %>%
+  filter(year == 2023) %>%
+  group_by(departamento) %>%
+  summarise(
+    # Vulnerabilidad
+    IVIG_mean = mean(IVIG_3_cont, na.rm = TRUE),
+    grupo_vulnerable = first(IVIG_3_dt),
+    
+    # Indicadores de prosperidad
+    prod_ind_mean = mean(ind_prod_nominal, na.rm = TRUE),
+    pib_mean = mean(PIB_DPTO, na.rm = TRUE),
+    poblacion_mean = mean(poblacion, na.rm = TRUE),
+    sgp_mean = mean(SGP, na.rm = TRUE),
+    
+    # Componentes del IVIG
+    dependencia_mean = mean(dependencia, na.rm = TRUE),
+    costotransporte_mean = mean(costotransporte, na.rm = TRUE),
+    costomolgas_mean = mean(costomolgas, na.rm = TRUE)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    grupo_label = ifelse(grupo_vulnerable == 1, "Vulnerable", "Control")
+  )
+
+# Convertir PIB a millones para mejor visualización
+analisis_deptos <- analisis_deptos %>%
+  mutate(pib_mean_billones = pib_mean / 1e3)
+
+# 1. Tabla descriptiva
+
+cat("Tabla 8: Características por Grupo de Vulnerabilidad\n")
+cat("======================================================\n\n")
+
+comparacion_grupos <- analisis_deptos %>%
+  group_by(grupo_label) %>%
+  summarise(
+    N_deptos = n(),
+    IVIG_promedio = mean(IVIG_mean, na.rm = TRUE),
+    Productividad = mean(prod_ind_mean, na.rm = TRUE),
+    PIB_promedio = mean(pib_mean_billones, na.rm = TRUE),
+    Poblacion = mean(poblacion_mean, na.rm = TRUE),
+    SGP = mean(sgp_mean, na.rm = TRUE)
+  )
+
+
+# Enumerar la tabla
+numero_tabla <- 8
+
+tabla_latex_2 <- kable(comparacion_grupos,
+      format = "latex",
+      booktabs = TRUE,
+      digits = 2,
+      col.names = c("Grupo", "N deptos", "IVIG", "Productividad", 
+                    "PIB", "Población", "SGP"),
+      caption = "Características por Grupo de Vulnerabilidad (2023)")
+
+# Guardar la tabla en un archivo
+writeLines(as.character(tabla_latex_2), file.path(dir_tablas, "tabla_temp.tex"))
+
+#Convertir la tabla de resultados en Latex y PNG.
+# Leer el contenido de la tabla
+tabla_contenido <- readLines(file.path(dir_tablas,"tabla_temp.tex"))
+
+# Extraer SOLO el contenido entre \begin{document} y \end{document}
+inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
+fin <- which(grepl("\\\\end\\{document\\}", tabla_contenido))
+
+if (length(inicio) > 0 && length(fin) > 0) {
+  # Extraer solo el contenido de la tabla (sin document tags)
+  tabla_limpia <- tabla_contenido[(inicio + 1):(fin - 1)]
+} else {
+  # Si no hay \begin{document}, usar todo el contenido
+  tabla_limpia <- tabla_contenido
+}
+
+# Remover \begin{table} y \end{table} duplicados si existen
+tabla_limpia <- tabla_limpia[!grepl("^\\\\begin\\{table\\}|^\\\\end\\{table\\}|^\\\\centering$", tabla_limpia)]
+
+# Crear documento completo con notas alineadas
+doc_completo <- c(
+  "\\documentclass[12pt]{article}",
+  "\\usepackage{booktabs}",
+  "\\usepackage{caption}",
+  "\\usepackage{threeparttable}",
+  "\\usepackage{dcolumn}",
+  "\\usepackage{adjustbox}",
+  "\\usepackage[utf8]{inputenc}",
+  "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
+  "\\pagestyle{empty}",
+  "\\begin{document}",
+  paste0("\\setcounter{table}{", numero_tabla - 1, "}"),
+  "\\begin{table}[htbp]",
+  "\\centering",
+  "\\begin{threeparttable}",
+  tabla_limpia,
+  "\\begin{tablenotes}",
+  "\\footnotesize",
+  "\\item \\textit{Notas:} El PIB departamental en Billones COP",
+  "\\end{tablenotes}",
+  "\\end{threeparttable}",
+  "\\end{table}",
+  "\\end{document}"
+)
+
+# Guardar UN SOLO archivo .tex
+writeLines(doc_completo, file.path(dir_tablas,"grupo_vulnerab.tex"))
+cat("✓ Archivo .tex guardado\n")
+
+# Compilar
+dir_actual <- getwd()
+setwd(dir_tablas)
+
+
+resultado <- try({
+  tinytex::pdflatex("grupo_vulnerab.tex")
+}, silent = FALSE)
+
+setwd(dir_actual)
+
+if (inherits(resultado, "try-error")) {
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n")
+  log_file <- file.path(dir_tablas, "grupo_vulnerab.log")
+  if (file.exists(log_file)) {
+    log_lines <- readLines(log_file)
+    cat(tail(log_lines, 30), sep = "\n")
+  }
+  stop("No se pudo compilar el documento LaTeX")
+}
+
+# Verificar la ruta correcta del PDF
+pdf_path <- file.path(dir_tablas, "grupo_vulnerab.pdf")
+
+if (file.exists(pdf_path)) {
+  # Convertir a PNG
+  img <- image_read_pdf(pdf_path, density = 300)
+  image_write(img, file.path(dir_tablas, "grupo_vulnerab.png"))
+  cat("✓ Tabla convertida a PNG:", file.path(dir_tablas, "grupo_vulnerab.png"), "\n")
+  
+  # Limpiar archivos temporales
+  archivos_temp <- c(
+    file.path(dir_tablas, "tabla_temp.tex"),
+    file.path(dir_tablas, "grupo_vulnerab.pdf"),
+    file.path(dir_tablas, "grupo_vulnerab.aux"), 
+    file.path(dir_tablas, "grupo_vulnerab.log")
+  )
+  
+  file.remove(archivos_temp[file.exists(archivos_temp)])
+  cat("✓ Archivos temporales eliminados\n")
+} else {
+  cat("❌ No se generó el PDF\n")
+  cat("Ruta buscada:", pdf_path, "\n")
+  # Verificar qué archivos se crearon
+  cat("Archivos en", dir_tablas, ":\n")
+  print(list.files(dir_tablas))
+}
+
+cat("✓ Tabla 8 guardada: Características por Grupo de Vulnerabilidad\n")
+
+# 2. Correlaciones
+
+cat("Tabla 9: Correlaciones entre IVIG y Variables de Prosperidad\n")
+cat("=============================================================\n\n")
+
+correlaciones <- analisis_deptos %>%
+  summarise(
+    `IVIG vs PIB` = cor(IVIG_mean, pib_mean_billones, use = "complete.obs"),
+    `IVIG vs Productividad` = cor(IVIG_mean, prod_ind_mean, use = "complete.obs"),
+    `IVIG vs Población` = cor(IVIG_mean, poblacion_mean, use = "complete.obs"),
+    `IVIG vs SGP` = cor(IVIG_mean, sgp_mean, use = "complete.obs")
+  ) %>%
+  pivot_longer(cols = everything(),
+               names_to = "Correlación",
+               values_to = "Valor")
+
+# Enumerar la tabla
+numero_tabla <- 9
+
+tabla_latex_3 <- kable(correlaciones,
+      format = "latex",
+      booktabs = TRUE,
+      digits = 3,
+      caption = "Correlaciones entre IVIG y Variables de Prosperidad")
+
+# Guardar la tabla en un archivo
+writeLines(as.character(tabla_latex_3), file.path(dir_tablas, "tabla_temp.tex"))
+
+#Convertir la tabla de resultados en Latex y PNG.
+# Leer el contenido de la tabla
+tabla_contenido <- readLines(file.path(dir_tablas,"tabla_temp.tex"))
+
+# Extraer SOLO el contenido entre \begin{document} y \end{document}
+inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
+fin <- which(grepl("\\\\end\\{document\\}", tabla_contenido))
+
+if (length(inicio) > 0 && length(fin) > 0) {
+  # Extraer solo el contenido de la tabla (sin document tags)
+  tabla_limpia <- tabla_contenido[(inicio + 1):(fin - 1)]
+} else {
+  # Si no hay \begin{document}, usar todo el contenido
+  tabla_limpia <- tabla_contenido
+}
+
+# Remover \begin{table} y \end{table} duplicados si existen
+tabla_limpia <- tabla_limpia[!grepl("^\\\\begin\\{table\\}|^\\\\end\\{table\\}|^\\\\centering$", tabla_limpia)]
+
+# Crear documento completo con notas alineadas
+doc_completo <- c(
+  "\\documentclass[12pt]{article}",
+  "\\usepackage{booktabs}",
+  "\\usepackage{caption}",
+  "\\usepackage{threeparttable}",
+  "\\usepackage{dcolumn}",
+  "\\usepackage{adjustbox}",
+  "\\usepackage[utf8]{inputenc}",
+  "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
+  "\\pagestyle{empty}",
+  "\\begin{document}",
+  paste0("\\setcounter{table}{", numero_tabla - 1, "}"),
+  "\\begin{table}[htbp]",
+  "\\centering",
+  "\\begin{threeparttable}",
+  tabla_limpia,
+  "\\begin{tablenotes}",
+  "\\footnotesize",
+  "\\item \\textit{Notas:}El PIB departamental en Billones COP",
+  "\\end{tablenotes}",
+  "\\end{threeparttable}",
+  "\\end{table}",
+  "\\end{document}"
+)
+
+# Guardar UN SOLO archivo .tex
+writeLines(doc_completo, file.path(dir_tablas,"correlaciones.tex"))
+cat("✓ Archivo .tex guardado\n")
+
+# Compilar
+dir_actual <- getwd()
+setwd(dir_tablas)
+
+
+resultado <- try({
+  tinytex::pdflatex("correlaciones.tex")
+}, silent = FALSE)
+
+setwd(dir_actual)
+
+if (inherits(resultado, "try-error")) {
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n")
+  log_file <- file.path(dir_tablas, "correlaciones.log")
+  if (file.exists(log_file)) {
+    log_lines <- readLines(log_file)
+    cat(tail(log_lines, 30), sep = "\n")
+  }
+  stop("No se pudo compilar el documento LaTeX")
+}
+
+# Verificar la ruta correcta del PDF
+pdf_path <- file.path(dir_tablas, "correlaciones.pdf")
+
+if (file.exists(pdf_path)) {
+  # Convertir a PNG
+  img <- image_read_pdf(pdf_path, density = 300)
+  image_write(img, file.path(dir_tablas, "correlaciones.png"))
+  cat("✓ Tabla convertida a PNG:", file.path(dir_tablas, "correlaciones.png"), "\n")
+  
+  # Limpiar archivos temporales
+  archivos_temp <- c(
+    file.path(dir_tablas, "tabla_temp.tex"),
+    file.path(dir_tablas, "correlaciones.pdf"),
+    file.path(dir_tablas, "correlaciones.aux"), 
+    file.path(dir_tablas, "correlaciones.log")
+  )
+  
+  file.remove(archivos_temp[file.exists(archivos_temp)])
+  cat("✓ Archivos temporales eliminados\n")
+} else {
+  cat("❌ No se generó el PDF\n")
+  cat("Ruta buscada:", pdf_path, "\n")
+  # Verificar qué archivos se crearon
+  cat("Archivos en", dir_tablas, ":\n")
+  print(list.files(dir_tablas))
+}
+
+cat("✓ Tabla 9 guardada: Correlaciones\n")
+
+#Grafico IVIG y PIB
+
+p1 <- ggplot(analisis_deptos, aes(x = IVIG_mean, y = pib_mean_billones, 
+                                   color = grupo_label)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = TRUE, alpha = 0.2) +
+  geom_text(aes(label = departamento), size = 2.5, 
+            vjust = -1, hjust = 0.5, check_overlap = TRUE) +
+  scale_y_continuous(limits = c(0,500), breaks = seq (0,500,50))+
+  labs(title = "Figura 11: Vulnerabilidad Energética vs PIB Departamental",
+       subtitle = "Año 2023 (pre-shock)",
+       x = "IVIG (Índice de Vulnerabilidad)",
+       y = "PIB Departamental (Billones de COP)",
+       color = "Grupo") +
+  theme_minimal() +
+      theme(
+      plot.title = element_text(size = 14, face = "bold"),
+      plot.subtitle = element_text(size = 11),
+      axis.title = element_text(size = 11),
+      legend.position = "bottom",
+      panel.grid.minor = element_blank()
+    )
+  scale_color_manual(values = c("Control" = "#0072B2", 
+                                 "Vulnerable" = "#D55E00"))
+
+print(p1)
+
+ggsave(file.path(dir_graficos,"figura11_vul_pibdpto.png"), width = 10, height = 6)
+
+
+#Grafico IVIG y Indicie de producción industrial
+
+p2 <- ggplot(analisis_deptos, aes(x = IVIG_mean, y = prod_ind_mean, 
+                                   color = grupo_label)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = TRUE, alpha = 0.2) +
+  geom_text(aes(label = departamento), size = 2.5, 
+            vjust = -1, hjust = 0.5, check_overlap = TRUE) +
+  scale_y_continuous(limits = c(100,250), breaks = seq (100,250,50))+
+  labs(title = "Figura 12: Vulnerabilidad Energética vs Ind. Producción",
+       subtitle = "Año 2023 (pre-shock)",
+       x = "IVIG (Índice de Vulnerabilidad)",
+       y = "Producción Industrial Nominal",
+       color = "Grupo") +
+    theme_minimal() +
+      theme(
+      plot.title = element_text(size = 14, face = "bold"),
+      plot.subtitle = element_text(size = 11),
+      axis.title = element_text(size = 11),
+      legend.position = "bottom",
+      panel.grid.minor = element_blank()
+    )
+  scale_color_manual(values = c("Control" = "#0072B2", 
+                                 "Vulnerable" = "#D55E00"))
+
+print(p2)
+
+ggsave(file.path(dir_graficos,"figura12_vul_indprod.png"), width = 10, height = 6)
+
+# 3. Ranking departamentos
+
+cat("Tabla 10: Ranking de Departamentos (por IVIG)\n")
+cat("=============================================\n\n")
+
+ranking <- analisis_deptos %>%
+  select(departamento, IVIG_mean, grupo_label, prod_ind_mean, pib_mean_billones) %>%
+  arrange(desc(IVIG_mean))
+
+# Enumerar la tabla
+numero_tabla <- 10
+
+tabla_latex_4 <- kable(ranking,
+      format = "latex",
+      booktabs = TRUE,
+      digits = 3,
+      col.names = c("Departamento", "IVIG", "Grupo", "Productividad", "PIB"))
+
+# Guardar la tabla en un archivo
+writeLines(as.character(tabla_latex_4), file.path(dir_tablas, "tabla_temp.tex"))
+
+#Convertir la tabla de resultados en Latex y PNG.
+# Leer el contenido de la tabla
+tabla_contenido <- readLines(file.path(dir_tablas,"tabla_temp.tex"))
+
+# Extraer SOLO el contenido entre \begin{document} y \end{document}
+inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
+fin <- which(grepl("\\\\end\\{document\\}", tabla_contenido))
+
+if (length(inicio) > 0 && length(fin) > 0) {
+  # Extraer solo el contenido de la tabla (sin document tags)
+  tabla_limpia <- tabla_contenido[(inicio + 1):(fin - 1)]
+} else {
+  # Si no hay \begin{document}, usar todo el contenido
+  tabla_limpia <- tabla_contenido
+}
+
+# Remover \begin{table} y \end{table} duplicados si existen
+tabla_limpia <- tabla_limpia[!grepl("^\\\\begin\\{table\\}|^\\\\end\\{table\\}|^\\\\centering$", tabla_limpia)]
+
+# Crear documento completo con notas alineadas
+doc_completo <- c(
+  "\\documentclass[12pt]{article}",
+  "\\usepackage{booktabs}",
+  "\\usepackage{caption}",
+  "\\usepackage{threeparttable}",
+  "\\usepackage{dcolumn}",
+  "\\usepackage{adjustbox}",
+  "\\usepackage[utf8]{inputenc}",
+  "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
+  "\\pagestyle{empty}",
+  "\\begin{document}",
+  paste0("\\setcounter{table}{", numero_tabla - 1, "}"),
+  "\\begin{table}[htbp]",
+  "\\centering",
+  "\\begin{threeparttable}",
+  tabla_limpia,
+  "\\begin{tablenotes}",
+  "\\footnotesize",
+  "\\item \\textit{Notas:}El PIB departamental en Billones COP",
+  "\\end{tablenotes}",
+  "\\end{threeparttable}",
+  "\\end{table}",
+  "\\end{document}"
+)
+
+# Guardar UN SOLO archivo .tex
+writeLines(doc_completo, file.path(dir_tablas,"ranking.tex"))
+cat("✓ Archivo .tex guardado\n")
+
+# Compilar
+dir_actual <- getwd()
+setwd(dir_tablas)
+
+
+resultado <- try({
+  tinytex::pdflatex("ranking.tex")
+}, silent = FALSE)
+
+setwd(dir_actual)
+
+if (inherits(resultado, "try-error")) {
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n")
+  log_file <- file.path(dir_tablas, "ranking.log")
+  if (file.exists(log_file)) {
+    log_lines <- readLines(log_file)
+    cat(tail(log_lines, 30), sep = "\n")
+  }
+  stop("No se pudo compilar el documento LaTeX")
+}
+
+# Verificar la ruta correcta del PDF
+pdf_path <- file.path(dir_tablas, "ranking.pdf")
+
+if (file.exists(pdf_path)) {
+  # Convertir a PNG
+  img <- image_read_pdf(pdf_path, density = 300)
+  image_write(img, file.path(dir_tablas, "ranking.png"))
+  cat("✓ Tabla convertida a PNG:", file.path(dir_tablas, "ranking.png"), "\n")
+  
+  # Limpiar archivos temporales
+  archivos_temp <- c(
+    file.path(dir_tablas, "tabla_temp.tex"),
+    file.path(dir_tablas, "ranking.pdf"),
+    file.path(dir_tablas, "ranking.aux"), 
+    file.path(dir_tablas, "ranking.log")
+  )
+  
+  file.remove(archivos_temp[file.exists(archivos_temp)])
+  cat("✓ Archivos temporales eliminados\n")
+} else {
+  cat("❌ No se generó el PDF\n")
+  cat("Ruta buscada:", pdf_path, "\n")
+  # Verificar qué archivos se crearon
+  cat("Archivos en", dir_tablas, ":\n")
+  print(list.files(dir_tablas))
+}
+
+cat("✓ Tabla 10 guardada: ranking\n")
+
+cat("\n✓ Análisis de vulnerabilidad vs prosperidad completado\n")
+
+```
+# Estudio de evento 
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Gráfica de estudio de evento
+
+# Crear la variable de tiempo relativo al shock
+
+# Shock Importación (dic 2024)
+BD_0 <- BD_0 %>%                                                
+  mutate(                                                        
+    tiempo_rel_imp = interval(fecha_pre_tratamiento, date) %/% months(1),  
+    periodo_imp = as.integer(tiempo_rel_imp)                                  
+  )     
+
+# Verificar distribución por los shocks
+cat("Rango de períodos Importación:", 
+    range(BD_0$periodo_imp, na.rm = TRUE), "\n")  
+```
+## Selección de rangos para estudio
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Seleccionar los rangos de periodos
+
+# Definir ventana de análisis (ej: -12 a +5 meses)
+ventana_imp <- c(-12, 5)       # 12 meses antes, 5 meses después
+
+BD_event_imp <- BD_0 %>%                                         
+  filter(periodo_imp >= ventana_imp[1] &                          
+         periodo_imp <= ventana_imp[2])                           
+
+cat("Observaciones para Event Study Importación:", nrow(BD_event_imp), "\n")  
+
+
+```
+
+## Modelo de interacción periodo y grupo
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Estimación de modelos Event Study
+cat("Modelo Estudio de Evento\n")
+
+# Enumerar la tabla
+numero_tabla <- 11
+
+# EVENT STUDY - SHOCK IMPORTACIÓN
+modelo_event_imp <- feols(ind_prod_nominal ~ i(periodo_imp, IVIG_3_dt, ref = -1) +
+                     cobertura +                                   
+                     log(poblacion) + log(SGP) |                  
+                     departamento + ym_2,                            
+  data = BD_event_imp,                                            
+  cluster = ~departamento                                         
+)                    
+
+# Resultado del modelo de Estudio de Evento
+etable(modelo_event_imp,
+       tex = TRUE,
+       title = "Modelo Event Study - Importación GNI",
+       headers = c("Importación GNI"),
+       drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
+       notes = NULL,
+       fontsize = "small",
+       se.below = FALSE,
+       digits = 4,
+       digits.stats = 1,
+       file = file.path(dir_tablas, "tabla_temp.tex")
+)
+cat("✓ Tabla LaTeX generada\n")
+
+#Convertir la tabla de resultados en Latex y PNG.
+# Leer el contenido de la tabla
+tabla_contenido <- readLines(file.path(dir_tablas,"tabla_temp.tex"))
+
+# Extraer SOLO el contenido entre \begin{document} y \end{document}
+inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
+fin <- which(grepl("\\\\end\\{document\\}", tabla_contenido))
+
+if (length(inicio) > 0 && length(fin) > 0) {
+  # Extraer solo el contenido de la tabla (sin document tags)
+  tabla_limpia <- tabla_contenido[(inicio + 1):(fin - 1)]
+} else {
+  # Si no hay \begin{document}, usar todo el contenido
+  tabla_limpia <- tabla_contenido
+}
+
+# Remover \begin{table} y \end{table} duplicados si existen
+tabla_limpia <- tabla_limpia[!grepl("^\\\\begin\\{table\\}|^\\\\end\\{table\\}|^\\\\centering$", tabla_limpia)]
+
+# Crear documento completo con notas alineadas
+doc_completo <- c(
+  "\\documentclass[12pt]{article}",
+  "\\usepackage{booktabs}",
+  "\\usepackage{caption}",
+  "\\usepackage{threeparttable}",
+  "\\usepackage{dcolumn}",
+  "\\usepackage{adjustbox}",
+  "\\usepackage[utf8]{inputenc}",
+  "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
+  "\\pagestyle{empty}",
+  "\\begin{document}",
+  paste0("\\setcounter{table}{", numero_tabla - 1, "}"),
+  "\\begin{table}[htbp]",
+  "\\centering",
+  "\\begin{threeparttable}",
+  tabla_limpia,
+  "\\begin{tablenotes}",
+  "\\footnotesize",
+  "\\item \\textit{Notas:} Errores estándar agrupados a nivel departamental entre paréntesis.",
+  "\\end{tablenotes}",
+  "\\end{threeparttable}",
+  "\\end{table}",
+  "\\end{document}"
+)
+
+# Guardar UN SOLO archivo .tex
+writeLines(doc_completo, file.path(dir_tablas,"study_event_table.tex"))
+cat("✓ Archivo .tex guardado\n")
+
+# Compilar
+dir_actual <- getwd()
+setwd(dir_tablas)
+
+
+resultado <- try({
+  tinytex::pdflatex("study_event_table.tex")
+}, silent = FALSE)
+
+setwd(dir_actual)
+
+if (inherits(resultado, "try-error")) {
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n")
+  log_file <- file.path(dir_tablas, "study_event_table.log")
+  if (file.exists(log_file)) {
+    log_lines <- readLines(log_file)
+    cat(tail(log_lines, 30), sep = "\n")
+  }
+  stop("No se pudo compilar el documento LaTeX")
+}
+
+# Verificar la ruta correcta del PDF
+pdf_path <- file.path(dir_tablas, "study_event_table.pdf")
+
+if (file.exists(pdf_path)) {
+  # Convertir a PNG
+  img <- image_read_pdf(pdf_path, density = 300)
+  image_write(img, file.path(dir_tablas, "study_event_table.png"))
+  cat("✓ Tabla convertida a PNG:", file.path(dir_tablas, "study_event_table.png"), "\n")
+  
+  # Limpiar archivos temporales
+  archivos_temp <- c(
+    file.path(dir_tablas, "tabla_temp.tex"),
+    file.path(dir_tablas, "study_event_table.pdf"),
+    file.path(dir_tablas, "study_event_table.aux"), 
+    file.path(dir_tablas, "study_event_table.log")
+  )
+  
+  file.remove(archivos_temp[file.exists(archivos_temp)])
+  cat("✓ Archivos temporales eliminados\n")
+} else {
+  cat("❌ No se generó el PDF\n")
+  cat("Ruta buscada:", pdf_path, "\n")
+  # Verificar qué archivos se crearon
+  cat("Archivos en", dir_tablas, ":\n")
+  print(list.files(dir_tablas))
+}
+
+# Extraer coeficientes 
+
+# Función para extraer coeficientes del event study
+extraer_coefs_event <- function(modelo, nombre_var) {
+  # Obtener todos los coeficientes
+  coefs <- coef(modelo)
+  ses <- se(modelo)
+  
+  # Filtrar solo los de interacción (nombres contienen el período)
+  indices <- grep(nombre_var, names(coefs))
+  
+  # Extraer períodos de los nombres
+  # Ejemplo: "periodo_covid::-12:grupo_IVIG_3" → -12
+  periodos <- as.numeric(gsub(".*::([-]?[0-9]+):.*", "\\1", names(coefs)[indices]))
+  
+  # Crear data frame
+  df <- data.frame(
+    periodo = periodos,
+    coef = coefs[indices],
+    se = ses[indices]
+  ) %>%
+    mutate(
+      ci_low = coef - 2.56 * se,
+      ci_high = coef + 2.56 * se
+    ) %>%
+    arrange(periodo)
+  
+  # Agregar período de referencia (-1) con coef = 0
+  df_ref <- data.frame(
+    periodo = -1,
+    coef = 0,
+    se = 0,
+    ci_low = 0,
+    ci_high = 0
+  )
+  
+  df <- bind_rows(df, df_ref) %>%
+    arrange(periodo)
+  
+  return(df)
+}
+
+# Extraer coeficientes
+coefs_imp <- extraer_coefs_event(modelo_event_imp, "periodo_imp")   
+
+
+cat("Coeficientes extraídos:\n")
+cat("Importación: N períodos =", nrow(coefs_imp), "\n")  
+
+```
+## Gráfico de estudio de evento
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Gerenerar el gráfico de Evento
+cat("Generando gráficos\n")
+
+# FUNCIÓN PARA GRAFICAR
+plot_event_study <- function(coefs_df, titulo, fecha_shock_label) {
+  
+  # Identificar período pre/post
+  coefs_df <- coefs_df %>%
+    mutate(
+      fase = ifelse(periodo < 0, "Pre-shock", "Post-shock"),
+      significativo = ifelse(ci_low > 0 | ci_high < 0, "Sí", "No")
+    )
+  
+  p <- ggplot(coefs_df, aes(x = periodo, y = coef)) +
+    # Banda de confianza
+    geom_ribbon(aes(ymin = ci_low, ymax = ci_high), 
+                alpha = 0.2, fill = "steelblue") +
+    
+    # Línea de referencia en cero
+    geom_hline(yintercept = 0, linetype = "solid", 
+               color = "black", linewidth = 0.5) +
+    
+    # Línea vertical en el shock (período 0)
+    geom_vline(xintercept = -0.5, linetype = "dashed", 
+               color = "red", linewidth = 1) +
+    
+    # Línea de coeficientes
+    geom_line(color = "steelblue", linewidth = 1) +
+    
+    # Puntos (diferentes para sig/no sig)
+    geom_point(aes(color = significativo, shape = significativo), 
+               size = 3) +
+    
+    # Etiquetas y tema
+    labs(
+      title = titulo,
+      subtitle = paste("Línea vertical roja:", fecha_shock_label),
+      x = "Meses relativos al shock",
+      y = "Efecto en Producción industrial\n(diferencia Tratamiento - Control)",
+      caption = "Notas: Bandas grises = IC 95%. Período -1 omitido como referencia.\nPuntos rojos = coeficientes estadísticamente significativos (IC no incluye cero)."
+    ) +
+    
+    theme_minimal() +
+    theme(
+      plot.title = element_text(size = 13, face = "bold"),
+      plot.subtitle = element_text(size = 11),
+      axis.title = element_text(size = 11),
+      legend.position = "bottom",
+      panel.grid.minor = element_blank()
+    ) +
+    
+    scale_color_manual(
+      name = "Significativo (99%):",
+      values = c("No" = "steelblue", "Sí" = "red")
+    ) +
+    
+    scale_shape_manual(
+      name = "Significativo (99%):",
+      values = c("No" = 16, "Sí" = 17)
+    ) +
+    
+    # Anotar el shock
+    annotate("text", x = 1, y = max(coefs_df$ci_high, na.rm = TRUE) * 0.99,
+             label = "Shock", color = "red", size = 4, hjust = 0)
+    
+  ggsave(file.path(dir_graficos,"figura11_event_study.png"), width = 10, height = 6)
+  return(p)
+}
+
+# Crear gráficos
+
+p_event_imp <- plot_event_study(                             
+  coefs_imp,                                                 
+  "Figura 11: Event Study - Efecto Dinámico de la Importación de Gas (GNI)",  
+  "Diciembre 2024"                                           
+)
+
+# Mostrar
+print(p_event_imp)   
+
+
+```
+
+## Test de tendencias paralelas
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# Test conjunto: todos los coeficientes pre-shock = 0
+
+test_pre_imp <- coefs_imp %>%                                     
+  filter(periodo < -1) %>%                                        
+  summarise(                                                       
+    n_coefs = n(),                                                 
+    n_sig = sum(ci_low > 0 | ci_high < 0),                         
+    max_abs_coef = max(abs(coef))                                  
+  )                                                                
+
+cat("SHOCK IMPORTACIÓN:\n")                                                    
+cat("  N coeficientes pre-shock:", test_pre_imp$n_coefs, "\n")                 
+cat("  N significativos:", test_pre_imp$n_sig, "\n")                           
+cat("  Máximo coeficiente (abs):", round(test_pre_imp$max_abs_coef, 3), "\n")  
+if(test_pre_imp$n_sig == 0) {                                                  
+  cat("  ✅ Ningún coeficiente pre-shock significativo → Tendencias paralelas VÁLIDAS\n") 
+} else {                                                                        
+  cat("  ⚠️  Algunos coeficientes pre-shock significativos → Posible violación\n")       
+}
+
+```
+
+
+#Análisis de Heterogeneidad por Industria
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+
+# 1. HETEROGENEIDAD POR INDUSTRIA
+cat("1. Estimando efectos por industria\n")
+
+# Enumerar la tabla
+numero_tabla <- 6
+
+# Crear variable de shock
+if(!"Shock_Importacion" %in% colnames(BD_0)) {
+  BD_0 <- BD_0 %>%
+    mutate(Shock_Importacion = ifelse(date >= fecha_pre_tratamiento, 1, 0))
+}
+
+# Cambiar el nivel de referencia del factor
+BD_0 <- BD_0 %>%
+  mutate(
+    industria = factor(industria, 
+                      levels = c("Total", 
+                                "Alimentos y bebidas",
+                                "Madera y muebles",
+                                "Minerales no metálicos",
+                                "Papel e imprentas",
+                                "Productos metálicos",
+                                "Sustancias y productos químicos, farmacéuticos, de caucho y plástico",
+                                "Textiles, confecciones y cuero"))
+  )
+
+# Verificar que "Total" es ahora la referencia
+cat("Nuevo orden de niveles (la referencia es el primero):\n")
+print(levels(BD_0$industria))
+cat("\n")
+
+# Modelo con triple interacción: Shock × Grupo × Industria
+modelo_het_industria <- feols(
+  ind_prod_nominal ~ Shock_Importacion:IVIG_3_dt:industria + 
+                     Shock_Importacion:IVIG_3_dt +
+                     Shock_Importacion:industria +
+                     IVIG_3_dt:industria +
+                     cobertura + log(poblacion) + log(SGP) |
+                     departamento + ym_2,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+cat("✓ Modelo por industria estimado\n")
+
+# Resultado del modelo de Heterogeneidad por Industria
+etable(modelo_het_industria, 
+       tex = TRUE,
+       title = "Heterogeneidad por Industria",
+       headers = c("Modelo Heterogéneo por Industria"),
+       keep = "%Shock_Importacion:IVIG_3_dt:industria",
+       notes = NULL,
+       fontsize = "small",
+       se.below = FALSE,
+       digits = 4,
+       digits.stats = 1,      
+       file = file.path(dir_tablas,"tabla_temp.tex")
+)
+
+#Convertir la tabla de resultados en Latex y PNG.
+# Leer el contenido de la tabla
+tabla_contenido <- readLines(file.path(dir_tablas,"tabla_temp.tex"))
+
+# Extraer SOLO el contenido entre \begin{document} y \end{document}
+inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
+fin <- which(grepl("\\\\end\\{document\\}", tabla_contenido))
+
+if (length(inicio) > 0 && length(fin) > 0) {
+  # Extraer solo el contenido de la tabla (sin document tags)
+  tabla_limpia <- tabla_contenido[(inicio + 1):(fin - 1)]
+} else {
+  # Si no hay \begin{document}, usar todo el contenido
+  tabla_limpia <- tabla_contenido
+}
+
+# Remover \begin{table} y \end{table} duplicados si existen
+tabla_limpia <- tabla_limpia[!grepl("^\\\\begin\\{table\\}|^\\\\end\\{table\\}|^\\\\centering$", tabla_limpia)]
+
+# Crear documento completo con notas alineadas
+doc_completo <- c(
+  "\\documentclass[12pt]{article}",
+  "\\usepackage{booktabs}",
+  "\\usepackage{caption}",
+  "\\usepackage{threeparttable}",
+  "\\usepackage{dcolumn}",
+  "\\usepackage{adjustbox}",
+  "\\usepackage[utf8]{inputenc}",
+  "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
+  "\\pagestyle{empty}",
+  "\\begin{document}",
+  paste0("\\setcounter{table}{", numero_tabla - 1, "}"),
+  "\\begin{table}[htbp]",
+  "\\centering",
+  "\\begin{threeparttable}",
+  tabla_limpia,
+  "\\begin{tablenotes}",
+  "\\footnotesize",
+  "\\item \\textit{Notas:} Errores estándar agrupados a nivel departamental entre paréntesis, Todos los coeficientes se interpretan relativo a la industria de referencia que sera el total agregado",
+  "\\end{tablenotes}",
+  "\\end{threeparttable}",
+  "\\end{table}",
+  "\\end{document}"
+)
+
+# Guardar UN SOLO archivo .tex
+writeLines(doc_completo, file.path(dir_tablas,"hetero_industria.tex"))
+cat("✓ Archivo .tex guardado\n")
+
+# Compilar
+dir_actual <- getwd()
+setwd(dir_tablas)
+
+
+resultado <- try({
+  tinytex::pdflatex("hetero_industria.tex")
+}, silent = FALSE)
+
+setwd(dir_actual)
+
+if (inherits(resultado, "try-error")) {
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n")
+  log_file <- file.path(dir_tablas, "hetero_industria.log")
+  if (file.exists(log_file)) {
+    log_lines <- readLines(log_file)
+    cat(tail(log_lines, 30), sep = "\n")
+  }
+  stop("No se pudo compilar el documento LaTeX")
+}
+
+# Verificar la ruta correcta del PDF
+pdf_path <- file.path(dir_tablas, "hetero_industria.pdf")
+
+if (file.exists(pdf_path)) {
+  # Convertir a PNG
+  img <- image_read_pdf(pdf_path, density = 300)
+  image_write(img, file.path(dir_tablas, "hetero_industria.png"))
+  cat("✓ Tabla convertida a PNG:", file.path(dir_tablas, "hetero_industria.png"), "\n")
+  
+  # Limpiar archivos temporales
+  archivos_temp <- c(
+    file.path(dir_tablas, "tabla_temp.tex"),
+    file.path(dir_tablas, "hetero_industria.pdf"),
+    file.path(dir_tablas, "hetero_industria.aux"), 
+    file.path(dir_tablas, "hetero_industria.log")
+  )
+  
+  file.remove(archivos_temp[file.exists(archivos_temp)])
+  cat("✓ Archivos temporales eliminados\n")
+} else {
+  cat("❌ No se generó el PDF\n")
+  cat("Ruta buscada:", pdf_path, "\n")
+  # Verificar qué archivos se crearon
+  cat("Archivos en", dir_tablas, ":\n")
+  print(list.files(dir_tablas))
+}
+
+```
+
+#Análisis de Heterogeneidad por Vulnerabilidad
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# 2. HETEROGENEIDAD POR NIVEL DE VULNERABILIDAD (Continuo)
+cat("2. Estimando efectos usando IVIG continuo\n")
+
+# Enumerar la tabla
+numero_tabla <- 7
+
+modelo_het_continuo <- feols(
+  ind_prod_nominal ~ Shock_Importacion:IVIG_3_cont +
+                     cobertura + log(poblacion) + log(SGP) |
+                     departamento + ym_2,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+cat("✓ Modelo con IVIG continuo estimado\n")
+
+# Resultado del modelo de Heterogeneidad IVIG continuo
+etable(modelo_het_continuo,
+       tex = TRUE,
+       title = "Efecto según Nivel de Vulnerabilidad (IVIG continuo)",
+       headers = c("IVIG Continuo"),
+       drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
+       notes = NULL,
+       fontsize = "small",
+       se.below = FALSE,
+       digits = 4,
+       digits.stats = 1,
+       file = file.path(dir_tablas,"tabla_temp.tex")
+       )
+
+#Convertir la tabla de resultados en Latex y PNG.
+# Leer el contenido de la tabla
+tabla_contenido <- readLines(file.path(dir_tablas,"tabla_temp.tex"))
+
+# Extraer SOLO el contenido entre \begin{document} y \end{document}
+inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
+fin <- which(grepl("\\\\end\\{document\\}", tabla_contenido))
+
+if (length(inicio) > 0 && length(fin) > 0) {
+  # Extraer solo el contenido de la tabla (sin document tags)
+  tabla_limpia <- tabla_contenido[(inicio + 1):(fin - 1)]
+} else {
+  # Si no hay \begin{document}, usar todo el contenido
+  tabla_limpia <- tabla_contenido
+}
+
+# Remover \begin{table} y \end{table} duplicados si existen
+tabla_limpia <- tabla_limpia[!grepl("^\\\\begin\\{table\\}|^\\\\end\\{table\\}|^\\\\centering$", tabla_limpia)]
+
+# Crear documento completo con notas alineadas
+doc_completo <- c(
+  "\\documentclass[12pt]{article}",
+  "\\usepackage{booktabs}",
+  "\\usepackage{caption}",
+  "\\usepackage{threeparttable}",
+  "\\usepackage{dcolumn}",
+  "\\usepackage{adjustbox}",
+  "\\usepackage[utf8]{inputenc}",
+  "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
+  "\\pagestyle{empty}",
+  "\\begin{document}",
+  paste0("\\setcounter{table}{", numero_tabla - 1, "}"),
+  "\\begin{table}[htbp]",
+  "\\centering",
+  "\\begin{threeparttable}",
+  tabla_limpia,
+  "\\begin{tablenotes}",
+  "\\footnotesize",
+  "\\item \\textit{Notas:} Errores estándar agrupados a nivel departamental entre paréntesis.",
+  "\\end{tablenotes}",
+  "\\end{threeparttable}",
+  "\\end{table}",
+  "\\end{document}"
+)
+
+# Guardar UN SOLO archivo .tex
+writeLines(doc_completo, file.path(dir_tablas,"hetero_vulnerabilidad.tex"))
+cat("✓ Archivo .tex guardado\n")
+
+# Compilar
+dir_actual <- getwd()
+setwd(dir_tablas)
+
+
+resultado <- try({
+  tinytex::pdflatex("hetero_vulnerabilidad.tex")
+}, silent = FALSE)
+
+setwd(dir_actual)
+
+if (inherits(resultado, "try-error")) {
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n")
+  log_file <- file.path(dir_tablas, "hetero_vulnerabilidad.log")
+  if (file.exists(log_file)) {
+    log_lines <- readLines(log_file)
+    cat(tail(log_lines, 30), sep = "\n")
+  }
+  stop("No se pudo compilar el documento LaTeX")
+}
+
+# Verificar la ruta correcta del PDF
+pdf_path <- file.path(dir_tablas, "hetero_vulnerabilidad.pdf")
+
+if (file.exists(pdf_path)) {
+  # Convertir a PNG
+  img <- image_read_pdf(pdf_path, density = 300)
+  image_write(img, file.path(dir_tablas, "hetero_vulnerabilidad.png"))
+  cat("✓ Tabla convertida a PNG:", file.path(dir_tablas, "hetero_vulnerabilidad.png"), "\n")
+  
+  # Limpiar archivos temporales
+  archivos_temp <- c(
+    file.path(dir_tablas, "tabla_temp.tex"),
+    file.path(dir_tablas, "hetero_vulnerabilidad.pdf"),
+    file.path(dir_tablas, "hetero_vulnerabilidad.aux"), 
+    file.path(dir_tablas, "hetero_vulnerabilidad.log")
+  )
+  
+  file.remove(archivos_temp[file.exists(archivos_temp)])
+  cat("✓ Archivos temporales eliminados\n")
+} else {
+  cat("❌ No se generó el PDF\n")
+  cat("Ruta buscada:", pdf_path, "\n")
+  # Verificar qué archivos se crearon
+  cat("Archivos en", dir_tablas, ":\n")
+  print(list.files(dir_tablas))
+}
+
+```
+
+#Análisis de Heterogeneidad por Dpto
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+# 3. HETEROGENEIDAD POR DEPARTAMENTO ESPECÍFICO 
+cat("3. Estimando efectos por departamento\n")
+
+# Enumerar la tabla
+numero_tabla <- 8
+
+# Modelo con interacciones departamento × shock
+modelo_het_depto <- feols(
+  ind_prod_nominal ~ Shock_Importacion:IVIG_3_dt:departamento +
+                     cobertura + log(poblacion) + log(SGP) |
+                     departamento + ym_2,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+cat("✓ Modelo por departamento estimado\n")
+
+# Resultado del modelo de Heterogeneidad por departamento
+etable(modelo_het_depto,
+       tex = TRUE,
+       title = "Heterogeneidad por departamento",
+       headers = c("Modelo Heterogéneo por Departamento"),
+       drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
+       notes = NULL,
+       fontsize = "small",
+       se.below = FALSE,
+       digits = 4,
+       digits.stats = 1,
+       file = file.path(dir_tablas,"tabla_temp.tex")
+)
+
+#Convertir la tabla de resultados en Latex y PNG.
+# Leer el contenido de la tabla
+tabla_contenido <- readLines(file.path(dir_tablas,"tabla_temp.tex"))
+
+# Extraer SOLO el contenido entre \begin{document} y \end{document}
+inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
+fin <- which(grepl("\\\\end\\{document\\}", tabla_contenido))
+
+if (length(inicio) > 0 && length(fin) > 0) {
+  # Extraer solo el contenido de la tabla (sin document tags)
+  tabla_limpia <- tabla_contenido[(inicio + 1):(fin - 1)]
+} else {
+  # Si no hay \begin{document}, usar todo el contenido
+  tabla_limpia <- tabla_contenido
+}
+
+# Remover \begin{table} y \end{table} duplicados si existen
+tabla_limpia <- tabla_limpia[!grepl("^\\\\begin\\{table\\}|^\\\\end\\{table\\}|^\\\\centering$", tabla_limpia)]
+
+# Crear documento completo con notas alineadas
+doc_completo <- c(
+  "\\documentclass[12pt]{article}",
+  "\\usepackage{booktabs}",
+  "\\usepackage{caption}",
+  "\\usepackage{threeparttable}",
+  "\\usepackage{dcolumn}",
+  "\\usepackage{adjustbox}",
+  "\\usepackage[utf8]{inputenc}",
+  "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
+  "\\pagestyle{empty}",
+  "\\begin{document}",
+  paste0("\\setcounter{table}{", numero_tabla - 1, "}"),
+  "\\begin{table}[htbp]",
+  "\\centering",
+  "\\begin{threeparttable}",
+  tabla_limpia,
+  "\\begin{tablenotes}",
+  "\\footnotesize",
+  "\\item \\textit{Notas:} Errores estándar agrupados a nivel departamental entre paréntesis.",
+  "\\end{tablenotes}",
+  "\\end{threeparttable}",
+  "\\end{table}",
+  "\\end{document}"
+)
+
+# Guardar UN SOLO archivo .tex
+writeLines(doc_completo, file.path(dir_tablas,"hetero_dpto.tex"))
+cat("✓ Archivo .tex guardado\n")
+
+# Compilar
+dir_actual <- getwd()
+setwd(dir_tablas)
+
+
+resultado <- try({
+  tinytex::pdflatex("hetero_dpto.tex")
+}, silent = FALSE)
+
+setwd(dir_actual)
+
+if (inherits(resultado, "try-error")) {
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n")
+  log_file <- file.path(dir_tablas, "hetero_dpto.log")
+  if (file.exists(log_file)) {
+    log_lines <- readLines(log_file)
+    cat(tail(log_lines, 30), sep = "\n")
+  }
+  stop("No se pudo compilar el documento LaTeX")
+}
+
+# Verificar la ruta correcta del PDF
+pdf_path <- file.path(dir_tablas, "hetero_dpto.pdf")
+
+if (file.exists(pdf_path)) {
+  # Convertir a PNG
+  img <- image_read_pdf(pdf_path, density = 300)
+  image_write(img, file.path(dir_tablas, "hetero_dpto.png"))
+  cat("✓ Tabla convertida a PNG:", file.path(dir_tablas, "hetero_dpto.png"), "\n")
+  
+  # Limpiar archivos temporales
+  archivos_temp <- c(
+    file.path(dir_tablas, "tabla_temp.tex"),
+    file.path(dir_tablas, "hetero_dpto.pdf"),
+    file.path(dir_tablas, "hetero_dpto.aux"), 
+    file.path(dir_tablas, "hetero_dpto.log")
+  )
+  
+  file.remove(archivos_temp[file.exists(archivos_temp)])
+  cat("✓ Archivos temporales eliminados\n")
+} else {
+  cat("❌ No se generó el PDF\n")
+  cat("Ruta buscada:", pdf_path, "\n")
+  # Verificar qué archivos se crearon
+  cat("Archivos en", dir_tablas, ":\n")
+  print(list.files(dir_tablas))
+}
+
+# Extraer coeficientes de departamentos
+coefs_depto <- coef(modelo_het_depto)
+nombres_depto <- names(coefs_depto)[grepl("departamento", names(coefs_depto))]
+valores_depto <- coefs_depto[nombres_depto]
+
+# Limpiar nombres
+nombres_limpios <- gsub("Shock_Importacion:IVIG_3_dt:departamento", "", nombres_depto)
+
+# Crear dataframe
+df_plot <- data.frame(
+  departamento = nombres_limpios,
+  coef = valores_depto,
+  se = se(modelo_het_depto)[nombres_depto]
+) %>%
+  mutate(
+    ci_low = coef - 1.96 * se,
+    ci_high = coef + 1.96 * se,
+    significativo = ifelse(ci_low > 0 | ci_high < 0, "Sí", "No")
+  )
+
+# Gráfico
+ggplot(df_plot, aes(x = reorder(departamento, coef), y = coef)) +
+  geom_point(aes(color = significativo), size = 3) +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high, color = significativo),
+                width = 0.2, linewidth = 1) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  coord_flip() +
+  labs(title = "Figura 12: Efectos Heterogéneos por Departamento",
+       subtitle = "Shock Importación × Vulnerabilidad (con IC 95%)",
+       x = "Departamento",
+       y = "Efecto estimado",
+       color = "Significativo (5%)") +
+  theme_minimal() +
+      theme(
+      plot.title = element_text(size = 14, face = "bold"),
+      plot.subtitle = element_text(size = 11),
+      axis.title = element_text(size = 11),
+      legend.position = "bottom",
+      panel.grid.minor = element_blank()
+    )+
+  scale_color_manual(values = c("No" = "gray", "Sí" = "red"))
+
+ggsave(file.path(dir_graficos,"figura12_efect_hetero_dpto.png"), width = 10, height = 6)
+
+```
+
+#Analisis de robustez
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+
+cat("ANÁLISIS DE ROBUSTEZ\n")
+
+# 1. ESPECIFICACIÓN ALTERNATIVA: Sin controles
+
+cat("1. Modelo sin controles (solo efectos fijos)...\n")
+
+modelo_rob_sincontroles <- feols(
+  ind_prod_nominal ~ Shock_Importacion:IVIG_3_dt + IVIG_3_dt |
+                     departamento + ym_2,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+cat("✓ Modelo sin controles estimado\n")
+
+# 2. ESPECIFICACIÓN ALTERNATIVA: Umbral alternativo (percentil 75)
+
+cat("2. Modelo con umbral alternativo (P75)...\n")
+
+# Calcular percentil 75 en período pre-tratamiento
+p75_pre <- BD_0 %>%
+  filter(year == 2023) %>%
+  summarise(p75 = quantile(IVIG_3_cont, 0.75, na.rm = TRUE)) %>%
+  pull(p75)
+
+BD_0 <- BD_0 %>%
+  mutate(IVIG_3_dt_p75 = ifelse(IVIG_3_cont >= p75_pre, 1, 0))
+
+modelo_rob_p75 <- feols(
+  ind_prod_nominal ~ Shock_Importacion:IVIG_3_dt_p75 + IVIG_3_dt_p75 +
+                     cobertura + log(poblacion) + log(SGP) |
+                     departamento + ym_2,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+cat("✓ Modelo con P75 estimado\n")
+
+# 3. ESPECIFICACIÓN ALTERNATIVA: Efectos fijos más estrictos
+
+cat("3. Modelo con efectos fijos departamento × año...\n")
+
+BD_0 <- BD_0 %>%
+  mutate(depto_year = paste(departamento, year, sep = "_"))
+
+modelo_rob_fe_estricto <- feols(
+  ind_prod_nominal ~ Shock_Importacion:IVIG_3_dt + IVIG_3_dt +
+                     cobertura + log(poblacion) + log(SGP) |
+                     depto_year + ym_2,
+  data = BD_0,
+  cluster = ~departamento
+)
+
+cat("✓ Modelo con FE estrictos estimado\n")
+
+
+# 4. PLACEBO TEST: Shock falso 12 meses antes
+
+cat("4. Placebo test (shock falso)...\n")
+
+# Crear shock placebo 12 meses antes del verdadero
+fecha_placebo <- fecha_pre_tratamiento %m-% months(12)
+
+BD_placebo <- BD_0 %>%
+  filter(date < fecha_pre_tratamiento) %>%  # Solo período pre-tratamiento real
+  mutate(Shock_Placebo = ifelse(date >= fecha_placebo, 1, 0))
+
+modelo_placebo <- feols(
+  ind_prod_nominal ~ Shock_Placebo:IVIG_3_dt + IVIG_3_dt +
+                     cobertura + log(poblacion) + log(SGP) |
+                     departamento + ym_2,
+  data = BD_placebo,
+  cluster = ~departamento
+)
+
+cat("✓ Placebo test estimado\n")
+
+
+```
+
+#Estimacion del modelo de DID
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+
+# ESTIMACION DiD - SHOCK IMPORTACIÓN (dic 2024)
+cat("Modelo Diferencias en Diferencias\n")
+
+# Enumerar la tabla
+numero_tabla <- 9
+
+                  
+if(!"Shock_Importacion" %in% colnames(BD_0)) {                             
+  BD_0 <- BD_0 %>%                                                         
+    mutate(Shock_Importacion = ifelse(date >= fecha_pre_tratamiento, 1, 0)) 
+  cat("→ Variable Shock_Importacion creada\n")                              
+}
+
+modelo_imp_m1 <- feols(                                                    
+  ind_prod_nominal ~ Shock_Importacion + Shock_Importacion:IVIG_3_dt + IVIG_3_dt +
+                     cobertura +                                           
+                     log(poblacion) + log(SGP) |                           
+                     departamento + ym_2,                                    
+  data = BD_0,                                                             
+  cluster = ~departamento                                                  
+)
+
+cat("✓ Modelos Importación estimados\n")
+
+# Resultado del modelo de DiD
+etable(modelo_imp_m1,
+       tex = TRUE,   
+       title = "Efecto de la Importación de Gas (GNI) sobre Productividad Industrial", 
+       headers = c("Importación"),
+       drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
+       notes = NULL,
+       fontsize = "small",
+       se.below = FALSE,
+       digits = 4,
+       digits.stats = 1,
+       file = file.path(dir_tablas,"tabla_temp.tex")
+)
+
+#Convertir la tabla de resultados en Latex y PNG.
+# Leer el contenido de la tabla
+tabla_contenido <- readLines(file.path(dir_tablas,"tabla_temp.tex"))
+
+# Extraer SOLO el contenido entre \begin{document} y \end{document}
+inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
+fin <- which(grepl("\\\\end\\{document\\}", tabla_contenido))
+
+if (length(inicio) > 0 && length(fin) > 0) {
+  # Extraer solo el contenido de la tabla (sin document tags)
+  tabla_limpia <- tabla_contenido[(inicio + 1):(fin - 1)]
+} else {
+  # Si no hay \begin{document}, usar todo el contenido
+  tabla_limpia <- tabla_contenido
+}
+
+# Remover \begin{table} y \end{table} duplicados si existen
+tabla_limpia <- tabla_limpia[!grepl("^\\\\begin\\{table\\}|^\\\\end\\{table\\}|^\\\\centering$", tabla_limpia)]
+
+# Crear documento completo con notas alineadas
+doc_completo <- c(
+  "\\documentclass[12pt]{article}",
+  "\\usepackage{booktabs}",
+  "\\usepackage{caption}",
+  "\\usepackage{threeparttable}",
+  "\\usepackage{dcolumn}",
+  "\\usepackage{adjustbox}",
+  "\\usepackage[utf8]{inputenc}",
+  "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
+  "\\pagestyle{empty}",
+  "\\begin{document}",
+  paste0("\\setcounter{table}{", numero_tabla - 1, "}"),
+  "\\begin{table}[htbp]",
+  "\\centering",
+  "\\begin{threeparttable}",
+  tabla_limpia,
+  "\\begin{tablenotes}",
+  "\\footnotesize",
+  "\\item \\textit{Notas:} Errores estándar agrupados a nivel departamental entre paréntesis.",
+  "\\end{tablenotes}",
+  "\\end{threeparttable}",
+  "\\end{table}",
+  "\\end{document}"
+)
+
+# Guardar UN SOLO archivo .tex
+writeLines(doc_completo, file.path(dir_tablas,"modelo_did.tex"))
+cat("✓ Archivo .tex guardado\n")
+
+# Compilar
+dir_actual <- getwd()
+setwd(dir_tablas)
+
+
+resultado <- try({
+  tinytex::pdflatex("modelo_did.tex")
+}, silent = FALSE)
+
+setwd(dir_actual)
+
+if (inherits(resultado, "try-error")) {
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n")
+  log_file <- file.path(dir_tablas, "modelo_did.log")
+  if (file.exists(log_file)) {
+    log_lines <- readLines(log_file)
+    cat(tail(log_lines, 30), sep = "\n")
+  }
+  stop("No se pudo compilar el documento LaTeX")
+}
+
+# Verificar la ruta correcta del PDF
+pdf_path <- file.path(dir_tablas, "modelo_did.pdf")
+
+if (file.exists(pdf_path)) {
+  # Convertir a PNG
+  img <- image_read_pdf(pdf_path, density = 300)
+  image_write(img, file.path(dir_tablas, "modelo_did.png"))
+  cat("✓ Tabla convertida a PNG:", file.path(dir_tablas, "modelo_did.png"), "\n")
+  
+  # Limpiar archivos temporales
+  archivos_temp <- c(
+    file.path(dir_tablas, "tabla_temp.tex"),
+    file.path(dir_tablas, "modelo_did.pdf"),
+    file.path(dir_tablas, "modelo_did.aux"), 
+    file.path(dir_tablas, "modelo_did.log")
+  )
+  
+  file.remove(archivos_temp[file.exists(archivos_temp)])
+  cat("✓ Archivos temporales eliminados\n")
+} else {
+  cat("❌ No se generó el PDF\n")
+  cat("Ruta buscada:", pdf_path, "\n")
+  # Verificar qué archivos se crearon
+  cat("Archivos en", dir_tablas, ":\n")
+  print(list.files(dir_tablas))
+}
+```
+
+#Tabla estima de resultados incluidos los de robustez
+```{r ECHO=FALSE, warning=FALSE, message=FALSE}
+
+# TABLA COMPARATIVA DE ROBUSTEZ
+cat("Generando tabla comparativa de robustez\n")
+
+# Enumerar la tabla
+numero_tabla <- 10
+
+# Resultado de los modelos DiD y robustez 
+etable(modelo_imp_m1, modelo_rob_sincontroles, modelo_rob_p75, 
+       modelo_rob_fe_estricto, modelo_placebo,
+       tex = TRUE,
+       title = "Análisis de Robustez",
+       headers = c("Baseline", "Sin controles", "Umbral P75", 
+                   "FE estrictos", "Placebo"),
+       drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
+       notes = NULL,
+       fontsize = "small",
+       se.below = FALSE,
+       digits = 4,
+       digits.stats = 1,
+       file = file.path(dir_tablas,"tabla_temp.tex")
+)
+
+#Convertir la tabla de resultados en Latex y PNG.
+# Leer el contenido de la tabla
+tabla_contenido <- readLines(file.path(dir_tablas,"tabla_temp.tex"))
+
+# Extraer SOLO el contenido entre \begin{document} y \end{document}
+inicio <- which(grepl("\\\\begin\\{document\\}", tabla_contenido))
+fin <- which(grepl("\\\\end\\{document\\}", tabla_contenido))
+
+if (length(inicio) > 0 && length(fin) > 0) {
+  # Extraer solo el contenido de la tabla (sin document tags)
+  tabla_limpia <- tabla_contenido[(inicio + 1):(fin - 1)]
+} else {
+  # Si no hay \begin{document}, usar todo el contenido
+  tabla_limpia <- tabla_contenido
+}
+
+# Remover \begin{table} y \end{table} duplicados si existen
+tabla_limpia <- tabla_limpia[!grepl("^\\\\begin\\{table\\}|^\\\\end\\{table\\}|^\\\\centering$", tabla_limpia)]
+
+# Crear documento completo con notas alineadas
+doc_completo <- c(
+  "\\documentclass[12pt]{article}",
+  "\\usepackage{booktabs}",
+  "\\usepackage{caption}",
+  "\\usepackage{threeparttable}",
+  "\\usepackage{dcolumn}",
+  "\\usepackage{adjustbox}",
+  "\\usepackage[utf8]{inputenc}",
+  "\\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}",
+  "\\pagestyle{empty}",
+  "\\begin{document}",
+  paste0("\\setcounter{table}{", numero_tabla - 1, "}"),
+  "\\begin{table}[htbp]",
+  "\\centering",
+  "\\begin{threeparttable}",
+  tabla_limpia,
+  "\\begin{tablenotes}",
+  "\\footnotesize",
+  "\\item \\textit{Notas:} Estación de ponderacion por Varianza inversa",
+                 "Errores estándar agrupados por departamento en paréntesis.",        
+                 "Efectos fijos por departamento y período (año-mes) incluidos.",     
+                 "El coeficiente de interés captura el efecto diferencial de la importación", 
+                 "en departamentos vulnerables (Grupo=1) relativo a departamentos control (Grupo=0).",
+  "\\end{tablenotes}",
+  "\\end{threeparttable}",
+  "\\end{table}",
+  "\\end{document}"
+)
+
+# Guardar UN SOLO archivo .tex
+writeLines(doc_completo, file.path(dir_tablas,"modelo_did_robus.tex"))
+cat("✓ Archivo .tex guardado\n")
+
+# Compilar
+dir_actual <- getwd()
+setwd(dir_tablas)
+
+
+resultado <- try({
+  tinytex::pdflatex("modelo_did_robus.tex")
+}, silent = FALSE)
+
+setwd(dir_actual)
+
+if (inherits(resultado, "try-error")) {
+  cat("\n❌ Error al compilar. Mostrando las últimas líneas del log:\n")
+  log_file <- file.path(dir_tablas, "modelo_did_robus.log")
+  if (file.exists(log_file)) {
+    log_lines <- readLines(log_file)
+    cat(tail(log_lines, 30), sep = "\n")
+  }
+  stop("No se pudo compilar el documento LaTeX")
+}
+
+# Verificar la ruta correcta del PDF
+pdf_path <- file.path(dir_tablas, "modelo_did_robus.pdf")
+
+if (file.exists(pdf_path)) {
+  # Convertir a PNG
+  img <- image_read_pdf(pdf_path, density = 300)
+  image_write(img, file.path(dir_tablas, "modelo_did_robus.png"))
+  cat("✓ Tabla convertida a PNG:", file.path(dir_tablas, "modelo_did_robus.png"), "\n")
+  
+  # Limpiar archivos temporales
+  archivos_temp <- c(
+    file.path(dir_tablas, "tabla_temp.tex"),
+    file.path(dir_tablas, "modelo_did_robus.pdf"),
+    file.path(dir_tablas, "modelo_did_robus.aux"), 
+    file.path(dir_tablas, "modelo_did_robus.log")
+  )
+  
+  file.remove(archivos_temp[file.exists(archivos_temp)])
+  cat("✓ Archivos temporales eliminados\n")
+} else {
+  cat("❌ No se generó el PDF\n")
+  cat("Ruta buscada:", pdf_path, "\n")
+  # Verificar qué archivos se crearon
+  cat("Archivos en", dir_tablas, ":\n")
+  print(list.files(dir_tablas))
+}
+
+cat("✓ Análisis de heterogeneidad y robustez completado\n")
+
+```
+
+## Bibliografía
+
+Moyano, L. F. (2016). Regalías y pobreza en el Caribe colombiano: un análisis de impacto distributivo del Sistema General de Regalías. Universidad del Norte. https://manglar.uninorte.edu.co/handle/10584/7374
+Alcaraz, C. (2017). The effect of natural gas shortages on the Mexican economy. Energy Economics, 66, 77–86. https://doi.org/10.1016/j.eneco.2017.05.011
+Yépez-García, A. (2021). Productivity and energy intensity in Latin America. Inter-American Development Bank (IDB), Energy Division Working Paper. https://publications.iadb.org/en/productivity-and-energy-intensity-latin-america
+Wang, C., & Garduño-Rivera, R. (2022). The growing US-Mexico natural gas trade and its regional economic impacts in Mexico. arXiv preprint. https://arxiv.org/abs/2207.09391
