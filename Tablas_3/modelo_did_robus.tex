@@ -1,0 +1,57 @@
+\documentclass[12pt]{article}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{threeparttable}
+\usepackage{dcolumn}
+\usepackage{adjustbox}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.5in, paperwidth=14in, paperheight=10in]{geometry}
+\pagestyle{empty}
+\begin{document}
+\setcounter{table}{12}
+\begin{table}[htbp]
+\centering
+\begin{threeparttable}
+
+   \caption{Análisis de Robustez}
+   \centering
+   \small
+   \begin{tabular}{lccccc}
+      \tabularnewline \midrule \midrule
+      Dependent Variable: & \multicolumn{5}{c}{ind\_prod\_nominal}\\
+                                                        & Baseline                & Sin controles           & Umbral P75            & FE estrictos             & Placebo \\   
+      Model:                                            & (1)                     & (2)                     & (3)                   & (4)                      & (5)\\  
+      \midrule
+      \emph{Variables}\\
+      IVIG\_3\_dt                                       & -1.290$^{***}$ (0.3859) & -1.391$^{***}$ (0.4276) &                       & -0.6637$^{***}$ (0.1951) & -1.327$^{***}$ (0.3894)\\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt           & -2.949 (3.703)          & -2.762 (4.167)          &                       & -0.9888 (2.810)          &   \\   
+      IVIG\_3\_dt\_p75                                  &                         &                         & -5.443$^{**}$ (1.905) &                          &   \\   
+      Shock\_Importacion $\times$ IVIG\_3\_dt\_p75      &                         &                         & -6.705 (4.403)        &                          &   \\   
+      Shock\_Placebo $\times$ IVIG\_3\_dt               &                         &                         &                       &                          & -0.5683 (1.017)\\   
+      \midrule
+      \emph{Fixed-effects}\\
+      departamento                                      & Yes                     & Yes                     & Yes                   &                          & Yes\\  
+      ym\_2                                             & Yes                     & Yes                     & Yes                   & Yes                      & Yes\\  
+      depto\_year                                       &                         &                         &                       & Yes                      & \\  
+      \midrule
+      \emph{Fit statistics}\\
+      Observations                                      & 4,539                   & 4,539                   & 4,539                 & 4,539                    & 4,233\\  
+      R$^2$                                             & 0.7                     & 0.7                     & 0.7                   & 0.7                      & 0.7\\  
+      Within R$^2$                                      & 0.02                    & 0.002                   & 0.02                  & 0.0005                   & 0.02\\  
+      \midrule \midrule
+      \multicolumn{6}{l}{\emph{Clustered (departamento) standard-errors in parentheses}}\\
+      \multicolumn{6}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+   \end{tabular}
+
+
+\begin{tablenotes}
+\footnotesize
+\item \textit{Notas:} Estación de ponderacion por Varianza inversa
+Errores estándar agrupados por departamento en paréntesis.
+Efectos fijos por departamento y período (año-mes) incluidos.
+El coeficiente de interés captura el efecto diferencial de la importación
+en departamentos vulnerables (Grupo=1) relativo a departamentos control (Grupo=0).
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{document}
