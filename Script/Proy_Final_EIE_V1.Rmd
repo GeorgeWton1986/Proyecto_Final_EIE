@@ -1644,7 +1644,7 @@ plot_event_study <- function(coefs_df, titulo, fecha_shock_label) {
     annotate("text", x = 1, y = max(coefs_df$ci_high, na.rm = TRUE) * 0.99,
              label = "Shock", color = "red", size = 4, hjust = 0)
     
-  ggsave(file.path(dir_graficos,"figura11_event_study.png"), width = 10, height = 6)
+  ggsave(file.path(dir_graficos,"figura13_event_study.png"), width = 10, height = 6)
   return(p)
 }
 
@@ -1652,7 +1652,7 @@ plot_event_study <- function(coefs_df, titulo, fecha_shock_label) {
 
 p_event_imp <- plot_event_study(                             
   coefs_imp,                                                 
-  "Figura 11: Event Study - Efecto Dinámico de la Importación de Gas (GNI)",  
+  "Figura 13: Event Study - Efecto Dinámico de la Importación de Gas (GNI)",  
   "Diciembre 2024"                                           
 )
 
@@ -2136,7 +2136,7 @@ ggplot(df_plot, aes(x = reorder(departamento, coef), y = coef)) +
                 width = 0.2, linewidth = 1) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
   coord_flip() +
-  labs(title = "Figura 12: Efectos Heterogéneos por Departamento",
+  labs(title = "Figura 14: Efectos Heterogéneos por Departamento",
        subtitle = "Shock Importación × Vulnerabilidad (con IC 95%)",
        x = "Departamento",
        y = "Efecto estimado",
@@ -2151,7 +2151,7 @@ ggplot(df_plot, aes(x = reorder(departamento, coef), y = coef)) +
     )+
   scale_color_manual(values = c("No" = "gray", "Sí" = "red"))
 
-ggsave(file.path(dir_graficos,"figura12_efect_hetero_dpto.png"), width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura14_efect_hetero_dpto.png"), width = 10, height = 6)
 
 ```
 
