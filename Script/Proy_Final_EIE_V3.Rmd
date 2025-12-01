@@ -181,7 +181,7 @@ setwd("..")
 getwd()
 
 # Crear las carpetas 
-carpetas <- c("Tablas", "Graphs")
+carpetas <- c("Tablas_3", "Graphs_3")
 
 for (carpeta in carpetas) {
   if (!dir.exists(carpeta)) {
@@ -211,8 +211,8 @@ getwd()
 ```
 ### Direccion de rutas
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
-dir_tablas <- "../Tablas"
-dir_graficos <- "../Graphs"
+dir_tablas <- "../Tablas_3"
+dir_graficos <- "../Graphs_3"
 ```
 
 ### Transformación de datos en R
@@ -504,17 +504,13 @@ BD_pre_tratamiento <- BD_0 %>%
 # Calcular min/max pre-tratamiento según shock
 min_costotransporte <- min(BD_pre_tratamiento$costotransporte, na.rm = TRUE)
 max_costotransporte <- max(BD_pre_tratamiento$costotransporte, na.rm = TRUE)
-min_costomolgas <- min(BD_pre_tratamiento$costomolgas, na.rm = TRUE)
-max_costomolgas <- max(BD_pre_tratamiento$costomolgas, na.rm = TRUE)
 
 # Cálculo dependencia y estandarización de variables
 BD_0 <- BD_0 %>%
   mutate(
     dependencia = pmax(0,1 - (prod/consumo)),
     est_costotransporte = (costotransporte - min_costotransporte) / 
-                          (max_costotransporte - min_costotransporte),
-    est_costomolgas = (costomolgas - min_costomolgas) / 
-                      (max_costomolgas - min_costomolgas)
+                          (max_costotransporte - min_costotransporte)
   )
 
 # Cálculo de índice IVIG
@@ -526,8 +522,7 @@ datos_ref_depto <- BD_0 %>%
   group_by(departamento) %>%
   summarise(
     dependencia_mean = mean(dependencia, na.rm = TRUE),
-    est_costotransporte_mean = mean(est_costotransporte, na.rm = TRUE),
-    est_costomolgas_mean = mean(est_costomolgas, na.rm = TRUE)
+    est_costotransporte_mean = mean(est_costotransporte, na.rm = TRUE)
   ) %>%
   ungroup()
 
@@ -535,24 +530,20 @@ datos_ref_depto <- BD_0 %>%
 
 var_dependencia <- var(datos_ref_depto$dependencia_mean, na.rm = TRUE)
 var_est_costotransporte <- var(datos_ref_depto$est_costotransporte_mean, na.rm = TRUE)
-var_est_costomolgas <- var(datos_ref_depto$est_costomolgas_mean, na.rm = TRUE)
 
 # Calcular ponderaciones de varianza inversa
 inv_var_dependencia <- 1 / var_dependencia
 inv_var_est_costotransporte <- 1 / var_est_costotransporte
-inv_var_est_costomolgas <- 1 / var_est_costomolgas
 
-sum_inv_vars <- inv_var_dependencia + inv_var_est_costotransporte + inv_var_est_costomolgas
+sum_inv_vars <- inv_var_dependencia + inv_var_est_costotransporte
 
 w1_3 <- inv_var_dependencia / sum_inv_vars
 w2_3 <- inv_var_est_costotransporte / sum_inv_vars
-w3_3 <- inv_var_est_costomolgas / sum_inv_vars
 
 # Cálculo de IVIG (continuo)
 BD_0 <- BD_0 %>%
   mutate(
-    IVIG_3_cont = (w1_3 * dependencia) + (w2_3 * est_costotransporte) + (w3_3 * est_costomolgas)
-  )
+    IVIG_3_cont = (w1_3 * dependencia) + (w2_3 * est_costotransporte))
 
 # Cálculo de IVIG (dicotoma)
 
@@ -582,8 +573,8 @@ BD_0 <- BD_0 %>%
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Crear dataframe con los pesos
 datos_pesos <- data.frame(
-  Variable = c("Dependencia", "Costo Transporte", "Costo Gas"),
-  Peso = c(w1_3, w2_3, w3_3)
+  Variable = c("Dependencia", "Costo Transporte"),
+  Peso = c(w1_3, w2_3)
 )
 
 # Gráfico de barras simple para los pesos
@@ -604,11 +595,10 @@ ggsave(file.path(dir_graficos,"figura1_ponderaciones.png"), width = 10, height =
 # Para ver las distribuciones de los componentes ponderados en la muestra
 datos_componentes <- BD_0 %>%
   filter(year == 2023) %>%
-  select(departamento, dependencia, est_costotransporte, est_costomolgas) %>%
+  select(departamento, dependencia, est_costotransporte) %>%
   mutate(
     comp_dependencia = dependencia * w1_3,
-    comp_costotransporte = est_costotransporte * w2_3,
-    comp_costomolgas = est_costomolgas * w3_3
+    comp_costotransporte = est_costotransporte * w2_3
   ) %>%
   select(departamento, starts_with("comp_")) %>%
   pivot_longer(cols = starts_with("comp_"),
@@ -616,8 +606,7 @@ datos_componentes <- BD_0 %>%
                values_to = "Valor") %>%
   mutate(Componente = case_when(
     Componente == "comp_dependencia" ~ "Dependencia",
-    Componente == "comp_costotransporte" ~ "Costo Transporte",
-    Componente == "comp_costomolgas" ~ "Costo Gas"
+    Componente == "comp_costotransporte" ~ "Costo Transporte"
   ))
 
 # Boxplot de componentes ponderados
@@ -696,34 +685,6 @@ ggplot(BD_0, aes(x = date, y = est_costotransporte)) +
 
 ggsave(file.path(dir_graficos,"figura4_estcostranporte_dpto.png"), width = 10, height = 6)
 
-# Grafico de Costo Mol Gas Estandarizado
-ggplot(BD_0, aes(x = date, y = est_costomolgas)) +
-  geom_line(color = "darkgreen", linewidth = 0.4) + 
-  geom_vline(xintercept = as.POSIXct("2024-12-01"), 
-             linetype = "dashed", 
-             color = "red", 
-             linewidth = 0.2) +
-  annotate("text", 
-           x = as.POSIXct("2024-12-01"), 
-           y = 0.70,
-           label = "Shock", 
-           color = "red", 
-           size = 2, 
-           angle = 90, 
-           vjust = -0.5) +
-  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
-  facet_wrap(~departamento, scales = "free_y") +
-  labs(title = "Figura 5: Costo de Molécula de Gas Estandarizado por Departamento",
-       x = "Fecha",
-       y = "Costo de Molécula de Gas Estandarizado") +
-  theme_minimal() +
-  theme(plot.title = element_text(size = 14, face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1, size = 6), 
-        axis.text.y = element_text(hjust = 1, size = 6),
-        strip.text = element_text(size = 6))
-
-ggsave(file.path(dir_graficos,"figura5_estcostmolgas_dpto.png"), width = 10, height = 6)
-
 ```
 
 
@@ -732,7 +693,7 @@ ggsave(file.path(dir_graficos,"figura5_estcostmolgas_dpto.png"), width = 10, hei
 # Gráfico por departamento
 ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = departamento)) +
   geom_line(linewidth = 0.4) +
-  labs(title = "Figura 6: Índice de Producción Industrial Nominal por Departamento",
+  labs(title = "Figura 5: Índice de Producción Industrial Nominal por Departamento",
        x = "Fecha",
        y = "Índice de Producción Industrial Nominal",
        color = "Departamento") +
@@ -743,12 +704,12 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = departamento)) +
           legend.position = "right", 
           legend.text = element_text(size = 4))
 
-ggsave(file.path(dir_graficos,"figura6_IPIND.png"), width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura5_IPIND.png"), width = 10, height = 6)
 
 # Gráfico por industria
 ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = industria)) +
   geom_line(linewidth = 0.4) +
-  labs(title = "Figura 7: Índice de Producción Industrial Nominal por Industria",
+  labs(title = "Figura 6: Índice de Producción Industrial Nominal por Industria",
        x = "Fecha",
        y = "Índice de Producción Industrial Nominal",
        color = "Industria") +
@@ -759,7 +720,7 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal, color = industria)) +
           legend.position = "right", 
           legend.text = element_text(size = 4))
 
-ggsave(file.path(dir_graficos,"figura7_IPINI.png"), width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura6_IPINI.png"), width = 10, height = 6)
 
 # Gráfico separados por departamento
 ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
@@ -778,7 +739,7 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
            vjust = -0.5) +
   scale_y_continuous(limits = c(0, 300), breaks = seq(0, 300, 100)) +
   facet_wrap(~departamento, scales = "free_y") +
-  labs(title = "Figura 8: Índice de Producción Industrial Nominal por Departamento",
+  labs(title = "Figura 7: Índice de Producción Industrial Nominal por Departamento",
        x = "Fecha",
        y = "Índice") +
   theme_minimal() +
@@ -787,7 +748,7 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
         axis.text.y = element_text (hjust = 1, size = 6),
         strip.text = element_text(size = 6))
 
-ggsave(file.path(dir_graficos,"figura8_IPIND2.png"), width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura7_IPIND2.png"), width = 10, height = 6)
 
 # Gráfico separados separados por industria
 ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
@@ -806,7 +767,7 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
            vjust = -0.5) +
   scale_y_continuous(limits = c(0, 300), breaks = seq(0, 300, 100)) +
   facet_wrap(~industria, scales = "free_y") +
-  labs(title = "Figura 9: Índice de Producción Industrial Nominal por Industria",
+  labs(title = "Figura 8: Índice de Producción Industrial Nominal por Industria",
        x = "Fecha",
        y = "Índice") +
   theme_minimal() +
@@ -815,9 +776,10 @@ ggplot(BD_0, aes(x = date, y = ind_prod_nominal)) +
         axis.text.y = element_text (hjust = 1, size = 6),
         strip.text = element_text(size = 5))
 
-ggsave(file.path(dir_graficos,"figura9_IPINI2.png"), width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura8_IPINI2.png"), width = 10, height = 6)
 
 ```
+
 ### Grafico entre grupo tratado y control en el tiempo
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 BD_0 <- BD_0 %>%
@@ -878,13 +840,13 @@ plot_tendencias <- function(data, grupo_var, titulo, fecha_shock,
     scale_fill_manual(values = c("Control" = "#0072B2", 
                                   "Tratado" = "#D55E00"))
 
-  ggsave(file.path(dir_graficos,"figura10_PIN_lineas.png"), width = 10, height = 6)
+  ggsave(file.path(dir_graficos,"figura9_PIN_lineas.png"), width = 10, height = 6)
   return(p)
 }
 
 # Importación GNI (dic 2024)
 p3_imp <- plot_tendencias(BD_0, "grupo_IVIG_3_label",
-                          "Figura 10: Productividad Industrial Nominal - Importación GNI",
+                          "Figura 9: Productividad Industrial Nominal - Importación GNI",
                           fecha_pre_tratamiento)  
 
 print(p3_imp)  
@@ -914,8 +876,7 @@ analisis_deptos <- BD_0 %>%
     
     # Componentes del IVIG
     dependencia_mean = mean(dependencia, na.rm = TRUE),
-    costotransporte_mean = mean(costotransporte, na.rm = TRUE),
-    costomolgas_mean = mean(costomolgas, na.rm = TRUE)
+    costotransporte_mean = mean(costotransporte, na.rm = TRUE)
   ) %>%
   ungroup() %>%
   mutate(
@@ -1192,7 +1153,7 @@ p1 <- ggplot(analisis_deptos, aes(x = IVIG_mean, y = pib_mean_billones,
   geom_text(aes(label = departamento), size = 2.5, 
             vjust = -1, hjust = 0.5, check_overlap = TRUE) +
   scale_y_continuous(limits = c(0,500), breaks = seq (0,500,50))+
-  labs(title = "Figura 11: Vulnerabilidad Energética vs PIB Departamental",
+  labs(title = "Figura 10: Vulnerabilidad Energética vs PIB Departamental",
        subtitle = "Año 2023 (pre-shock)",
        x = "IVIG (Índice de Vulnerabilidad)",
        y = "PIB Departamental (Billones de COP)",
@@ -1210,7 +1171,7 @@ p1 <- ggplot(analisis_deptos, aes(x = IVIG_mean, y = pib_mean_billones,
 
 print(p1)
 
-ggsave(file.path(dir_graficos,"figura11_vul_pibdpto.png"), width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura10_vul_pibdpto.png"), width = 10, height = 6)
 
 
 #Grafico IVIG y Indicie de producción industrial
@@ -1222,7 +1183,7 @@ p2 <- ggplot(analisis_deptos, aes(x = IVIG_mean, y = prod_ind_mean,
   geom_text(aes(label = departamento), size = 2.5, 
             vjust = -1, hjust = 0.5, check_overlap = TRUE) +
   scale_y_continuous(limits = c(100,250), breaks = seq (100,250,50))+
-  labs(title = "Figura 12: Vulnerabilidad Energética vs Ind. Producción",
+  labs(title = "Figura 11: Vulnerabilidad Energética vs Ind. Producción",
        subtitle = "Año 2023 (pre-shock)",
        x = "IVIG (Índice de Vulnerabilidad)",
        y = "Producción Industrial Nominal",
@@ -1240,7 +1201,7 @@ p2 <- ggplot(analisis_deptos, aes(x = IVIG_mean, y = prod_ind_mean,
 
 print(p2)
 
-ggsave(file.path(dir_graficos,"figura12_vul_indprod.png"), width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura11_vul_indprod.png"), width = 10, height = 6)
 
 # 3. Ranking departamentos
 
@@ -1365,6 +1326,7 @@ cat("✓ Tabla 7 guardada: ranking\n")
 cat("\n✓ Análisis de vulnerabilidad vs prosperidad completado\n")
 
 ```
+
 # Estudio de evento 
 ```{r ECHO=FALSE, warning=FALSE, message=FALSE}
 # Gráfica de estudio de evento
@@ -1408,7 +1370,7 @@ numero_tabla <- 8
 
 # EVENT STUDY - SHOCK IMPORTACIÓN
 modelo_event_imp <- feols(ind_prod_nominal ~ i(periodo_imp, IVIG_3_dt, ref = -1) +
-                     cobertura +                                   
+                     cobertura + costomolgas +                                  
                      log(poblacion) + log(SGP) |                  
                      departamento + ym_2,                            
   data = BD_event_imp,                                            
@@ -1420,7 +1382,7 @@ etable(modelo_event_imp,
        tex = TRUE,
        title = "Modelo Event Study - Importación GNI",
        headers = c("Importación GNI"),
-       drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
+       drop = "cobertura|costomolgas|poblacion|SGP|^ym_2$|^departamento$",
        notes = NULL,
        fontsize = "small",
        se.below = FALSE,
@@ -1644,7 +1606,7 @@ plot_event_study <- function(coefs_df, titulo, fecha_shock_label) {
     annotate("text", x = 1, y = max(coefs_df$ci_high, na.rm = TRUE) * 0.99,
              label = "Shock", color = "red", size = 4, hjust = 0)
     
-  ggsave(file.path(dir_graficos,"figura11_event_study.png"), width = 10, height = 6)
+  ggsave(file.path(dir_graficos,"figura12_event_study.png"), width = 10, height = 6)
   return(p)
 }
 
@@ -1652,7 +1614,7 @@ plot_event_study <- function(coefs_df, titulo, fecha_shock_label) {
 
 p_event_imp <- plot_event_study(                             
   coefs_imp,                                                 
-  "Figura 11: Event Study - Efecto Dinámico de la Importación de Gas (GNI)",  
+  "Figura 12: Event Study - Efecto Dinámico de la Importación de Gas (GNI)",  
   "Diciembre 2024"                                           
 )
 
@@ -1727,7 +1689,7 @@ modelo_het_industria <- feols(
                      Shock_Importacion:IVIG_3_dt +
                      Shock_Importacion:industria +
                      IVIG_3_dt:industria +
-                     cobertura + log(poblacion) + log(SGP) |
+                     cobertura + costomolgas +log(poblacion) + log(SGP) |
                      departamento + ym_2,
   data = BD_0,
   cluster = ~departamento
@@ -1858,7 +1820,7 @@ numero_tabla <- 10
 
 modelo_het_continuo <- feols(
   ind_prod_nominal ~ Shock_Importacion:IVIG_3_cont +
-                     cobertura + log(poblacion) + log(SGP) |
+                     cobertura + costomolgas + log(poblacion) + log(SGP) |
                      departamento + ym_2,
   data = BD_0,
   cluster = ~departamento
@@ -1871,7 +1833,7 @@ etable(modelo_het_continuo,
        tex = TRUE,
        title = "Efecto según Nivel de Vulnerabilidad (IVIG continuo)",
        headers = c("IVIG Continuo"),
-       drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
+       drop = "cobertura|costomolgas|poblacion|SGP|^ym_2$|^departamento$",
        notes = NULL,
        fontsize = "small",
        se.below = FALSE,
@@ -1990,7 +1952,7 @@ numero_tabla <- 11
 # Modelo con interacciones departamento × shock
 modelo_het_depto <- feols(
   ind_prod_nominal ~ Shock_Importacion:IVIG_3_dt:departamento +
-                     cobertura + log(poblacion) + log(SGP) |
+                     cobertura + costomolgas + log(poblacion) + log(SGP) |
                      departamento + ym_2,
   data = BD_0,
   cluster = ~departamento
@@ -2003,7 +1965,7 @@ etable(modelo_het_depto,
        tex = TRUE,
        title = "Heterogeneidad por departamento",
        headers = c("Modelo Heterogéneo por Departamento"),
-       drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
+       drop = "cobertura|costomolgas|poblacion|SGP|^ym_2$|^departamento$",
        notes = NULL,
        fontsize = "small",
        se.below = FALSE,
@@ -2136,7 +2098,7 @@ ggplot(df_plot, aes(x = reorder(departamento, coef), y = coef)) +
                 width = 0.2, linewidth = 1) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
   coord_flip() +
-  labs(title = "Figura 12: Efectos Heterogéneos por Departamento",
+  labs(title = "Figura 13: Efectos Heterogéneos por Departamento",
        subtitle = "Shock Importación × Vulnerabilidad (con IC 95%)",
        x = "Departamento",
        y = "Efecto estimado",
@@ -2151,7 +2113,7 @@ ggplot(df_plot, aes(x = reorder(departamento, coef), y = coef)) +
     )+
   scale_color_manual(values = c("No" = "gray", "Sí" = "red"))
 
-ggsave(file.path(dir_graficos,"figura12_efect_hetero_dpto.png"), width = 10, height = 6)
+ggsave(file.path(dir_graficos,"figura13_efect_hetero_dpto.png"), width = 10, height = 6)
 
 ```
 
@@ -2205,7 +2167,7 @@ BD_0 <- BD_0 %>%
 
 modelo_rob_fe_estricto <- feols(
   ind_prod_nominal ~ Shock_Importacion:IVIG_3_dt + IVIG_3_dt +
-                     cobertura + log(poblacion) + log(SGP) |
+                     cobertura + costomolgas + log(poblacion) + log(SGP) |
                      depto_year + ym_2,
   data = BD_0,
   cluster = ~departamento
@@ -2227,7 +2189,7 @@ BD_placebo <- BD_0 %>%
 
 modelo_placebo <- feols(
   ind_prod_nominal ~ Shock_Placebo:IVIG_3_dt + IVIG_3_dt +
-                     cobertura + log(poblacion) + log(SGP) |
+                     cobertura + costomolgas + log(poblacion) + log(SGP) |
                      departamento + ym_2,
   data = BD_placebo,
   cluster = ~departamento
@@ -2256,7 +2218,7 @@ if(!"Shock_Importacion" %in% colnames(BD_0)) {
 
 modelo_imp_m1 <- feols(                                                    
   ind_prod_nominal ~ Shock_Importacion + Shock_Importacion:IVIG_3_dt + IVIG_3_dt +
-                     cobertura +                                           
+                     cobertura + costomolgas +                                           
                      log(poblacion) + log(SGP) |                           
                      departamento + ym_2,                                    
   data = BD_0,                                                             
@@ -2270,7 +2232,7 @@ etable(modelo_imp_m1,
        tex = TRUE,   
        title = "Efecto de la Importación de Gas (GNI) sobre Productividad Industrial", 
        headers = c("Importación"),
-       drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
+       drop = "cobertura|costomolgas|poblacion|SGP|^ym_2$|^departamento$",
        notes = NULL,
        fontsize = "small",
        se.below = FALSE,
@@ -2393,7 +2355,7 @@ etable(modelo_imp_m1, modelo_rob_sincontroles, modelo_rob_p75,
        title = "Análisis de Robustez",
        headers = c("Baseline", "Sin controles", "Umbral P75", 
                    "FE estrictos", "Placebo"),
-       drop = "cobertura|poblacion|SGP|^ym_2$|^departamento$",
+       drop = "cobertura|costomolgas|poblacion|SGP|^ym_2$|^departamento$",
        notes = NULL,
        fontsize = "small",
        se.below = FALSE,
